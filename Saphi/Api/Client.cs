@@ -2,14 +2,14 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Web;
 
-namespace Saphira
+namespace Saphira.Saphi.Api
 {
-    public class SaphiClient
+    public class Client
     {
         private readonly HttpClient _httpClient;
         private readonly Configuration _configuration;
 
-        public SaphiClient(HttpClient httpClient, Configuration configuration)
+        public Client(HttpClient httpClient, Configuration configuration)
         {
             _httpClient = httpClient;
             _configuration = configuration;
@@ -27,7 +27,7 @@ namespace Saphira
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        private static string BuildUrlWithQuery(string endpoint, Dictionary<string, string>? queryParams)
+        private string BuildUrlWithQuery(string endpoint, Dictionary<string, string>? queryParams)
         {
             if (queryParams == null || queryParams.Count == 0)
                 return endpoint;

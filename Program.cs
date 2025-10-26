@@ -3,6 +3,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Saphira.Saphi.Api;
 using Saphira.Util;
 
 namespace Saphira
@@ -12,6 +13,8 @@ namespace Saphira
         private static DiscordSocketClient _discordSocketClient = null!;
         private static InteractionService _interactionService = null!;
         private static IServiceProvider _serviceProvider = null!;
+
+        public static DateTime StartTime { get; private set; }
 
         private static Task Log(string message)
         {
@@ -48,7 +51,7 @@ namespace Saphira
                 .AddSingleton(_interactionService)
                 .AddSingleton(config)
                 .AddHttpClient()
-                .AddSingleton<SaphiClient>()
+                .AddSingleton<Client>()
                 .AddSingleton<ScoreFormatter>()
                 .BuildServiceProvider();
 
@@ -60,15 +63,18 @@ namespace Saphira
 
             _discordSocketClient.Ready += () =>
             {
+                StartTime = DateTime.UtcNow;
+
                 Log("Connection to Discord established.");
                 Log("Slash commands are being registered ...");
                 Log("Saphira started successfully.");
+
                 return Task.CompletedTask;
             };
 
-            _discordSocketClient.Log += (msg) =>
+            _discordSocketClient.Log += (message) =>
             {
-                Console.WriteLine(msg.ToString());
+                Console.WriteLine(message.ToString());
                 return Task.CompletedTask;
             };
 
