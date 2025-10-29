@@ -1,31 +1,42 @@
-﻿using Saphira.Saphi.Api;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Saphira.Saphi.Api;
 
 namespace Saphira.Commands.Autocompletion.ValueProvider
 {
     public class CategoryValueProvider : IValueProvider
     {
         private readonly SaphiApiClient _saphiApiClient;
+        private readonly IMemoryCache _cache;
 
-        public CategoryValueProvider(SaphiApiClient saphiApiClient)
+        public CategoryValueProvider(SaphiApiClient saphiApiClient, IMemoryCache cache)
         {
-            _saphiApiClient = saphiApiClient;        
+            _saphiApiClient = saphiApiClient;
+            _cache = cache;
         }
 
         public async Task<List<Value>> GetValuesAsync()
         {
             var values = new List<Value>();
-            var response = await _saphiApiClient.GetCategoriesAsync();
+            var categories = await GetCategoriesFromCache();
 
-            if (response?.Success == true)
+            foreach (var category in categories)
             {
-                foreach (var category in response.Data)
-                {
-                    var value = new Value(int.Parse(category.Id), category.Name);
-                    values.Add(value);
-                }
+                var value = new Value(int.Parse(category.Id), category.Name);
+                values.Add(value);
             }
 
             return values;
+        }
+
+        private async Task<List<Category>> GetCategoriesFromCache()
+        {
+            return await _cache.GetOrCreateAsync("categories", async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24);
+
+                var response = await _saphiApiClient.GetCategoriesAsync();
+                return response?.Data ?? [];
+            });
         }
     }
 }

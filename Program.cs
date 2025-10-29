@@ -80,7 +80,6 @@ namespace Saphira
                 .AddSingleton(discordSocketClient)
                 .AddSingleton(interactionService)
                 .AddSingleton(configuration)
-                .AddHttpClient()
                 .AddSingleton<GuildRoleManager>()
                 .AddSingleton<SaphiApiClient>()
                 .AddSingleton<IMessageLogger, ConsoleMessageLogger>()
@@ -94,6 +93,8 @@ namespace Saphira
                 .AddTransient<ToggleableRoleValueProvider>()
                 .AddTransient<GuildManager>()
                 .AddTransient<ScoreFormatter>()
+                .AddHttpClient()
+                .AddMemoryCache()
                 .BuildServiceProvider();
         }
 

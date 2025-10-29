@@ -2,7 +2,28 @@
 
 # Saphira Commands
 
+## Table of Contents
+
+- [General Commands](#-general-commands)
+- [Saphi Commands](#-saphi-commands)
+- [Profile Commands](#-profile-commands)
+- [Moderator Commands](#️-moderator-commands)
+
 ## 📋 General Commands
+
+### `/livestreams`
+List all CTR livestreams from server members.
+
+**Usage:**
+```
+/livestreams
+```
+
+**Response:**
+- List of currently streaming members with their stream links
+
+**Requirements:**
+- Bot needs "Server Members Intent" and "Presence Intent" enabled
 
 ### `/ping`
 Check the bot's latency and uptime.
@@ -29,20 +50,6 @@ Get detailed information about the current server.
 - Server statistics (members, emotes, roles, channels)
 - Server limits (max bitrate, upload size, members)
 
-### `/livestreams`
-List all CTR livestreams from server members.
-
-**Usage:**
-```
-/livestreams
-```
-
-**Response:**
-- List of currently streaming members with their stream links
-
-**Requirements:**
-- Bot needs "Server Members Intent" and "Presence Intent" enabled
-
 ## 🏁 Saphi Commands
 
 ### `/achievements`
@@ -63,16 +70,20 @@ Show a player's achievements and statistics.
 - First places
 - Podium finishes
 
-### `/tracks`
-Get the list of all supported custom tracks.
+### `/leaderboard`
+Get the leaderboard for a specific track and category.
 
 **Usage:**
 ```
-/tracks
+/leaderboard track:<track-name> category:<category-name>
 ```
 
+**Parameters:**
+- `track` - The custom track name (autocomplete available)
+- `category` - The racing category (autocomplete available)
+
 **Response:**
-- Complete list of custom tracks with their IDs
+- Top 20 times for the specified track and category
 
 ### `/pbs`
 Get personal best times for a player across all tracks.
@@ -88,20 +99,16 @@ Get personal best times for a player across all tracks.
 **Response:**
 - Numbered list of personal bests with track names, times, and ranks
 
-### `/leaderboard`
-Get the leaderboard for a specific track and category.
+### `/tracks`
+Get the list of all supported custom tracks.
 
 **Usage:**
 ```
-/leaderboard track:<track-name> category:<category-name>
+/tracks
 ```
 
-**Parameters:**
-- `track` - The custom track name (autocomplete available)
-- `category` - The racing category (autocomplete available)
-
 **Response:**
-- Top 20 times for the specified track and category
+- Complete list of custom tracks with their IDs
 
 ## 👤 Profile Commands
 
@@ -139,17 +146,38 @@ Toggle notification roles on or off.
 
 > **Note:** These commands require the "Saphi Team" role.
 
-### `/post`
-Send a message to a specific channel as the bot.
+### `/ban`
+Ban a user from the server.
 
 **Usage:**
 ```
-/post message:<message-text> channel:<#channel>
+/ban user:<@user> reason:<optional-reason> deleteMessageDays:<0-7>
 ```
 
 **Parameters:**
-- `message` - The message text to send
-- `channel` - The target channel
+- `user` - The user to ban
+- `reason` - Reason for the ban (optional, defaults to "No reason provided")
+- `deleteMessageDays` - Days of message history to delete (0-7, defaults to 0)
+
+**Features:**
+- Can delete message history (up to 7 days)
+- Logs reason in audit log
+
+**Permissions Required:**
+- Saphi Team role
+
+### `/clearcache`
+Clear the bot's in-memory cache.
+
+**Usage:**
+```
+/clearcache
+```
+
+**Features:**
+- Clears cached API data (categories, tracks, characters)
+- Forces fresh data to be fetched on next request
+- Useful when API data has been updated
 
 **Permissions Required:**
 - Saphi Team role
@@ -174,6 +202,39 @@ Send a direct message to a user as the bot.
 **Permissions Required:**
 - Saphi Team role
 
+### `/kick`
+Kick a user from the server.
+
+**Usage:**
+```
+/kick user:<@user> reason:<optional-reason>
+```
+
+**Parameters:**
+- `user` - The user to kick
+- `reason` - Reason for the kick (optional, defaults to "No reason provided")
+
+**Features:**
+- Logs reason in audit log
+
+**Permissions Required:**
+- Saphi Team role
+
+### `/post`
+Send a message to a specific channel as the bot.
+
+**Usage:**
+```
+/post message:<message-text> channel:<#channel>
+```
+
+**Parameters:**
+- `message` - The message text to send
+- `channel` - The target channel
+
+**Permissions Required:**
+- Saphi Team role
+
 ### `/purge`
 Delete the last X messages in the current channel.
 
@@ -191,7 +252,6 @@ Delete the last X messages in the current channel.
 
 **Permissions Required:**
 - Saphi Team role
-- Bot needs "Manage Messages" permission
 
 ### `/react`
 Add a reaction to any message as the bot.
@@ -216,63 +276,6 @@ Add a reaction to any message as the bot.
 
 **Permissions Required:**
 - Saphi Team role
-- Bot needs "Add Reactions" permission
-
-### `/verify`
-Add the "Verified" role to a user.
-
-**Usage:**
-```
-/verify user:<@user>
-```
-
-**Parameters:**
-- `user` - The user to verify
-
-**Permissions Required:**
-- Saphi Team role
-- Bot needs "Manage Roles" permission
-- Bot's role must be higher than "Verified" role in hierarchy
-
-### `/kick`
-Kick a user from the server.
-
-**Usage:**
-```
-/kick user:<@user> reason:<optional-reason>
-```
-
-**Parameters:**
-- `user` - The user to kick
-- `reason` - Reason for the kick (optional, defaults to "No reason provided")
-
-**Features:**
-- Logs reason in audit log
-
-**Permissions Required:**
-- Saphi Team role
-- Bot needs "Kick Members" permission
-
-### `/ban`
-Ban a user from the server.
-
-**Usage:**
-```
-/ban user:<@user> reason:<optional-reason> deleteMessageDays:<0-7>
-```
-
-**Parameters:**
-- `user` - The user to ban
-- `reason` - Reason for the ban (optional, defaults to "No reason provided")
-- `deleteMessageDays` - Days of message history to delete (0-7, defaults to 0)
-
-**Features:**
-- Can delete message history (up to 7 days)
-- Logs reason in audit log
-
-**Permissions Required:**
-- Saphi Team role
-- Bot needs "Ban Members" permission
 
 ### `/timeout`
 Timeout a user for a specified duration.
@@ -293,4 +296,18 @@ Timeout a user for a specified duration.
 
 **Permissions Required:**
 - Saphi Team role
-- Bot needs "Moderate Members" permission
+
+### `/verify`
+Add the "Verified" role to a user.
+
+**Usage:**
+```
+/verify user:<@user>
+```
+
+**Parameters:**
+- `user` - The user to verify
+
+**Permissions Required:**
+- Saphi Team role
+- Bot's role must be higher than "Verified" role in hierarchy

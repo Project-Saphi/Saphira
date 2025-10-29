@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Microsoft.Extensions.Caching.Memory;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 
@@ -8,6 +9,13 @@ namespace Saphira.Commands
 {
     public class ModeratorCommands : InteractionModuleBase<SocketInteractionContext>
     {
+        private readonly IMemoryCache _cache;
+
+        public ModeratorCommands(IMemoryCache cache)
+        {
+            _cache = cache;
+        }
+
         [CommandContextType(InteractionContextType.Guild)]
         [RequireTextChannel]
         [RequireTeamMemberRole]
@@ -285,6 +293,40 @@ namespace Saphira.Commands
             catch (Exception ex)
             {
                 var errorAlert = new ErrorAlertEmbedBuilder($"Failed to timeout user: {ex.Message}");
+                await FollowupAsync(embed: errorAlert.Build());
+            }
+        }
+
+        [CommandContextType(InteractionContextType.Guild)]
+        [RequireTextChannel]
+        [RequireTeamMemberRole]
+        [SlashCommand("clearcache", "Clear the bot's in-memory cache")]
+        public async Task ClearCacheCommand()
+        {
+            await DeferAsync();
+
+            try
+            {
+                var cacheKeys = new List<string>
+                {
+                    "categories",
+                    "characters",
+                    "custom_tracks",
+                };
+
+                int clearedCount = 0;
+                foreach (var key in cacheKeys)
+                {
+                    _cache.Remove(key);
+                    clearedCount++;
+                }
+
+                var successAlert = new SuccessAlertEmbedBuilder($"Successfully cleared {clearedCount} cache entry / entries.");
+                await FollowupAsync(embed: successAlert.Build());
+            }
+            catch (Exception ex)
+            {
+                var errorAlert = new ErrorAlertEmbedBuilder($"Failed to clear cache: {ex.Message}");
                 await FollowupAsync(embed: errorAlert.Build());
             }
         }

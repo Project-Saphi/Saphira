@@ -2,6 +2,14 @@
 
 # Requirements
 
+## Table of Contents
+
+- [System](#system)
+- [Discord Application](#discord-application)
+- [Configuration](#configuration)
+- [Roles](#roles)
+- [Permissions](#permissions)
+
 ## System
 
 - .NET 9.0 or higher is required to run Saphira
@@ -47,3 +55,19 @@ Saphira needs a number of different roles to work properly:
 - `Saphi Updates` - This role can be toggled on by users to receive pings regarding Saphi updates
 - `Verified` - This role is for verified users so that channel visibility can be restricted to users with that role
 - `WR Feed` - This role can be toggled on by users to receive pings when new world records are posted in the submission feed
+
+## Permissions
+
+Saphira requires the following Discord bot permissions to function properly:
+
+- **Manage Messages** - Required for the `/purge` command to delete messages
+- **Manage Roles** - Required for the `/verify` command to assign roles to users
+- **Kick Members** - Required for the `/kick` command
+- **Ban Members** - Required for the `/ban` command
+- **Moderate Members** - Required for the `/timeout` command to timeout users
+- **Add Reactions** - Required for the `/react` command to add reactions to messages
+- **Send Messages** - Required for posting messages via `/post` command and general bot responses
+- **Embed Links** - Required for sending rich embed responses
+- **Read Message History** - Required for various command functionalities
+
+Make sure to grant these permissions when inviting the bot to your server, or assign them to the bot's role in your server settings.
