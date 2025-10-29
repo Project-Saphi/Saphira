@@ -1,6 +1,6 @@
 ﻿using Discord;
 
-namespace Saphira.Discord
+namespace Saphira.Discord.Messaging
 {
     public class AlertEmbedBuilder : EmbedBuilder
     {
@@ -51,7 +51,7 @@ namespace Saphira.Discord
             WithColor(new Color((uint)color));
 
             var fieldBuilder = new EmbedFieldBuilder();
-            fieldBuilder.WithName($"{GetEmoteString(emote)} {GetTitleString(title)}");
+            fieldBuilder.WithName($"{GetEmoteString(emote)} {MessageTextFormat.Bold(GetTitleString(title))}");
             fieldBuilder.WithValue(message);
 
             AddField(fieldBuilder);
@@ -59,26 +59,14 @@ namespace Saphira.Discord
 
         protected string GetEmoteString(AlertEmote emote)
         {
-            var emotes = new List<string>();
-            emotes.Add("📝");
-            emotes.Add("ℹ️");
-            emotes.Add("✅");
-            emotes.Add("⚠️");
-            emotes.Add("⛔");
-
-            return emotes[(int) emote];
+            var emotes = new[] { "📝", "ℹ️", "✅", "⚠️", "⛔" };
+            return emotes[(int)emote];
         }
 
         protected string GetTitleString(AlertTitle title)
         {
-            var titles = new List<string>();
-            titles.Add("Message");
-            titles.Add("Info!");
-            titles.Add("Success!");
-            titles.Add("Warning!");
-            titles.Add("Error!");
-
-            return titles[(int) title];
+            var titles = new[] { "Message", "Info", "Success", "Warning", "Error" };
+            return titles[(int)title];
         }
     }
 

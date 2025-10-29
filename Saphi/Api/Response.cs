@@ -61,4 +61,52 @@ namespace Saphira.Saphi.Api
         [JsonPropertyName("data")]
         public UserProfile Data { get; set; }
     }
+
+    public class GetCountriesResponse
+    {
+        [JsonPropertyName("success")]
+        public bool Success { get; set; }
+
+        [JsonPropertyName("message")]
+        public string Message { get; set; }
+
+        [JsonPropertyName("data")]
+        public List<Country> Data { get; set; }
+    }
+
+    public class GetCharactersResponse
+    {
+        [JsonPropertyName("success")]
+        public bool Success { get; set; }
+
+        [JsonPropertyName("message")]
+        public string Message { get; set; }
+
+        [JsonPropertyName("data")]
+        public List<Character> Data { get; set; }
+    }
+
+    public class GetEngineTypesResponse
+    {
+        [JsonPropertyName("success")]
+        public bool Success { get; set; }
+
+        [JsonPropertyName("message")]
+        public string Message { get; set; }
+
+        [JsonPropertyName("data")]
+        public List<EngineType> Data { get; set; }
+    }
+
+    public class GetCategoriesResponse
+    {
+        [JsonPropertyName("success")]
+        public bool Success { get; set; }
+
+        [JsonPropertyName("message")]
+        public string Message { get; set; }
+
+        [JsonPropertyName("data")]
+        public List<Category> Data { get; set; }
+    }
 }

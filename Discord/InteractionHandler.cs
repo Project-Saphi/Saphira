@@ -2,9 +2,10 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
+using Saphira.Commands.Autocompletion.TypeConverter;
 using System.Reflection;
 
-namespace Saphira
+namespace Saphira.Discord
 {
     public class InteractionHandler
     {
@@ -23,6 +24,8 @@ namespace Saphira
 
         public async Task InitializeAsync()
         {
+            _interactionService.AddTypeConverter<IEmote>(new EmoteTypeConverter());
+
             await _interactionService.AddModulesAsync(Assembly.GetEntryAssembly(), _serviceProvider);
 
             _discordSocketClient.InteractionCreated += HandleInteraction;

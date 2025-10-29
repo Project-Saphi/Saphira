@@ -3,8 +3,11 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Saphira.Commands.Autocompletion.ValueProvider;
+using Saphira.Discord;
+using Saphira.Discord.Guild;
 using Saphira.Saphi.Api;
-using Saphira.Util;
+using Saphira.Util.CTR;
 
 namespace Saphira
 {
@@ -51,8 +54,14 @@ namespace Saphira
                 .AddSingleton(_interactionService)
                 .AddSingleton(config)
                 .AddHttpClient()
-                .AddSingleton<Client>()
-                .AddSingleton<ScoreFormatter>()
+                .AddSingleton<GuildRoleManager>()
+                .AddSingleton<SaphiApiClient>()
+                .AddTransient<CustomTrackValueProvider>()
+                .AddTransient<CategoryValueProvider>()
+                .AddTransient<CharacterValueProvider>()
+                .AddTransient<ToggleableRoleValueProvider>()
+                .AddTransient<GuildManager>()
+                .AddTransient<ScoreFormatter>()
                 .BuildServiceProvider();
 
             var interactionHandler = new InteractionHandler(_discordSocketClient, _interactionService, _serviceProvider);

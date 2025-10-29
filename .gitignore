@@ -39,4 +39,4 @@ project.fragment.lock.json
 artifacts/
 
 # Misc Stuff
-Commands/Test.cs
+Commands/TestCommands.cs
