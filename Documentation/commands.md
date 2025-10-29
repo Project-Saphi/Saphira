@@ -233,3 +233,64 @@ Add the "Verified" role to a user.
 - Saphi Team role
 - Bot needs "Manage Roles" permission
 - Bot's role must be higher than "Verified" role in hierarchy
+
+### `/kick`
+Kick a user from the server.
+
+**Usage:**
+```
+/kick user:<@user> reason:<optional-reason>
+```
+
+**Parameters:**
+- `user` - The user to kick
+- `reason` - Reason for the kick (optional, defaults to "No reason provided")
+
+**Features:**
+- Logs reason in audit log
+
+**Permissions Required:**
+- Saphi Team role
+- Bot needs "Kick Members" permission
+
+### `/ban`
+Ban a user from the server.
+
+**Usage:**
+```
+/ban user:<@user> reason:<optional-reason> deleteMessageDays:<0-7>
+```
+
+**Parameters:**
+- `user` - The user to ban
+- `reason` - Reason for the ban (optional, defaults to "No reason provided")
+- `deleteMessageDays` - Days of message history to delete (0-7, defaults to 0)
+
+**Features:**
+- Can delete message history (up to 7 days)
+- Logs reason in audit log
+
+**Permissions Required:**
+- Saphi Team role
+- Bot needs "Ban Members" permission
+
+### `/timeout`
+Timeout a user for a specified duration.
+
+**Usage:**
+```
+/timeout user:<@user> minutes:<1-40320> reason:<optional-reason>
+```
+
+**Parameters:**
+- `user` - The user to timeout
+- `minutes` - Duration in minutes (1-40320, max 28 days)
+- `reason` - Reason for the timeout (optional, defaults to "No reason provided")
+
+**Features:**
+- Maximum timeout duration: 28 days (40,320 minutes)
+- Logs reason in audit log
+
+**Permissions Required:**
+- Saphi Team role
+- Bot needs "Moderate Members" permission

@@ -169,5 +169,124 @@ namespace Saphira.Commands
                 await FollowupAsync(embed: errorAlert.Build());
             }
         }
+
+        [CommandContextType(InteractionContextType.Guild)]
+        [RequireTextChannel]
+        [RequireTeamMemberRole]
+        [SlashCommand("kick", "Kick a user from the server")]
+        public async Task KickCommand(SocketGuildUser user, string reason = "No reason provided")
+        {
+            await DeferAsync();
+
+            if (user.Id == Context.User.Id)
+            {
+                var errorAlert = new ErrorAlertEmbedBuilder("You cannot kick yourself.");
+                await FollowupAsync(embed: errorAlert.Build());
+                return;
+            }
+
+            if (user.Id == Context.Client.CurrentUser.Id)
+            {
+                var errorAlert = new ErrorAlertEmbedBuilder("I cannot kick myself.");
+                await FollowupAsync(embed: errorAlert.Build());
+                return;
+            }
+
+            try
+            {
+                await user.KickAsync(reason);
+
+                var successAlert = new SuccessAlertEmbedBuilder($"Successfully kicked {MessageTextFormat.Bold(user.Username)}.\nReason: {reason}");
+                await FollowupAsync(embed: successAlert.Build());
+            }
+            catch (Exception ex)
+            {
+                var errorAlert = new ErrorAlertEmbedBuilder($"Failed to kick user: {ex.Message}");
+                await FollowupAsync(embed: errorAlert.Build());
+            }
+        }
+
+        [CommandContextType(InteractionContextType.Guild)]
+        [RequireTextChannel]
+        [RequireTeamMemberRole]
+        [SlashCommand("ban", "Ban a user from the server")]
+        public async Task BanCommand(
+            SocketGuildUser user,
+            string reason = "No reason provided",
+            [MinValue(0)]
+            [MaxValue(7)]
+            int deleteMessageDays = 0)
+        {
+            await DeferAsync();
+
+            if (user.Id == Context.User.Id)
+            {
+                var errorAlert = new ErrorAlertEmbedBuilder("You cannot ban yourself.");
+                await FollowupAsync(embed: errorAlert.Build());
+                return;
+            }
+
+            if (user.Id == Context.Client.CurrentUser.Id)
+            {
+                var errorAlert = new ErrorAlertEmbedBuilder("I cannot ban myself.");
+                await FollowupAsync(embed: errorAlert.Build());
+                return;
+            }
+
+            try
+            {
+                await Context.Guild.AddBanAsync(user, deleteMessageDays, reason);
+
+                var successAlert = new SuccessAlertEmbedBuilder($"Successfully banned {MessageTextFormat.Bold(user.Username)}.\nReason: {reason}\nDeleted messages from last {deleteMessageDays} day(s).");
+                await FollowupAsync(embed: successAlert.Build());
+            }
+            catch (Exception ex)
+            {
+                var errorAlert = new ErrorAlertEmbedBuilder($"Failed to ban user: {ex.Message}");
+                await FollowupAsync(embed: errorAlert.Build());
+            }
+        }
+
+        [CommandContextType(InteractionContextType.Guild)]
+        [RequireTextChannel]
+        [RequireTeamMemberRole]
+        [SlashCommand("timeout", "Timeout a user for a specified duration")]
+        public async Task TimeoutCommand(
+            SocketGuildUser user,
+            [MinValue(1)]
+            [MaxValue(40320)]
+            int minutes,
+            string reason = "No reason provided")
+        {
+            await DeferAsync();
+
+            if (user.Id == Context.User.Id)
+            {
+                var errorAlert = new ErrorAlertEmbedBuilder("You cannot timeout yourself.");
+                await FollowupAsync(embed: errorAlert.Build());
+                return;
+            }
+
+            if (user.Id == Context.Client.CurrentUser.Id)
+            {
+                var errorAlert = new ErrorAlertEmbedBuilder("I cannot timeout myself.");
+                await FollowupAsync(embed: errorAlert.Build());
+                return;
+            }
+
+            try
+            {
+                var timeoutDuration = TimeSpan.FromMinutes(minutes);
+                await user.SetTimeOutAsync(timeoutDuration, new RequestOptions { AuditLogReason = reason });
+
+                var successAlert = new SuccessAlertEmbedBuilder($"Successfully timed out {MessageTextFormat.Bold(user.Username)} for {MessageTextFormat.Bold(minutes.ToString())} minute(s).\nReason: {reason}");
+                await FollowupAsync(embed: successAlert.Build());
+            }
+            catch (Exception ex)
+            {
+                var errorAlert = new ErrorAlertEmbedBuilder($"Failed to timeout user: {ex.Message}");
+                await FollowupAsync(embed: errorAlert.Build());
+            }
+        }
     }
 }

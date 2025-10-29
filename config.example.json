@@ -3,5 +3,6 @@
   "GuildId": 0,
   "BotOwnerId": 0,
   "SaphiApiKey": "YOUR_API_KEY_HERE",
-  "SaphiBaseUrl": "https://api.example.com"
+  "SaphiApiBaseUrl": "https://api.example.com",
+  "MainChannel": "general"
 }

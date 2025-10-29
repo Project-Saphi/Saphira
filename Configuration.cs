@@ -10,6 +10,7 @@ namespace Saphira
 
         public string SaphiApiKey { get; set; } = string.Empty;
 
-        public string SaphiBaseUrl { get; set; } = string.Empty;
+        public string SaphiApiBaseUrl { get; set; } = string.Empty;
+        public string MainChannelName {  get; set; } = string.Empty;
     }
 }

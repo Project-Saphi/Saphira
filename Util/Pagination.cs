@@ -12,7 +12,5 @@
             _currentPage = currentPage;
             _pageSize = totalItemCount;
         }
-
-
     }
 }

@@ -14,9 +14,9 @@ namespace Saphira.Saphi.Api
             _httpClient = httpClient;
             _configuration = configuration;
 
-            if (!string.IsNullOrWhiteSpace(_configuration.SaphiBaseUrl))
+            if (!string.IsNullOrWhiteSpace(_configuration.SaphiApiBaseUrl))
             {
-                _httpClient.BaseAddress = new Uri(_configuration.SaphiBaseUrl);
+                _httpClient.BaseAddress = new Uri(_configuration.SaphiApiBaseUrl);
             }
 
             if (!string.IsNullOrWhiteSpace(_configuration.SaphiApiKey))

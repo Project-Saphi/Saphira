@@ -3,6 +3,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Saphira.Commands.Autocompletion.TypeConverter;
+using Saphira.Util.Logging;
 using System.Reflection;
 
 namespace Saphira.Discord
@@ -13,13 +14,15 @@ namespace Saphira.Discord
         private readonly InteractionService _interactionService;
         private readonly IServiceProvider _serviceProvider;
         private readonly Configuration _configuration;
+        private readonly IMessageLogger _logger;
 
-        public InteractionHandler(DiscordSocketClient client, InteractionService interactionService, IServiceProvider services)
+        public InteractionHandler(DiscordSocketClient client, InteractionService interactionService, IServiceProvider serviceProvider)
         {
             _discordSocketClient = client;
             _interactionService = interactionService;
-            _serviceProvider = services;
-            _configuration = services.GetRequiredService<Configuration>();
+            _serviceProvider = serviceProvider;
+            _configuration = serviceProvider.GetRequiredService<Configuration>();
+            _logger = serviceProvider.GetRequiredService<IMessageLogger>();
         }
 
         public async Task InitializeAsync()
@@ -35,7 +38,7 @@ namespace Saphira.Discord
 
         private async Task RegisterCommandsAsync()
         {
-            Console.WriteLine($"Registering commands to guild {_configuration.GuildId} (instant) ...");
+            _logger.Log(LogSeverity.Info, "Saphira", $"Registering commands to guild {_configuration.GuildId} ...");
             await _interactionService.RegisterCommandsToGuildAsync(_configuration.GuildId);
         }
 
@@ -48,7 +51,7 @@ namespace Saphira.Discord
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error handling interaction: {ex.Message}");
+                _logger.Log(LogSeverity.Error, "Saphira", $"Error handling interaction: {ex.Message}");
                 if (interaction.Type == InteractionType.ApplicationCommand)
                 {
                     await interaction.RespondAsync($"An error occurred: {ex.Message}", ephemeral: true);
@@ -58,7 +61,7 @@ namespace Saphira.Discord
 
         private Task LogAsync(LogMessage log)
         {
-            Console.WriteLine(log.ToString());
+            _logger.Log(log);
             return Task.CompletedTask;
         }
     }
