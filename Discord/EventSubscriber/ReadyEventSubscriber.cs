@@ -1,10 +1,12 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using Saphira.Extensions.DependencyInjection;
 using Saphira.Util.Logging;
 
 namespace Saphira.Discord.EventSubscriber
 {
-    public class ReadyEventSubscriber : IDiscordEventSubscriber
+    [AutoRegister]
+    public class ReadyEventSubscriber : IDiscordSocketClientEventSubscriber
     {
         private readonly DiscordSocketClient _client;
         private readonly IMessageLogger _logger;
@@ -38,7 +40,6 @@ namespace Saphira.Discord.EventSubscriber
             Program.StartTime = DateTime.UtcNow;
 
             _logger.Log(LogSeverity.Info, "Saphira", "Connection to Discord established.");
-            _logger.Log(LogSeverity.Info, "Saphira", "Slash commands are being registered ...");
             _logger.Log(LogSeverity.Info, "Saphira", "Saphira started successfully.");
 
             return Task.CompletedTask;

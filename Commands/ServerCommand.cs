@@ -1,64 +1,16 @@
-﻿using Discord;
+using Discord;
 using Discord.Interactions;
 using Saphira.Commands.Precondition;
-using Saphira.Discord.Guild;
 using Saphira.Discord.Messaging;
 
 namespace Saphira.Commands
 {
-    public class GeneralCommands : InteractionModuleBase<SocketInteractionContext>
+    public class ServerCommand : InteractionModuleBase<SocketInteractionContext>
     {
-        private readonly GuildManager _guildManager;
-
-        public GeneralCommands(GuildManager guildManager)
-        {
-            _guildManager = guildManager;
-        }
-
-        [CommandContextType(InteractionContextType.Guild)]
-        [RequireTextChannel]
-        [SlashCommand("livestreams", "List all CTR livestreams from server members")]
-        public async Task LivestreamsCommand()
-        {
-            var livestreams = _guildManager.GetCTRStreamActivites(Context.Guild);
-
-            if (livestreams.Count > 0)
-            {
-                await RespondAsync("People are streaming CTR ...");
-                return;
-            }
-            else
-            {
-                var warningAlert = new WarningAlertEmbedBuilder("There is currently nobody streaming CTR.");
-                await RespondAsync(embed: warningAlert.Build());
-                return;
-            }
-        }
-
-        [CommandContextType(InteractionContextType.Guild)]
-        [RequireTextChannel]
-        [SlashCommand("ping", "Check the bot's latency")]
-        public async Task PingCommand()
-        {
-            var latency = Context.Client.Latency;
-
-            var uptime = DateTime.UtcNow - Program.StartTime;
-            var uptimeString = $"{uptime.Days}d {uptime.Hours}h {uptime.Minutes}m {uptime.Seconds}s";
-
-            var ping = new[]
-            {
-                $"{MessageTextFormat.Bold("Latency")}: {latency}ms",
-                $"{MessageTextFormat.Bold("Uptime")}: {uptimeString}"
-            };
-
-            var successAlert = new SuccessAlertEmbedBuilder(String.Join("\n", ping));
-            await RespondAsync(embed: successAlert.Build());
-        }
-
         [CommandContextType(InteractionContextType.Guild)]
         [RequireTextChannel]
         [SlashCommand("server", "Get information about this server")]
-        public async Task ServerInfoCommand()
+        public async Task HandleCommand()
         {
             var guild = Context.Guild;
 

@@ -1,16 +1,20 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Discord;
+using Microsoft.Extensions.Caching.Memory;
 using Saphira.Saphi.Api;
+using Saphira.Util.Logging;
 
 namespace Saphira.Commands.Autocompletion.ValueProvider
 {
     public class CustomTrackValueProvider : IValueProvider
     {
-        private readonly SaphiApiClient _saphiApiClient;
+        private readonly Client _client;
+        private readonly IMessageLogger _logger;
         private readonly IMemoryCache _cache;
 
-        public CustomTrackValueProvider(SaphiApiClient saphiApiClient, IMemoryCache cache)
+        public CustomTrackValueProvider(Client client, IMessageLogger logger, IMemoryCache cache)
         {
-            _saphiApiClient = saphiApiClient;        
+            _client = client;
+            _logger = logger;
             _cache = cache;
         }
 
@@ -34,9 +38,21 @@ namespace Saphira.Commands.Autocompletion.ValueProvider
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24);
 
-                var response = await _saphiApiClient.GetCustomTracksAsync();
-                return response?.Data ?? [];
-            });
+                var result = await _client.GetCustomTracksAsync();
+
+                if (result.Success == true)
+                {
+                    var response = result.Response;
+                    return response?.Data ?? [];
+                }
+
+                if (result.ErrorMessage != null)
+                {
+                    _logger.Log(LogSeverity.Error, "Saphira", result.ErrorMessage);
+                }
+
+                return [];
+            }) ?? [];
         }
     }
 }

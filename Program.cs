@@ -5,10 +5,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Saphira.Commands.Autocompletion.ValueProvider;
 using Saphira.Discord;
-using Saphira.Discord.EventSubscriber;
 using Saphira.Discord.Guild;
+using Saphira.Discord.Messaging;
+using Saphira.Extensions.DependencyInjection;
 using Saphira.Saphi.Api;
-using Saphira.Util.CTR;
+using Saphira.Util.Game;
 using Saphira.Util.Logging;
 
 namespace Saphira
@@ -23,7 +24,7 @@ namespace Saphira
 
         public static async Task Main()
         {
-            var config = GetConfiguration();
+            var config = BuildConfiguration();
 
             if (string.IsNullOrWhiteSpace(config.BotToken))
             {
@@ -41,12 +42,12 @@ namespace Saphira
             await _discordSocketClient.LoginAsync(TokenType.Bot, config.BotToken);
             await _discordSocketClient.StartAsync();
 
-            RegisterEventSubscribers();
+            _serviceProvider.RegisterEventSubscribers();
 
             await Task.Delay(-1);
         }
 
-        private static Configuration GetConfiguration()
+        private static Configuration BuildConfiguration()
         {
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -81,34 +82,19 @@ namespace Saphira
                 .AddSingleton(interactionService)
                 .AddSingleton(configuration)
                 .AddSingleton<GuildRoleManager>()
-                .AddSingleton<SaphiApiClient>()
+                .AddSingleton<Client>()
                 .AddSingleton<IMessageLogger, ConsoleMessageLogger>()
-                .AddSingleton<LogEventSubscriber>()
-                .AddSingleton<MessageReceivedEventSubscriber>()
-                .AddSingleton<ReadyEventSubscriber>()
-                .AddSingleton<UserJoinedEventSubscriber>()
                 .AddTransient<CustomTrackValueProvider>()
                 .AddTransient<CategoryValueProvider>()
                 .AddTransient<CharacterValueProvider>()
                 .AddTransient<ToggleableRoleValueProvider>()
                 .AddTransient<GuildManager>()
                 .AddTransient<ScoreFormatter>()
+                .AddTransient<InviteLinkDetector>()
                 .AddHttpClient()
                 .AddMemoryCache()
+                .AddEventSubscribers()
                 .BuildServiceProvider();
-        }
-
-        private static void RegisterEventSubscribers()
-        {
-            var logEventSubscriber = _serviceProvider.GetRequiredService<LogEventSubscriber>();
-            var messageReceivedSubscriber = _serviceProvider.GetRequiredService<MessageReceivedEventSubscriber>();
-            var readySubscriber = _serviceProvider.GetRequiredService<ReadyEventSubscriber>();
-            var userJoinedSubscriber = _serviceProvider.GetRequiredService<UserJoinedEventSubscriber>();
-
-            logEventSubscriber.Register();
-            messageReceivedSubscriber.Register();
-            readySubscriber.Register();
-            userJoinedSubscriber.Register();
         }
     }
 }

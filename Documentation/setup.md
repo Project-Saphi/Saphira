@@ -41,8 +41,8 @@ A `config.json` file needs to be created with the following structure:
 
 - `BotToken` is the bot token you can acquire from the Discord Developer Portal
 - `GuildId` is the internal ID of the server you want to run Saphira on
-- `BotOwnerId` is the internal ID of the discord user who owns Saphira
-- `SaphiApiKey` is an API key to access to leaderboard website API
+- `BotOwnerId` is the internal ID of the Discord user who owns Saphira
+- `SaphiApiKey` is an API key to access the leaderboard website API
 - `SaphiBaseUrl` is the URL to the leaderboard website API
 - `MainChannelName` name of the main channel where Saphira will post some messages to (like the member count celebration)
 

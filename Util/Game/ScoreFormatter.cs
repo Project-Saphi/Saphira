@@ -1,4 +1,4 @@
-﻿namespace Saphira.Util.CTR
+﻿namespace Saphira.Util.Game
 {
     public class ScoreFormatter
     {

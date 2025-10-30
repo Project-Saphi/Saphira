@@ -1,8 +1,9 @@
 {
   "BotToken": "YOUR_BOT_TOKEN_HERE",
-  "GuildId": 0,
   "BotOwnerId": 0,
+  "GuildId": 0,
+  "MainChannelName": "general",
   "SaphiApiKey": "YOUR_API_KEY_HERE",
   "SaphiApiBaseUrl": "https://api.example.com",
-  "MainChannel": "general"
+  "MaxLeaderboardEntries": 20
 }

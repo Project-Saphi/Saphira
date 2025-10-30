@@ -1,6 +1,6 @@
 ﻿namespace Saphira.Discord.EventSubscriber
 {
-    public interface IDiscordEventSubscriber
+    public interface IDiscordSocketClientEventSubscriber
     {
         public void Register();
 

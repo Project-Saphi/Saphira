@@ -13,6 +13,12 @@ namespace Saphira.Commands.Precondition
             )
         {
             var socketGuildUser = context.User as SocketGuildUser;
+
+            if (socketGuildUser == null)
+            {
+                return Task.FromResult(PreconditionResult.FromError("User not found."));
+            }
+
             if (socketGuildUser.Roles.Any(role => GuildRole.IsTeamRole(role)))
             {
                 return Task.FromResult(PreconditionResult.FromSuccess());

@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Saphira.Commands.Autocompletion;
@@ -8,30 +8,19 @@ using Saphira.Discord.Messaging;
 
 namespace Saphira.Commands
 {
-    public class ProfileCommands : InteractionModuleBase<SocketInteractionContext>
+    public class ToggleCommand : InteractionModuleBase<SocketInteractionContext>
     {
         private readonly GuildRoleManager _guildRoleManager;
 
-        public ProfileCommands(GuildRoleManager guildRoleManager)
+        public ToggleCommand(GuildRoleManager guildRoleManager)
         {
             _guildRoleManager = guildRoleManager;
         }
 
         [CommandContextType(InteractionContextType.Guild)]
         [RequireTextChannel]
-        [SlashCommand("profile", "See your user profile")]
-        public async Task ProfileCommand()
-        {
-            var embed = new EmbedBuilder();
-            embed.WithAuthor(Context.User.GlobalName);
-
-            await RespondAsync(embed: embed.Build());
-        }
-
-        [CommandContextType(InteractionContextType.Guild)]
-        [RequireTextChannel]
         [SlashCommand("toggle", "Toggle one of your roles off or on")]
-        public async Task ToggleRoleCommand(
+        public async Task HandleCommand(
             [Autocomplete(typeof(ToggleableRoleAutocompleteHandler))] int role
             )
         {

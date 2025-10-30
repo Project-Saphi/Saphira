@@ -1,8 +1,10 @@
 ﻿using Discord.WebSocket;
+using Saphira.Extensions.DependencyInjection;
 
 namespace Saphira.Discord.EventSubscriber
 {
-    public class UserJoinedEventSubscriber : IDiscordEventSubscriber
+    [AutoRegister]
+    public class UserJoinedEventSubscriber : IDiscordSocketClientEventSubscriber
     {
         private readonly DiscordSocketClient _client;
         private readonly Configuration _configuration;
