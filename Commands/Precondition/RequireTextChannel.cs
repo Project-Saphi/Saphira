@@ -13,7 +13,7 @@ namespace Saphira.Commands.Precondition
         {
             var textChannel = context.Channel as SocketTextChannel;
 
-            if ( textChannel != null )
+            if (textChannel != null)
             {
                 return Task.FromResult(PreconditionResult.FromSuccess());
             }

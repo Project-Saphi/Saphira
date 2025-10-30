@@ -91,6 +91,7 @@ namespace Saphira
                 .AddTransient<GuildManager>()
                 .AddTransient<ScoreFormatter>()
                 .AddTransient<InviteLinkDetector>()
+                .AddTransient<RestrictedContentDetector>()
                 .AddHttpClient()
                 .AddMemoryCache()
                 .AddEventSubscribers()

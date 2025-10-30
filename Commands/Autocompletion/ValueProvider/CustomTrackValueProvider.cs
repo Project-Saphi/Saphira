@@ -23,7 +23,7 @@ namespace Saphira.Commands.Autocompletion.ValueProvider
             var values = new List<Value>();
             var result = await _client.GetCustomTracksAsync();
 
-            if (result.Success == false || result.Response == null)
+            if (!result.Success || result.Response == null)
             {
                 _logger.Log(LogSeverity.Error, "Saphira", $"Failed to fetch custom tracks: {result.ErrorMessage ?? "Unknown error"}");
                 return values;

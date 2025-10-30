@@ -16,7 +16,7 @@ namespace Saphira.Commands
 
             if (guild == null)
             {
-                await RespondAsync("This command can only be used in a server!", ephemeral: true);
+                await RespondAsync("This command can only be used in a server!");
                 return;
             }
 

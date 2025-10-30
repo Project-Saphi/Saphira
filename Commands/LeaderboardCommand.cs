@@ -28,7 +28,7 @@ namespace Saphira.Commands
         {
             var result = await _client.GetTrackLeaderboardAsync(track, category);
 
-            if (result.Success == false || result.Response == null)
+            if (!result.Success || result.Response == null)
             {
                 var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve leaderboard for {track}: {result.ErrorMessage ?? "Unknown error"}");
                 await RespondAsync(embed: errorAlert.Build());
@@ -40,7 +40,7 @@ namespace Saphira.Commands
 
             foreach (var leaderboardEntry in result.Response.Data)
             {
-                content.Add($"{leaderboardEntry.Rank}. {MessageTextFormat.Bold(leaderboardEntry.Holder)} - {MessageTextFormat.Bold(ScoreFormatter.AsIngameTime(leaderboardEntry.MinScore))}");
+                content.Add($"{leaderboardEntry.Rank}. {MessageTextFormat.Bold(leaderboardEntry.Holder)} - {ScoreFormatter.AsIngameTime(leaderboardEntry.MinScore)}");
                 playerCount++;
 
                 if (playerCount > (_configuration.MaxLeaderboardEntries - 1))

@@ -22,7 +22,7 @@ namespace Saphira.Commands
         {
             var result = await _client.GetPlayerPBsAsync(player);
 
-            if (result.Success == false || result.Response == null)
+            if (!result.Success || result.Response == null)
             {
                 var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve personal best times of {player}: {result.ErrorMessage ?? "Unknown error"}");
                 await RespondAsync(embed: errorAlert.Build());

@@ -16,22 +16,5 @@ namespace Saphira.Discord.Messaging
 
             return InviteLinkPattern.IsMatch(text);
         }
-
-        public IEnumerable<string> ExtractInviteLinks(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                return Enumerable.Empty<string>();
-
-            var matches = InviteLinkPattern.Matches(text);
-            return matches.Select(m => m.Value);
-        }
-
-        public string RemoveInviteLinks(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                return text;
-
-            return InviteLinkPattern.Replace(text, "[invite link removed]");
-        }
     }
 }

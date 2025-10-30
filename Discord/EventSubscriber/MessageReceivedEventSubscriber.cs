@@ -10,13 +10,15 @@ namespace Saphira.Discord.EventSubscriber
     {
         private readonly DiscordSocketClient _client;
         private readonly InviteLinkDetector _inviteLinkDetector;
+        private readonly RestrictedContentDetector _restrictedContentDetector;
 
         private bool _isRegistered = false;
 
-        public MessageReceivedEventSubscriber(DiscordSocketClient client, InviteLinkDetector inviteLinkDetector)
+        public MessageReceivedEventSubscriber(DiscordSocketClient client, InviteLinkDetector inviteLinkDetector, RestrictedContentDetector restrictedContentDetector)
         {
             _client = client;
             _inviteLinkDetector = inviteLinkDetector;
+            _restrictedContentDetector = restrictedContentDetector;
         }
 
         public void Register()
@@ -47,12 +49,35 @@ namespace Saphira.Discord.EventSubscriber
                 return;
             }
 
+            if (message.Author is not SocketGuildUser guildUser)
+            {
+                return;
+            }
+
+            // None of the checks below apply to team members
+            if (GuildMember.IsTeamMember(guildUser))
+            {
+                return;
+            }
+
             if (_inviteLinkDetector.MessageContainsInviteLink(message.Content))
             {
                 await message.DeleteAsync();
 
-                var warningAlert = new AlertEmbedBuilder($"{message.Author.Mention}, posting discord invite links is not allowed.");
+                var warningAlert = new WarningAlertEmbedBuilder($"{message.Author.Mention}, posting discord invite links is not allowed.");
                 await textChannel.SendMessageAsync(embed: warningAlert.Build());
+                return;
+            }
+
+            if (!GuildMember.IsVerified(guildUser) == false && GuildMember.IsNewUser(guildUser) && _restrictedContentDetector.MessageContainsRestrictedContent(message))
+            {
+                await message.DeleteAsync();
+
+                var warningAlert = new WarningAlertEmbedBuilder(
+                    $"{message.Author.Mention}, new members cannot post images, links, attachments, or videos until they have been on the server for at least 12 hours."
+                );
+                await textChannel.SendMessageAsync(embed: warningAlert.Build());
+                return;
             }
         }
     }

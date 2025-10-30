@@ -19,7 +19,11 @@ namespace Saphira.Commands
         {
             await DeferAsync();
 
-            var textChannel = Context.Channel as SocketTextChannel;
+            if (Context.Channel is not SocketTextChannel textChannel)
+            {
+                return;
+            }
+
             var messages = await textChannel.GetMessagesAsync(count).FlattenAsync();
 
             // Discord only allows mass deleting messages that are less than 14 days old because ... Discord
