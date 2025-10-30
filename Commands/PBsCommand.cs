@@ -9,9 +9,9 @@ namespace Saphira.Commands
 {
     public class PBsCommand : InteractionModuleBase<SocketInteractionContext>
     {
-        private readonly Client _client;
+        private readonly CachedClient _client;
 
-        public PBsCommand(Client client)
+        public PBsCommand(CachedClient client)
         {
             _client = client;
         }
@@ -24,7 +24,7 @@ namespace Saphira.Commands
 
             if (result.Success == false || result.Response == null)
             {
-                var errorAlert = new ErrorAlertEmbedBuilder($"personal best times of {player}: {result.ErrorMessage ?? "Unknown error"}");
+                var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve personal best times of {player}: {result.ErrorMessage ?? "Unknown error"}");
                 await RespondAsync(embed: errorAlert.Build());
                 return;
             }

@@ -7,11 +7,11 @@ namespace Saphira.Commands.Autocompletion.ValueProvider
 {
     public class CharacterValueProvider : IValueProvider
     {
-        private readonly Client _client;
+        private readonly CachedClient _client;
         private readonly IMessageLogger _logger;
         private readonly IMemoryCache _cache;
 
-        public CharacterValueProvider(Client client, IMessageLogger logger, IMemoryCache cache)
+        public CharacterValueProvider(CachedClient client, IMessageLogger logger, IMemoryCache cache)
         {
             _client = client;        
             _logger = logger;
@@ -21,38 +21,21 @@ namespace Saphira.Commands.Autocompletion.ValueProvider
         public async Task<List<Value>> GetValuesAsync()
         {
             var values = new List<Value>();
-            var characters = await GetCharactersFromCache();
+            var result = await _client.GetCharactersAsync();
 
-            foreach (var character in characters)
+            if (result.Success == false || result.Response == null)
+            {
+                _logger.Log(LogSeverity.Error, "Saphira", $"Failed to fetch characters: {result.ErrorMessage ?? "Unknown error"}");
+                return values;
+            }
+
+            foreach (var character in result.Response.Data)
             {
                 var value = new Value(int.Parse(character.Id), character.Name);
                 values.Add(value);
             }
 
             return values;
-        }
-
-        private async Task<List<Character>> GetCharactersFromCache()
-        {
-            return await _cache.GetOrCreateAsync("characters", async entry =>
-            {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24);
-
-                var result = await _client.GetCharactersAsync();
-
-                if (result.Success == true)
-                {
-                    var response = result.Response;
-                    return response?.Data ?? [];
-                }
-
-                if (result.ErrorMessage != null)
-                {
-                    _logger.Log(LogSeverity.Error, "Saphira", result.ErrorMessage);
-                }
-
-                return [];
-            }) ?? [];
         }
     }
 }

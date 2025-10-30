@@ -82,7 +82,7 @@ namespace Saphira
                 .AddSingleton(interactionService)
                 .AddSingleton(configuration)
                 .AddSingleton<GuildRoleManager>()
-                .AddSingleton<Client>()
+                .AddSingleton<CachedClient>()
                 .AddSingleton<IMessageLogger, ConsoleMessageLogger>()
                 .AddTransient<CustomTrackValueProvider>()
                 .AddTransient<CategoryValueProvider>()

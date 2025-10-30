@@ -10,10 +10,10 @@ namespace Saphira.Commands
 {
     public class LeaderboardCommand : InteractionModuleBase<SocketInteractionContext>
     {
-        private readonly Client _client;
+        private readonly CachedClient _client;
         private readonly Configuration _configuration;
 
-        public LeaderboardCommand(Client client, Configuration configuration)
+        public LeaderboardCommand(CachedClient client, Configuration configuration)
         {
             _client = client;
             _configuration = configuration;

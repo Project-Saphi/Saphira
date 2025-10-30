@@ -8,9 +8,9 @@ namespace Saphira.Commands
 {
     public class AchievementsCommand : InteractionModuleBase<SocketInteractionContext>
     {
-        private readonly Client _client;
+        private readonly CachedClient _client;
 
-        public AchievementsCommand(Client client)
+        public AchievementsCommand(CachedClient client)
         {
             _client = client;
         }

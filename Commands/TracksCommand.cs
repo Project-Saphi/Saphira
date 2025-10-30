@@ -8,9 +8,9 @@ namespace Saphira.Commands
 {
     public class TracksCommand : InteractionModuleBase<SocketInteractionContext>
     {
-        private readonly Client _client;
+        private readonly CachedClient _client;
 
-        public TracksCommand(Client client)
+        public TracksCommand(CachedClient client)
         {
             _client = client;
         }
