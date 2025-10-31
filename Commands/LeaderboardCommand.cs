@@ -40,29 +40,80 @@ namespace Saphira.Commands
             var customTrackEntity = await FindCustomTrack(customTrack);
             var categoryEntity = await FindCategory(category);
 
-            var content = new List<string>();
-            var playerCount = 0;
+            var embed = new EmbedBuilder();
+            embed.WithAuthor($"Top {_configuration.MaxLeaderboardEntries} {categoryEntity?.Name ?? "Unknown"} times on {customTrackEntity?.Name ?? "Unknown"}");
 
-            foreach (var leaderboardEntry in result.Response.Data)
+            var placementsField = new EmbedFieldBuilder();
+            placementsField.WithName($":trophy: {MessageTextFormat.Bold("Placement")}");
+            placementsField.WithValue(String.Join("\n", GetPlacements(result.Response.Data)));
+            placementsField.WithIsInline(true);
+
+            var playersField = new EmbedFieldBuilder();
+            playersField.WithName($":bust_in_silhouette: {MessageTextFormat.Bold("Player")}");
+            playersField.WithValue(String.Join("\n", GetPlayers(result.Response.Data)));
+            playersField.WithIsInline(true);
+
+            var timesField = new EmbedFieldBuilder();
+            timesField.WithName($":stopwatch: {MessageTextFormat.Bold("Time")}");
+            timesField.WithValue(String.Join("\n", GetTimes(result.Response.Data)));
+            timesField.WithIsInline(true);
+
+            embed.AddField(placementsField);
+            embed.AddField(playersField);
+            embed.AddField(timesField);
+
+            await RespondAsync(embed: embed.Build());
+        }
+
+        private List<string> GetPlacements(List<TrackLeaderboardEntry> leaderboardEntries)
+        {
+            var placements = new List<string>();
+
+            foreach (var entry in leaderboardEntries)
             {
-                content.Add($"#{leaderboardEntry.Rank} - {MessageTextFormat.Bold(leaderboardEntry.Holder)} - {ScoreFormatter.AsIngameTime(leaderboardEntry.MinScore)}");
-                playerCount++;
+                placements.Add($"{RankFormatter.ToMedalFormat(entry.Rank)}");
 
-                if (playerCount > (_configuration.MaxLeaderboardEntries - 1))
+                if (entry.Rank == _configuration.MaxLeaderboardEntries)
                 {
                     break;
                 }
             }
 
-            var embed = new EmbedBuilder();
-            
-            var field = new EmbedFieldBuilder();
-            field.WithName(MessageTextFormat.Bold($"Top {_configuration.MaxLeaderboardEntries} {categoryEntity?.Name ?? category} times on {customTrackEntity?.Name ?? customTrack}"));
-            field.WithValue(String.Join("\n", content));
+            return placements;
+        }
 
-            embed.AddField(field);
+        private List<string> GetPlayers(List<TrackLeaderboardEntry> leaderboardEntries)
+        {
+            var players = new List<string>();
 
-            await RespondAsync(embed: embed.Build());
+            foreach (var entry in leaderboardEntries)
+            {
+                players.Add(MessageTextFormat.Bold(entry.Holder));
+
+                if (entry.Rank == _configuration.MaxLeaderboardEntries)
+                {
+                    break;
+                }
+            }
+
+            return players;
+        }
+
+        private List<string> GetTimes(List<TrackLeaderboardEntry> leaderboardEntries)
+        {
+            var times = new List<string>();
+
+            foreach (var entry in leaderboardEntries)
+            {
+                times.Add(ScoreFormatter.AsIngameTime(entry.MinScore));
+
+                if (entry.Rank == _configuration.MaxLeaderboardEntries)
+                {
+                    break;
+                }
+            }
+
+            return times;
         }
 
         private async Task<CustomTrack?> FindCustomTrack(string trackId)

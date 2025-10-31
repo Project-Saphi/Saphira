@@ -31,23 +31,66 @@ namespace Saphira.Commands
                 return;
             }
 
-            var content = new List<string>();
-            foreach (var pbEntry in result.Response.Data)
-            {
-                var category = await FindCategory(pbEntry.CategoryId);
-                content.Add($"- {MessageTextFormat.Bold(pbEntry.TrackName)} ({category?.Name ?? "Unknown"}) - {ScoreFormatter.AsIngameTime(pbEntry.Time)} (#{pbEntry.Rank})");
-            }
-
             var playerName = result.Response.Data.First().Holder;
+
             var embed = new EmbedBuilder();
 
-            var field = new EmbedFieldBuilder();
-            field.WithName(MessageTextFormat.Bold($"Personal best times of {playerName}"));
-            field.WithValue(String.Join("\n", content));
+            var customTracksField = new EmbedFieldBuilder();
+            customTracksField.WithName($":motorway: {MessageTextFormat.Bold("Track")}");
+            customTracksField.WithValue(String.Join("\n", GetCustomTracks(result.Response.Data)));
+            customTracksField.WithIsInline(true);
 
-            embed.AddField(field);
+            var timesField = new EmbedFieldBuilder();
+            timesField.WithName($":stopwatch: {MessageTextFormat.Bold("Time")}");
+            timesField.WithValue(String.Join("\n", GetTimes(result.Response.Data)));
+            timesField.WithIsInline(true);
+
+            var placementsField = new EmbedFieldBuilder();
+            placementsField.WithName($":trophy: {MessageTextFormat.Bold("Placement")}");
+            placementsField.WithValue(String.Join("\n", GetPlacements(result.Response.Data)));
+            placementsField.WithIsInline(true);
+
+            embed.AddField(customTracksField);
+            embed.AddField(timesField);
+            embed.AddField(placementsField);
 
             await RespondAsync(embed: embed.Build());
+        }
+
+        private List<string> GetCustomTracks(List<PlayerPB> playerPBs)
+        {
+            var customTracks = new List<string>();
+
+            foreach (var playerPB in playerPBs)
+            {
+                customTracks.Add(MessageTextFormat.Bold(playerPB.TrackName));
+            }
+
+            return customTracks;
+        }
+
+        private List<string> GetTimes(List<PlayerPB> playerPBs)
+        {
+            var times = new List<string>();
+
+            foreach (var playerPB in playerPBs)
+            {
+                times.Add(ScoreFormatter.AsIngameTime(playerPB.Time));
+            }
+
+            return times;
+        }
+
+        private List<string> GetPlacements(List<PlayerPB> playerPBs)
+        {
+            var placements = new List<string>();
+
+            foreach (var playerPB in playerPBs)
+            {
+                placements.Add(RankFormatter.ToMedalFormat(int.Parse(playerPB.Rank)));
+            }
+
+            return placements;
         }
 
         private async Task<Category?> FindCategory(string categoryId)

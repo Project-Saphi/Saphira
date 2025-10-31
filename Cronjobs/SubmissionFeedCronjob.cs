@@ -32,7 +32,7 @@ namespace Saphira.Cronjobs
 
         public TimeSpan GetInterval()
         {
-            return TimeSpan.FromMinutes(1);
+            return TimeSpan.FromMinutes(5);
         }
     }
 }
