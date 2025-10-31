@@ -6,11 +6,12 @@ using Saphira.Discord.Messaging;
 
 namespace Saphira.Commands
 {
+    [RequireTextChannel]
+    [RequireCommandAllowedChannel]
+    [RequireTeamMemberRole]
     public class DmCommand : InteractionModuleBase<SocketInteractionContext>
     {
         [CommandContextType(InteractionContextType.Guild)]
-        [RequireTextChannel]
-        [RequireTeamMemberRole]
         [SlashCommand("dm", "DM someone as Saphira")]
         public async Task HandleCommand(string message, SocketGuildUser user)
         {

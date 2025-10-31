@@ -3,8 +3,6 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Saphira.Commands.Autocompletion.TypeConverter;
-using Saphira.Discord.Guild;
-using Saphira.Discord.Messaging;
 using Saphira.Util.Logging;
 using System.Reflection;
 
@@ -36,6 +34,7 @@ namespace Saphira.Discord
             _discordSocketClient.InteractionCreated += HandleInteraction;
             _discordSocketClient.Ready += RegisterCommandsAsync;
             _interactionService.Log += LogAsync;
+            _interactionService.InteractionExecuted += HandleInteractionExecuted;
         }
 
         private async Task RegisterCommandsAsync()
@@ -49,46 +48,58 @@ namespace Saphira.Discord
             try
             {
                 var context = new SocketInteractionContext(_discordSocketClient, interaction);
-
-                if (CanExecuteCommand(context.User, context.Channel))
-                {
-                    await _interactionService.ExecuteCommandAsync(context, _serviceProvider);
-                }
-                else
-                {
-                    if (interaction.Type == InteractionType.ApplicationCommand)
-                    {
-                        var warningAlert = new WarningAlertEmbedBuilder("You cannot use commands in this channel.");
-                        await interaction.RespondAsync(embed: warningAlert.Build(), ephemeral: true);
-                    }
-                }
+                await _interactionService.ExecuteCommandAsync(context, _serviceProvider);
             }
             catch (Exception ex)
             {
                 _logger.Log(LogSeverity.Error, "Saphira", $"Error handling interaction: {ex.Message}");
+
                 if (interaction.Type == InteractionType.ApplicationCommand)
                 {
-                    await interaction.RespondAsync($"An error occurred: {ex.Message}", ephemeral: true);
+                    if (interaction.HasResponded)
+                    {
+                        await interaction.FollowupAsync($"An error occurred: {ex.Message}", ephemeral: true);
+                    }
+                    else
+                    {
+                        await interaction.RespondAsync($"An error occurred: {ex.Message}", ephemeral: true);
+                    }
                 }
             }
         }
 
-        private bool CanExecuteCommand(SocketUser user, ISocketMessageChannel channel)
+        private async Task HandleInteractionExecuted(ICommandInfo commandInfo, IInteractionContext context, IResult result)
         {
-            var guildUser = user as SocketGuildUser;
-            var guildChannel = channel as SocketGuildChannel;
-
-            if (guildUser == null || guildChannel == null)
+            if (!result.IsSuccess)
             {
-                return false;
-            }
+                var errorMessage = result.Error switch
+                {
+                    InteractionCommandError.UnmetPrecondition => result.ErrorReason,
+                    InteractionCommandError.UnknownCommand => "Unknown command.",
+                    InteractionCommandError.BadArgs => "Invalid arguments provided.",
+                    InteractionCommandError.Exception => $"Command exception: {result.ErrorReason}",
+                    InteractionCommandError.Unsuccessful => "Command could not be executed.",
+                    _ => "An unknown error occurred."
+                };
 
-            if (_configuration.CommandsAllowedChannels.Any(c => c == guildChannel.Name) || GuildMember.IsTeamMember(user))
-            {
-                return true;
-            }
+                _logger.Log(LogSeverity.Warning, "Saphira", $"Command '{commandInfo.Name}' failed: {errorMessage}");
 
-            return false;
+                try
+                {
+                    if (context.Interaction.HasResponded)
+                    {
+                        await context.Interaction.FollowupAsync(errorMessage, ephemeral: true);
+                    }
+                    else
+                    {
+                        await context.Interaction.RespondAsync(errorMessage, ephemeral: true);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log(LogSeverity.Error, "Saphira", $"Failed to send error response: {ex.Message}");
+                }
+            }
         }
 
         private Task LogAsync(LogMessage log)

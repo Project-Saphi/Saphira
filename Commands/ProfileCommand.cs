@@ -6,10 +6,11 @@ using Saphira.Discord.Messaging;
 
 namespace Saphira.Commands
 {
+    [RequireTextChannel]
+    [RequireCommandAllowedChannel]
     public class ProfileCommand : InteractionModuleBase<SocketInteractionContext>
     {
         [CommandContextType(InteractionContextType.Guild)]
-        [RequireTextChannel]
         [SlashCommand("profile", "See your user profile")]
         public async Task HandleCommand()
         {

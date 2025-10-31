@@ -8,6 +8,8 @@ using Saphira.Discord.Messaging;
 
 namespace Saphira.Commands
 {
+    [RequireTextChannel]
+    [RequireCommandAllowedChannel]
     public class ToggleCommand : InteractionModuleBase<SocketInteractionContext>
     {
         private readonly GuildRoleManager _guildRoleManager;
@@ -18,7 +20,6 @@ namespace Saphira.Commands
         }
 
         [CommandContextType(InteractionContextType.Guild)]
-        [RequireTextChannel]
         [SlashCommand("toggle", "Toggle one of your roles off or on")]
         public async Task HandleCommand(
             [Autocomplete(typeof(ToggleableRoleAutocompleteHandler))] int role

@@ -9,6 +9,8 @@ using Saphira.Util.Game;
 
 namespace Saphira.Commands
 {
+    [RequireTextChannel]
+    [RequireCommandAllowedChannel]
     public class LeaderboardCommand : InteractionModuleBase<SocketInteractionContext>
     {
         private readonly CachedClient _client;
@@ -20,7 +22,6 @@ namespace Saphira.Commands
             _configuration = configuration;
         }
 
-        [RequireTextChannel]
         [SlashCommand("leaderboard", "Get the leaderboard for a single track (limited to 20 players)")]
         public async Task HandleCommand(
             [Autocomplete(typeof(CustomTrackAutocompleteHandler))] string customTrack,

@@ -4,14 +4,15 @@
 
 ## Command Preconditions
 
-There are 2 command preconditions that I find useful when developing new commands:
+There are 3 command preconditions that I find useful when developing new commands:
 
 - `RequireTeamMemberRole`
 - `RequireTextChannel`
+- `RequireCommandAllowedChannel`
 
 Instead of binding commands to permissions, I often bind commands to roles. Saphira, for example, has a bunch of moderation commands that are generally available for all team members. That's what the `RequireTeamMemberRole` precondition does - it checks for the `Saphi Team` role and restricts commands to users with that role.
 
-Most commands I develop are text-based and don't make any sense for non-text channels, such as voice channels or event channels. That's why I added the `RequireTextChannel` precondition, as this allows you to restrict a command to text channels.
+Most commands I develop are text-based and don't make any sense for non-text channels, such as voice channels or event channels. That's why I added the `RequireTextChannel` precondition, as this allows you to restrict a command to text channels. And since you usually want to restrict commands to certain text channels, there is also the `RequireCommandAllowedChannel` precondition.
 
 ## Autocompletion and ValueProviders
 

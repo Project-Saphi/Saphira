@@ -1,13 +1,14 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Interactions;
 using Discord.WebSocket;
 
 namespace Saphira.Commands.Precondition
 {
     public class RequireTextChannel : PreconditionAttribute
     {
-        public override Task<PreconditionResult> CheckPermissionsAsync(
-            ICommandContext context, 
-            CommandInfo command, 
+        public override Task<PreconditionResult> CheckRequirementsAsync(
+            IInteractionContext context,
+            ICommandInfo commandInfo,
             IServiceProvider services
             )
         {

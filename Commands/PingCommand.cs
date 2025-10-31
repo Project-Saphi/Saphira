@@ -4,9 +4,10 @@ using Saphira.Discord.Messaging;
 
 namespace Saphira.Commands
 {
+    [RequireTextChannel]
+    [RequireCommandAllowedChannel]
     public class PingCommand : InteractionModuleBase<SocketInteractionContext>
     {
-        [RequireTextChannel]
         [SlashCommand("ping", "Check the bot's latency")]
         public async Task HandleCommand()
         {

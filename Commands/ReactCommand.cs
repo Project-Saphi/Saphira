@@ -6,11 +6,12 @@ using Saphira.Discord.Messaging;
 
 namespace Saphira.Commands
 {
+    [RequireTextChannel]
+    [RequireCommandAllowedChannel]
+    [RequireTeamMemberRole]
     public class ReactCommand : InteractionModuleBase<SocketInteractionContext>
     {
         [CommandContextType(InteractionContextType.Guild)]
-        [RequireTextChannel]
-        [RequireTeamMemberRole]
         [SlashCommand("react", "React to a message as Saphira")]
         public async Task HandleCommand(IEmote emote, string messageId)
         {

@@ -8,6 +8,8 @@ using Saphira.Util.Game;
 
 namespace Saphira.Commands
 {
+    [RequireTextChannel]
+    [RequireCommandAllowedChannel]
     public class PBsCommand : InteractionModuleBase<SocketInteractionContext>
     {
         private readonly CachedClient _client;
@@ -17,7 +19,6 @@ namespace Saphira.Commands
             _client = client;
         }
 
-        [RequireTextChannel]
         [SlashCommand("pbs", "Get personal best times of a player")]
         public async Task HandleCommand(string player)
         {

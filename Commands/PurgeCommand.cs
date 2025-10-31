@@ -6,11 +6,12 @@ using Saphira.Discord.Messaging;
 
 namespace Saphira.Commands
 {
+    [RequireTextChannel]
+    [RequireCommandAllowedChannel]
+    [RequireTeamMemberRole]
     public class PurgeCommand : InteractionModuleBase<SocketInteractionContext>
     {
         [CommandContextType(InteractionContextType.Guild)]
-        [RequireTextChannel]
-        [RequireTeamMemberRole]
         [SlashCommand("purge", "Delete the last X messages in the current channel")]
         public async Task HandleCommand(
             [MinValue(1)]

@@ -6,6 +6,8 @@ using Saphira.Discord.Messaging;
 
 namespace Saphira.Commands
 {
+    [RequireTextChannel]
+    [RequireCommandAllowedChannel]
     public class LivestreamsCommand : InteractionModuleBase<SocketInteractionContext>
     {
         private readonly GuildManager _guildManager;
@@ -16,7 +18,6 @@ namespace Saphira.Commands
         }
 
         [CommandContextType(InteractionContextType.Guild)]
-        [RequireTextChannel]
         [SlashCommand("livestreams", "List all CTR livestreams from server members")]
         public async Task HandleCommand()
         {

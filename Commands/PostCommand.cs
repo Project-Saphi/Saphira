@@ -6,11 +6,12 @@ using Saphira.Discord.Messaging;
 
 namespace Saphira.Commands
 {
+    [RequireTextChannel]
+    [RequireCommandAllowedChannel]
+    [RequireTeamMemberRole]
     public class PostCommand : InteractionModuleBase<SocketInteractionContext>
     {
         [CommandContextType(InteractionContextType.Guild)]
-        [RequireTextChannel]
-        [RequireTeamMemberRole]
         [SlashCommand("post", "Send a message as Saphira")]
         public async Task HandleCommand(string message, SocketChannel channel)
         {

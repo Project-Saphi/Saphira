@@ -6,6 +6,8 @@ using Saphira.Saphi.Api;
 
 namespace Saphira.Commands
 {
+    [RequireTextChannel]
+    [RequireCommandAllowedChannel]
     public class TracksCommand : InteractionModuleBase<SocketInteractionContext>
     {
         private readonly CachedClient _client;
@@ -15,7 +17,6 @@ namespace Saphira.Commands
             _client = client;
         }
 
-        [RequireTextChannel]
         [SlashCommand("tracks", "Get the list of supported custom tracks")]
         public async Task HandleCommand()
         {

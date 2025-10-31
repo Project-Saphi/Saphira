@@ -6,6 +6,9 @@ using Saphira.Extensions.Caching;
 
 namespace Saphira.Commands
 {
+    [RequireTextChannel]
+    [RequireCommandAllowedChannel]
+    [RequireTeamMemberRole]
     public class ClearCacheCommand : InteractionModuleBase<SocketInteractionContext>
     {
         private readonly CacheInvalidationService _cacheInvalidationService;
@@ -16,8 +19,6 @@ namespace Saphira.Commands
         }
 
         [CommandContextType(InteractionContextType.Guild)]
-        [RequireTextChannel]
-        [RequireTeamMemberRole]
         [SlashCommand("clearcache", "Invalidate all cached data")]
         public async Task HandleCommand()
         {

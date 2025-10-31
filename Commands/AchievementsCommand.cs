@@ -6,6 +6,8 @@ using Saphira.Saphi.Api;
 
 namespace Saphira.Commands
 {
+    [RequireTextChannel]
+    [RequireCommandAllowedChannel]
     public class AchievementsCommand : InteractionModuleBase<SocketInteractionContext>
     {
         private readonly CachedClient _client;
@@ -15,7 +17,6 @@ namespace Saphira.Commands
             _client = client;
         }
 
-        [RequireTextChannel]
         [SlashCommand("achievements", "Show a player's achievements")]
         public async Task HandleCommand(string player)
         {

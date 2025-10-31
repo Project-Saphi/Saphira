@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Interactions;
 using Discord.WebSocket;
 using Saphira.Discord.Guild;
 
@@ -6,9 +7,9 @@ namespace Saphira.Commands.Precondition
 {
     public class RequireTeamMemberRole : PreconditionAttribute
     {
-        public override Task<PreconditionResult> CheckPermissionsAsync(
-            ICommandContext context, 
-            CommandInfo command, 
+        public override Task<PreconditionResult> CheckRequirementsAsync(
+            IInteractionContext context,
+            ICommandInfo commandInfo,
             IServiceProvider services
             )
         {
@@ -25,6 +26,6 @@ namespace Saphira.Commands.Precondition
             }
 
             return Task.FromResult(PreconditionResult.FromError("You don't have permission to use this command."));
-        }
+          }
     }
 }
