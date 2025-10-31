@@ -35,9 +35,11 @@ namespace Saphira.Commands
             }
 
             var embed = new EmbedBuilder();
+
             var field = new EmbedFieldBuilder();
             field.WithName(MessageTextFormat.Bold("Saphi Custom Track List"));
             field.WithValue(String.Join("\n", content));
+
             embed.AddField(field);
 
             await RespondAsync(embed: embed.Build());

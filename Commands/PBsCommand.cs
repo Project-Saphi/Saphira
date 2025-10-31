@@ -3,6 +3,7 @@ using Discord.Interactions;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 using Saphira.Saphi.Api;
+using Saphira.Saphi.Entity;
 using Saphira.Util.Game;
 
 namespace Saphira.Commands
@@ -24,27 +25,40 @@ namespace Saphira.Commands
 
             if (!result.Success || result.Response == null)
             {
-                var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve personal best times of {player}: {result.ErrorMessage ?? "Unknown error"}");
+                var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve personal best times: {result.ErrorMessage ?? "Unknown error"}");
                 await RespondAsync(embed: errorAlert.Build());
                 return;
             }
 
             var content = new List<string>();
-            var count = 1;
-
             foreach (var pbEntry in result.Response.Data)
             {
-                content.Add($"{count}. {MessageTextFormat.Bold(pbEntry.TrackName)} - {MessageTextFormat.Bold(ScoreFormatter.AsIngameTime(pbEntry.Time))} (Rank {pbEntry.Rank})");
-                count++;
+                var category = await FindCategory(pbEntry.CategoryId);
+                content.Add($"- {MessageTextFormat.Bold(pbEntry.TrackName)} ({category?.Name ?? "Unknown"}) - {ScoreFormatter.AsIngameTime(pbEntry.Time)} (#{pbEntry.Rank})");
             }
 
+            var playerName = result.Response.Data.First().Holder;
             var embed = new EmbedBuilder();
+
             var field = new EmbedFieldBuilder();
-            field.WithName(MessageTextFormat.Bold($"Personal best times of {player}"));
+            field.WithName(MessageTextFormat.Bold($"Personal best times of {playerName}"));
             field.WithValue(String.Join("\n", content));
+
             embed.AddField(field);
 
             await RespondAsync(embed: embed.Build());
+        }
+
+        private async Task<Category?> FindCategory(string categoryId)
+        {
+            var result = await _client.GetCategoriesAsync();
+
+            if (!result.Success || result.Response == null)
+            {
+                return null;
+            }
+
+            return result.Response.Data.FirstOrDefault(category => category.Id == categoryId);
         }
     }
 }

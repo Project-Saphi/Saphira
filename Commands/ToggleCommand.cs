@@ -40,7 +40,7 @@ namespace Saphira.Commands
 
             if (guildRole == null)
             {
-                var errorAlert = new ErrorAlertEmbedBuilder($"The role {toggledRole} does not exist.");
+                var errorAlert = new ErrorAlertEmbedBuilder($"The role {MessageTextFormat.Bold(toggledRole)} does not exist.");
                 await FollowupAsync(embed: errorAlert.Build());
                 return;
             }

@@ -8,7 +8,11 @@ namespace Saphira
 
         public ulong GuildId { get; set; } = 0;
         
-        public string MainChannelName { get; set; } = string.Empty;
+        public string MainChannel { get; set; } = string.Empty;
+
+        public string SubmissionFeedChannel {  get; set; } = string.Empty;
+
+        public List<string> CommandsAllowedChannels {  get; set; } = new List<string>();
 
         public string SaphiApiKey { get; set; } = string.Empty;
 

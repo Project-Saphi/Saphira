@@ -33,7 +33,9 @@ A `config.json` file needs to be created with the following structure:
   "BotToken": "",
   "BotOwnerId": 0,
   "GuildId": 0,
-  "MainChannelName": ""
+  "MainChannel": "",
+  "SubmissionFeedChannel": "",
+  "CommandsAllowedChannels": [],
   "SaphiApiKey": "",
   "SaphiApiBaseUrl": "https://api.example.com",
   "MaxLeaderboardEntries": 0
@@ -43,7 +45,9 @@ A `config.json` file needs to be created with the following structure:
 - `BotToken` is the bot token you can acquire from the Discord Developer Portal
 - `BotOwnerId` is the internal ID of the Discord user who owns Saphira
 - `GuildId` is the internal ID of the server you want to run Saphira on
-- `MainChannelName` name of the main channel where Saphira will post some messages to (like the member count celebration)
+- `MainChannel` is the name of the main channel where Saphira will post some messages to (like the member count celebration)
+- `SubmissionFeedChannel` is the name of the channel where Saphira will post the newest submissions to
+- `CommandsAllowedChannels` is a list of channels where users are allowed to use slash commands (unless they have the `Saphi Team` role)
 - `SaphiApiKey` is an API key to access the leaderboard website API
 - `SaphiApiBaseUrl` is the URL to the leaderboard website API
 - `MaxLeaderboardEntries` is the number of entries that will be shown when using `/leaderboard`

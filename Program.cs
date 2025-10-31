@@ -4,9 +4,11 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Saphira.Commands.Autocompletion.ValueProvider;
+using Saphira.Cronjobs;
 using Saphira.Discord;
 using Saphira.Discord.Guild;
 using Saphira.Discord.Messaging;
+using Saphira.Extensions.Caching;
 using Saphira.Extensions.DependencyInjection;
 using Saphira.Saphi.Api;
 using Saphira.Util.Game;
@@ -42,7 +44,11 @@ namespace Saphira
             await _discordSocketClient.LoginAsync(TokenType.Bot, config.BotToken);
             await _discordSocketClient.StartAsync();
 
+            _serviceProvider.RegisterCronjobs();
             _serviceProvider.RegisterEventSubscribers();
+
+            var cronjobScheduler = _serviceProvider.GetRequiredService<CronjobScheduler>();
+            cronjobScheduler.ScheduleCronjobs();
 
             await Task.Delay(-1);
         }
@@ -82,8 +88,10 @@ namespace Saphira
                 .AddSingleton(interactionService)
                 .AddSingleton(configuration)
                 .AddSingleton<GuildRoleManager>()
+                .AddSingleton<CacheInvalidationService>()
                 .AddSingleton<CachedClient>()
                 .AddSingleton<IMessageLogger, ConsoleMessageLogger>()
+                .AddSingleton<CronjobScheduler>()
                 .AddTransient<CustomTrackValueProvider>()
                 .AddTransient<CategoryValueProvider>()
                 .AddTransient<CharacterValueProvider>()
@@ -94,6 +102,7 @@ namespace Saphira
                 .AddTransient<RestrictedContentDetector>()
                 .AddHttpClient()
                 .AddMemoryCache()
+                .AddCronjobs()
                 .AddEventSubscribers()
                 .BuildServiceProvider();
         }

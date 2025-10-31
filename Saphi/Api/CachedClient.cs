@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Web;
 using Microsoft.Extensions.Caching.Memory;
+using Saphira.Extensions.Caching;
 using Saphira.Saphi.Api.Response;
 
 namespace Saphira.Saphi.Api
@@ -12,12 +13,14 @@ namespace Saphira.Saphi.Api
         private readonly HttpClient _httpClient;
         private readonly Configuration _configuration;
         private readonly IMemoryCache _cache;
+        private readonly CacheInvalidationService _cacheInvalidationService;
 
-        public CachedClient(HttpClient httpClient, Configuration configuration, IMemoryCache cache)
+        public CachedClient(HttpClient httpClient, Configuration configuration, IMemoryCache cache, CacheInvalidationService cacheInvalidationService)
         {
             _httpClient = httpClient;
             _configuration = configuration;
             _cache = cache;
+            _cacheInvalidationService = cacheInvalidationService;
 
             if (!string.IsNullOrWhiteSpace(_configuration.SaphiApiBaseUrl))
             {
@@ -105,6 +108,8 @@ namespace Saphira.Saphi.Api
             return await _cache.GetOrCreateAsync("api:custom_tracks", async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.CustomTrack;
+                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
+
                 return await GetAsync<GetCustomTracksResponse>(Endpoint.GetCustomTracks);
             }) ?? new Result<GetCustomTracksResponse>
             {
@@ -119,6 +124,7 @@ namespace Saphira.Saphi.Api
             return await _cache.GetOrCreateAsync(cacheKey, async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.PlayerPB;
+                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
 
                 var queryParams = new Dictionary<string, string>
                 {
@@ -139,6 +145,7 @@ namespace Saphira.Saphi.Api
             return await _cache.GetOrCreateAsync(cacheKey, async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.Leaderboard;
+                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
 
                 var queryParams = new Dictionary<string, string>
                 {
@@ -160,6 +167,7 @@ namespace Saphira.Saphi.Api
             return await _cache.GetOrCreateAsync(cacheKey, async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.Player;
+                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
 
                 var queryParams = new Dictionary<string, string>
                 {
@@ -179,6 +187,8 @@ namespace Saphira.Saphi.Api
             return await _cache.GetOrCreateAsync("api:countries", async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.Country;
+                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
+
                 return await GetAsync<GetCountriesResponse>(Endpoint.GetCountries);
             }) ?? new Result<GetCountriesResponse>
             {
@@ -192,6 +202,8 @@ namespace Saphira.Saphi.Api
             return await _cache.GetOrCreateAsync("api:characters", async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.Character;
+                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
+
                 return await GetAsync<GetCharactersResponse>(Endpoint.GetCharacters);
             }) ?? new Result<GetCharactersResponse>
             {
@@ -205,6 +217,8 @@ namespace Saphira.Saphi.Api
             return await _cache.GetOrCreateAsync("api:engine_types", async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.Engine;
+                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
+
                 return await GetAsync<GetEngineTypesResponse>(Endpoint.GetEngineTypes);
             }) ?? new Result<GetEngineTypesResponse>
             {
@@ -218,6 +232,8 @@ namespace Saphira.Saphi.Api
             return await _cache.GetOrCreateAsync("api:categories", async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.Category;
+                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
+
                 return await GetAsync<GetCategoriesResponse>(Endpoint.GetCategories);
             }) ?? new Result<GetCategoriesResponse>
             {

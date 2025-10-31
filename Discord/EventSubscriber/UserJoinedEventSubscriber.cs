@@ -39,7 +39,7 @@ namespace Saphira.Discord.EventSubscriber
 
             if (guild.Users.Count % 100 == 0)
             {
-                var mainChannel = guild.Channels.FirstOrDefault(channel => channel.Name == _configuration.MainChannelName);
+                var mainChannel = guild.Channels.FirstOrDefault(channel => channel.Name == _configuration.MainChannel);
                 if (mainChannel is not SocketTextChannel textChannel)
                 {
                     return;

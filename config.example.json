@@ -2,7 +2,12 @@
   "BotToken": "YOUR_BOT_TOKEN_HERE",
   "BotOwnerId": 0,
   "GuildId": 0,
-  "MainChannelName": "general",
+  "MainChannel": "general",
+  "SubmissionFeedChannel": "submissions",
+  "CommandsAllowedChannels": [
+    "time-trials",
+    "bot-spam"
+  ],
   "SaphiApiKey": "YOUR_API_KEY_HERE",
   "SaphiApiBaseUrl": "https://api.example.com",
   "MaxLeaderboardEntries": 20

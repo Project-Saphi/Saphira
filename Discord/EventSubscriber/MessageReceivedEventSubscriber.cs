@@ -69,7 +69,7 @@ namespace Saphira.Discord.EventSubscriber
                 return;
             }
 
-            if (!GuildMember.IsVerified(guildUser) == false && GuildMember.IsNewUser(guildUser) && _restrictedContentDetector.MessageContainsRestrictedContent(message))
+            if (!GuildMember.IsVerified(guildUser) && GuildMember.IsNewUser(guildUser) && _restrictedContentDetector.MessageContainsRestrictedContent(message))
             {
                 await message.DeleteAsync();
 

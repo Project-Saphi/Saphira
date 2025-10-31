@@ -35,7 +35,7 @@ namespace Saphira.Discord.EventSubscriber
 
         private async Task HandleGuildJoinedAsync(SocketGuild guild)
         {
-            var mainChannel = guild.Channels.FirstOrDefault(channel => channel.Name == _configuration.MainChannelName);
+            var mainChannel = guild.Channels.FirstOrDefault(channel => channel.Name == _configuration.MainChannel);
 
             if (mainChannel is not SocketTextChannel textChannel)
             {

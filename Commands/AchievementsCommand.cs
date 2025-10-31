@@ -23,7 +23,7 @@ namespace Saphira.Commands
 
             if (!result.Success || result.Response == null)
             {
-                var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve user profile of {player}: {result.ErrorMessage ?? "Unknown error"}");
+                var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve user profile: {result.ErrorMessage ?? "Unknown error"}");
                 await RespondAsync(embed: errorAlert.Build());
                 return;
             }

@@ -23,7 +23,6 @@ namespace Saphira.Commands
             var generalInfo = new[]
             {
                 $"{MessageTextFormat.Bold("Name")}: {guild.Name}",
-                $"{MessageTextFormat.Bold("Description")}: {guild.Description}",
                 $"{MessageTextFormat.Bold("Created")}: {guild.CreatedAt:yyyy-MM-dd}",
                 $"{MessageTextFormat.Bold("Owner")}: {MessageTextFormat.Mention(guild.OwnerId)}"
             };
@@ -46,17 +45,17 @@ namespace Saphira.Commands
             var embed = new EmbedBuilder();
 
             embed.AddField(new EmbedFieldBuilder()
-                .WithName(MessageTextFormat.Bold("General Information"))
+                .WithName(MessageTextFormat.Bold("Information"))
                 .WithValue(String.Join("\n", generalInfo))
                 .WithIsInline(true));
 
             embed.AddField(new EmbedFieldBuilder()
-                .WithName(MessageTextFormat.Bold("Server Statistics"))
+                .WithName(MessageTextFormat.Bold("Statistics"))
                 .WithValue(String.Join("\n", statistics))
                 .WithIsInline(true));
 
             embed.AddField(new EmbedFieldBuilder()
-                .WithName("Data")
+                .WithName("Metrics")
                 .WithValue(String.Join("\n", data))
                 .WithIsInline(true));
 

@@ -1,52 +1,38 @@
 using Discord;
 using Discord.Interactions;
-using Microsoft.Extensions.Caching.Memory;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
+using Saphira.Extensions.Caching;
 
 namespace Saphira.Commands
 {
     public class ClearCacheCommand : InteractionModuleBase<SocketInteractionContext>
     {
-        private readonly IMemoryCache _cache;
+        private readonly CacheInvalidationService _cacheInvalidationService;
 
-        public ClearCacheCommand(IMemoryCache cache)
+        public ClearCacheCommand(CacheInvalidationService cacheInvalidationService)
         {
-            _cache = cache;
+            _cacheInvalidationService = cacheInvalidationService;
         }
 
         [CommandContextType(InteractionContextType.Guild)]
         [RequireTextChannel]
         [RequireTeamMemberRole]
-        [SlashCommand("clearcache", "Clear the bot's in-memory cache")]
+        [SlashCommand("clearcache", "Invalidate all cached data")]
         public async Task HandleCommand()
         {
             await DeferAsync();
 
             try
             {
-                // I should probably make a central registry for this ...
-                // Otherwise it's too easy to forget to extend this
-                var cacheKeys = new List<string>
-                {
-                    "categories",
-                    "characters",
-                    "custom_tracks",
-                };
+                _cacheInvalidationService.InvalidateAll();
 
-                int clearedCount = 0;
-                foreach (var key in cacheKeys)
-                {
-                    _cache.Remove(key);
-                    clearedCount++;
-                }
-
-                var successAlert = new SuccessAlertEmbedBuilder($"Successfully cleared {clearedCount} cache entry / entries.");
+                var successAlert = new SuccessAlertEmbedBuilder("Successfully invalidated all cache entries. Data will be refreshed on next request.");
                 await FollowupAsync(embed: successAlert.Build());
             }
             catch (Exception ex)
             {
-                var errorAlert = new ErrorAlertEmbedBuilder($"Failed to clear cache: {ex.Message}");
+                var errorAlert = new ErrorAlertEmbedBuilder($"Failed to invalidate cache: {ex.Message}");
                 await FollowupAsync(embed: errorAlert.Build());
             }
         }
