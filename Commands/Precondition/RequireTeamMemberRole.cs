@@ -1,29 +1,28 @@
-﻿using Discord;
+using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Saphira.Discord.Guild;
 
-namespace Saphira.Commands.Precondition
+namespace Saphira.Commands.Precondition;
+
+public class RequireTeamMemberRole : PreconditionAttribute
 {
-    public class RequireTeamMemberRole : PreconditionAttribute
+    public override Task<PreconditionResult> CheckRequirementsAsync(
+        IInteractionContext context,
+        ICommandInfo commandInfo,
+        IServiceProvider services
+        )
     {
-        public override Task<PreconditionResult> CheckRequirementsAsync(
-            IInteractionContext context,
-            ICommandInfo commandInfo,
-            IServiceProvider services
-            )
+        if (context.User is not SocketGuildUser socketGuildUser)
         {
-            if (context.User is not SocketGuildUser socketGuildUser)
-            {
-                return Task.FromResult(PreconditionResult.FromError("User not found."));
-            }
+            return Task.FromResult(PreconditionResult.FromError("User not found."));
+        }
 
-            if (socketGuildUser.Roles.Any(role => GuildRole.IsTeamRole(role)))
-            {
-                return Task.FromResult(PreconditionResult.FromSuccess());
-            }
+        if (socketGuildUser.Roles.Any(role => GuildRole.IsTeamRole(role)))
+        {
+            return Task.FromResult(PreconditionResult.FromSuccess());
+        }
 
-            return Task.FromResult(PreconditionResult.FromError("You don't have permission to use this command."));
-          }
-    }
+        return Task.FromResult(PreconditionResult.FromError("You don't have permission to use this command."));
+      }
 }

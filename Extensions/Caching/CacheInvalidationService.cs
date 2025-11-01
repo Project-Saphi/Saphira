@@ -1,26 +1,25 @@
 using Microsoft.Extensions.Primitives;
 
-namespace Saphira.Extensions.Caching
+namespace Saphira.Extensions.Caching;
+
+public class CacheInvalidationService
 {
-    public class CacheInvalidationService
+    private CancellationTokenSource _invalidationTokenSource = new();
+    private readonly Lock _lock = new();
+
+    public IChangeToken GetInvalidationToken()
     {
-        private CancellationTokenSource _invalidationTokenSource = new();
-        private readonly Lock _lock = new();
+        return new CancellationChangeToken(_invalidationTokenSource.Token);
+    }
 
-        public IChangeToken GetInvalidationToken()
+    public void InvalidateAll()
+    {
+        lock (_lock)
         {
-            return new CancellationChangeToken(_invalidationTokenSource.Token);
-        }
-
-        public void InvalidateAll()
-        {
-            lock (_lock)
-            {
-                var oldTokenSource = _invalidationTokenSource;
-                _invalidationTokenSource = new CancellationTokenSource();
-                oldTokenSource.Cancel();
-                oldTokenSource.Dispose();
-            }
+            var oldTokenSource = _invalidationTokenSource;
+            _invalidationTokenSource = new CancellationTokenSource();
+            oldTokenSource.Cancel();
+            oldTokenSource.Dispose();
         }
     }
 }

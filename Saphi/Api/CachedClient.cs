@@ -6,184 +6,183 @@ using Microsoft.Extensions.Caching.Memory;
 using Saphira.Extensions.Caching;
 using Saphira.Saphi.Api.Response;
 
-namespace Saphira.Saphi.Api
+namespace Saphira.Saphi.Api;
+
+public class CachedClient
 {
-    public class CachedClient
+    private readonly HttpClient _httpClient;
+    private readonly Configuration _configuration;
+    private readonly IMemoryCache _cache;
+    private readonly CacheInvalidationService _cacheInvalidationService;
+
+    public CachedClient(HttpClient httpClient, Configuration configuration, IMemoryCache cache, CacheInvalidationService cacheInvalidationService)
     {
-        private readonly HttpClient _httpClient;
-        private readonly Configuration _configuration;
-        private readonly IMemoryCache _cache;
-        private readonly CacheInvalidationService _cacheInvalidationService;
+        _httpClient = httpClient;
+        _configuration = configuration;
+        _cache = cache;
+        _cacheInvalidationService = cacheInvalidationService;
 
-        public CachedClient(HttpClient httpClient, Configuration configuration, IMemoryCache cache, CacheInvalidationService cacheInvalidationService)
+        if (!string.IsNullOrWhiteSpace(_configuration.SaphiApiBaseUrl))
         {
-            _httpClient = httpClient;
-            _configuration = configuration;
-            _cache = cache;
-            _cacheInvalidationService = cacheInvalidationService;
-
-            if (!string.IsNullOrWhiteSpace(_configuration.SaphiApiBaseUrl))
-            {
-                _httpClient.BaseAddress = new Uri(_configuration.SaphiApiBaseUrl);
-            }
-
-            if (!string.IsNullOrWhiteSpace(_configuration.SaphiApiKey))
-            {
-                _httpClient.DefaultRequestHeaders.Add("Saphi-Api-Key", _configuration.SaphiApiKey);
-            }
-
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.BaseAddress = new Uri(_configuration.SaphiApiBaseUrl);
         }
 
-        private string BuildUrlWithQuery(string endpoint, Dictionary<string, string>? queryParams)
+        if (!string.IsNullOrWhiteSpace(_configuration.SaphiApiKey))
         {
-            if (queryParams == null || queryParams.Count == 0)
-                return endpoint;
-
-            var query = HttpUtility.ParseQueryString(string.Empty);
-            foreach (var param in queryParams)
-            {
-                query[param.Key] = param.Value;
-            }
-
-            return $"{endpoint}?{query}";
+            _httpClient.DefaultRequestHeaders.Add("Saphi-Api-Key", _configuration.SaphiApiKey);
         }
 
-        private async Task<Result<T>> GetAsync<T>(string endpoint)
-        {
-            try
+        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    }
+
+    public async Task<Result<GetCustomTracksResponse>> GetCustomTracksAsync(TimeSpan? cacheDuration = null) =>
+        await GetCachedAsync(
+            "api:custom_tracks",
+            () => GetAsync<GetCustomTracksResponse>(Endpoint.GetCustomTracks),
+            cacheDuration ?? DefaultCacheDuration.CustomTrack
+        );
+
+    public async Task<Result<GetPlayerPBsResponse>> GetPlayerPBsAsync(string playerId, TimeSpan? cacheDuration = null) =>
+        await GetCachedAsync(
+            $"api:player_pbs:{playerId}",
+            () => GetAsync<GetPlayerPBsResponse>(Endpoint.GetPlayerPBs, new Dictionary<string, string>
             {
-                var response = await _httpClient.GetAsync(endpoint);
-                var content = await response.Content.ReadAsStringAsync();
+                { "player_id", playerId }
+            }),
+            cacheDuration ?? DefaultCacheDuration.PlayerPB
+        );
 
-                if (!response.IsSuccessStatusCode)
-                {
-                    return new Result<T>
-                    {
-                        Success = false,
-                        ErrorMessage = $"Saphi API returned HTTP status code {response.StatusCode}: {content}",
-                        StatusCode = response.StatusCode
-                    };
-                }
+    public async Task<Result<GetTrackLeaderboardResponse>> GetTrackLeaderboardAsync(string trackId, string categoryId, TimeSpan? cacheDuration = null) =>
+        await GetCachedAsync(
+            $"api:track_leaderboard:{trackId}:{categoryId}",
+            () => GetAsync<GetTrackLeaderboardResponse>(Endpoint.GetTrackLeaderboard, new Dictionary<string, string>
+            {
+                { "id", trackId },
+                { "type", categoryId }
+            }),
+            cacheDuration ?? DefaultCacheDuration.Leaderboard
+        );
 
-                var data = JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                    NumberHandling = JsonNumberHandling.AllowReadingFromString
-                });
+    public async Task<Result<GetUserProfileResponse>> GetUserProfileAsync(string userId, TimeSpan? cacheDuration = null) =>
+        await GetCachedAsync(
+            $"api:user_profile:{userId}",
+            () => GetAsync<GetUserProfileResponse>(Endpoint.GetUserProfile, new Dictionary<string, string>
+            {
+                { "user_id", userId }
+            }),
+            cacheDuration ?? DefaultCacheDuration.Player
+        );
 
+    public async Task<Result<GetCountriesResponse>> GetCountriesAsync(TimeSpan? cacheDuration = null) =>
+        await GetCachedAsync(
+            "api:countries",
+            () => GetAsync<GetCountriesResponse>(Endpoint.GetCountries),
+            cacheDuration ?? DefaultCacheDuration.Country
+        );
+
+    public async Task<Result<GetCharactersResponse>> GetCharactersAsync(TimeSpan? cacheDuration = null) =>
+        await GetCachedAsync(
+            "api:characters",
+            () => GetAsync<GetCharactersResponse>(Endpoint.GetCharacters),
+            cacheDuration ?? DefaultCacheDuration.Character
+        );
+
+    public async Task<Result<GetEngineTypesResponse>> GetEngineTypesAsync(TimeSpan? cacheDuration = null) =>
+        await GetCachedAsync(
+            "api:engine_types",
+            () => GetAsync<GetEngineTypesResponse>(Endpoint.GetEngineTypes),
+            cacheDuration ?? DefaultCacheDuration.Engine
+        );
+
+    public async Task<Result<GetCategoriesResponse>> GetCategoriesAsync(TimeSpan? cacheDuration = null) =>
+        await GetCachedAsync(
+            "api:categories",
+            () => GetAsync<GetCategoriesResponse>(Endpoint.GetCategories),
+            cacheDuration ?? DefaultCacheDuration.Category
+        );
+
+    private string BuildUrlWithQuery(string endpoint, Dictionary<string, string>? queryParams)
+    {
+        if (queryParams == null || queryParams.Count == 0)
+            return endpoint;
+
+        var query = HttpUtility.ParseQueryString(string.Empty);
+        foreach (var param in queryParams)
+        {
+            query[param.Key] = param.Value;
+        }
+
+        return $"{endpoint}?{query}";
+    }
+
+    private async Task<Result<T>> GetAsync<T>(string endpoint)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync(endpoint);
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
                 return new Result<T>
                 {
-                    Success = true,
-                    Response = data,
+                    Success = false,
+                    ErrorMessage = $"Saphi API returned HTTP status code {response.StatusCode}: {content}",
                     StatusCode = response.StatusCode
                 };
             }
-            catch (JsonException ex)
-            {
-                return new Result<T>
-                {
-                    Success = false,
-                    ErrorMessage = $"Failed to parse JSON: {ex.Message}"
-                };
-            }
-            catch (Exception ex)
-            {
-                return new Result<T>
-                {
-                    Success = false,
-                    ErrorMessage = $"Request failed: {ex.Message}"
-                };
-            }
-        }
 
-        private async Task<Result<T>> GetAsync<T>(string endpoint, Dictionary<string, string> queryParams)
-        {
-            var url = BuildUrlWithQuery(endpoint, queryParams);
-            return await GetAsync<T>(url);
-        }
+            var data = JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                NumberHandling = JsonNumberHandling.AllowReadingFromString
+            });
 
-        private async Task<Result<T>> GetCachedAsync<T>(
-            string cacheKey,
-            Func<Task<Result<T>>> fetchFunc,
-            TimeSpan cacheDuration) where T : class
-        {
-            return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+            return new Result<T>
             {
-                entry.AbsoluteExpirationRelativeToNow = cacheDuration;
-                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
-                return await fetchFunc();
-            }) ?? new Result<T>
-            {
-                Success = false,
-                ErrorMessage = "Cache returned null"
+                Success = true,
+                Response = data,
+                StatusCode = response.StatusCode
             };
         }
+        catch (JsonException ex)
+        {
+            return new Result<T>
+            {
+                Success = false,
+                ErrorMessage = $"Failed to parse JSON: {ex.Message}"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new Result<T>
+            {
+                Success = false,
+                ErrorMessage = $"Request failed: {ex.Message}"
+            };
+        }
+    }
 
-        public async Task<Result<GetCustomTracksResponse>> GetCustomTracksAsync(TimeSpan? cacheDuration = null) =>
-            await GetCachedAsync(
-                "api:custom_tracks",
-                () => GetAsync<GetCustomTracksResponse>(Endpoint.GetCustomTracks),
-                cacheDuration ?? DefaultCacheDuration.CustomTrack
-            );
+    private async Task<Result<T>> GetAsync<T>(string endpoint, Dictionary<string, string> queryParams)
+    {
+        var url = BuildUrlWithQuery(endpoint, queryParams);
+        return await GetAsync<T>(url);
+    }
 
-        public async Task<Result<GetPlayerPBsResponse>> GetPlayerPBsAsync(string playerId, TimeSpan? cacheDuration = null) =>
-            await GetCachedAsync(
-                $"api:player_pbs:{playerId}",
-                () => GetAsync<GetPlayerPBsResponse>(Endpoint.GetPlayerPBs, new Dictionary<string, string>
-                {
-                    { "player_id", playerId }
-                }),
-                cacheDuration ?? DefaultCacheDuration.PlayerPB
-            );
-
-        public async Task<Result<GetTrackLeaderboardResponse>> GetTrackLeaderboardAsync(string trackId, string categoryId, TimeSpan? cacheDuration = null) =>
-            await GetCachedAsync(
-                $"api:track_leaderboard:{trackId}:{categoryId}",
-                () => GetAsync<GetTrackLeaderboardResponse>(Endpoint.GetTrackLeaderboard, new Dictionary<string, string>
-                {
-                    { "id", trackId },
-                    { "type", categoryId }
-                }),
-                cacheDuration ?? DefaultCacheDuration.Leaderboard
-            );
-
-        public async Task<Result<GetUserProfileResponse>> GetUserProfileAsync(string userId, TimeSpan? cacheDuration = null) =>
-            await GetCachedAsync(
-                $"api:user_profile:{userId}",
-                () => GetAsync<GetUserProfileResponse>(Endpoint.GetUserProfile, new Dictionary<string, string>
-                {
-                    { "user_id", userId }
-                }),
-                cacheDuration ?? DefaultCacheDuration.Player
-            );
-
-        public async Task<Result<GetCountriesResponse>> GetCountriesAsync(TimeSpan? cacheDuration = null) =>
-            await GetCachedAsync(
-                "api:countries",
-                () => GetAsync<GetCountriesResponse>(Endpoint.GetCountries),
-                cacheDuration ?? DefaultCacheDuration.Country
-            );
-
-        public async Task<Result<GetCharactersResponse>> GetCharactersAsync(TimeSpan? cacheDuration = null) =>
-            await GetCachedAsync(
-                "api:characters",
-                () => GetAsync<GetCharactersResponse>(Endpoint.GetCharacters),
-                cacheDuration ?? DefaultCacheDuration.Character
-            );
-
-        public async Task<Result<GetEngineTypesResponse>> GetEngineTypesAsync(TimeSpan? cacheDuration = null) =>
-            await GetCachedAsync(
-                "api:engine_types",
-                () => GetAsync<GetEngineTypesResponse>(Endpoint.GetEngineTypes),
-                cacheDuration ?? DefaultCacheDuration.Engine
-            );
-
-        public async Task<Result<GetCategoriesResponse>> GetCategoriesAsync(TimeSpan? cacheDuration = null) =>
-            await GetCachedAsync(
-                "api:categories",
-                () => GetAsync<GetCategoriesResponse>(Endpoint.GetCategories),
-                cacheDuration ?? DefaultCacheDuration.Category
-            );
+    private async Task<Result<T>> GetCachedAsync<T>(
+        string cacheKey,
+        Func<Task<Result<T>>> fetchFunc,
+        TimeSpan cacheDuration) where T : class
+    {
+        return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = cacheDuration;
+            entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
+            return await fetchFunc();
+        }) ?? new Result<T>
+        {
+            Success = false,
+            ErrorMessage = "Cache returned null"
+        };
     }
 }

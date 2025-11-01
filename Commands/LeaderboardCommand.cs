@@ -7,85 +7,84 @@ using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
 using Saphira.Util.Game;
 
-namespace Saphira.Commands
+namespace Saphira.Commands;
+
+[RequireTextChannel]
+[RequireCommandAllowedChannel]
+public class LeaderboardCommand(CachedClient client, Configuration configuration) : InteractionModuleBase<SocketInteractionContext>
 {
-    [RequireTextChannel]
-    [RequireCommandAllowedChannel]
-    public class LeaderboardCommand(CachedClient client, Configuration configuration) : InteractionModuleBase<SocketInteractionContext>
+    [SlashCommand("leaderboard", "Get the leaderboard for a single track (limited to 20 players)")]
+    public async Task HandleCommand(
+        [Autocomplete(typeof(CustomTrackAutocompleteHandler))] string customTrack,
+        [Autocomplete(typeof(CategoryAutocompleteHandler))] string category
+        )
     {
-        [SlashCommand("leaderboard", "Get the leaderboard for a single track (limited to 20 players)")]
-        public async Task HandleCommand(
-            [Autocomplete(typeof(CustomTrackAutocompleteHandler))] string customTrack,
-            [Autocomplete(typeof(CategoryAutocompleteHandler))] string category
-            )
+        var result = await client.GetTrackLeaderboardAsync(customTrack, category);
+
+        if (!result.Success || result.Response == null)
         {
-            var result = await client.GetTrackLeaderboardAsync(customTrack, category);
-
-            if (!result.Success || result.Response == null)
-            {
-                var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve leaderboard: {result.ErrorMessage ?? "Unknown error"}");
-                await RespondAsync(embed: errorAlert.Build());
-                return;
-            }
-
-            var customTrackEntity = await FindCustomTrack(customTrack);
-            var categoryEntity = await FindCategory(category);
-
-            var embed = new EmbedBuilder();
-            embed.WithAuthor($"Top {configuration.MaxLeaderboardEntries} {categoryEntity?.Name ?? "Unknown"} times on {customTrackEntity?.Name ?? "Unknown"}");
-
-            AddEmbedField(embed, ":trophy:", "Placement", GetPlacements(result.Response.Data));
-            AddEmbedField(embed, ":bust_in_silhouette:", "Player", GetPlayers(result.Response.Data));
-            AddEmbedField(embed, ":stopwatch:", "Time", GetTimes(result.Response.Data));
-
-            await RespondAsync(embed: embed.Build());
+            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve leaderboard: {result.ErrorMessage ?? "Unknown error"}");
+            await RespondAsync(embed: errorAlert.Build());
+            return;
         }
 
-        private void AddEmbedField(EmbedBuilder embed, string emote, string title, List<string> content)
+        var customTrackEntity = await FindCustomTrack(customTrack);
+        var categoryEntity = await FindCategory(category);
+
+        var embed = new EmbedBuilder();
+        embed.WithAuthor($"Top {configuration.MaxLeaderboardEntries} {categoryEntity?.Name ?? "Unknown"} times on {customTrackEntity?.Name ?? "Unknown"}");
+
+        AddEmbedField(embed, ":trophy:", "Placement", GetPlacements(result.Response.Data));
+        AddEmbedField(embed, ":bust_in_silhouette:", "Player", GetPlayers(result.Response.Data));
+        AddEmbedField(embed, ":stopwatch:", "Time", GetTimes(result.Response.Data));
+
+        await RespondAsync(embed: embed.Build());
+    }
+
+    private void AddEmbedField(EmbedBuilder embed, string emote, string title, List<string> content)
+    {
+        embed.AddField(new EmbedFieldBuilder()
+            .WithName($"{emote} {MessageTextFormat.Bold(title)}")
+            .WithValue(string.Join("\n", content))
+            .WithIsInline(true));
+    }
+
+    private List<string> GetPlacements(List<TrackLeaderboardEntry> entries) =>
+        entries.Take(configuration.MaxLeaderboardEntries)
+               .Select(e => RankFormatter.ToMedalFormat(e.Rank))
+               .ToList();
+
+    private List<string> GetPlayers(List<TrackLeaderboardEntry> entries) =>
+        entries.Take(configuration.MaxLeaderboardEntries)
+               .Select(e => MessageTextFormat.Bold(e.Holder))
+               .ToList();
+
+    private List<string> GetTimes(List<TrackLeaderboardEntry> entries) =>
+        entries.Take(configuration.MaxLeaderboardEntries)
+               .Select(e => ScoreFormatter.AsIngameTime(e.MinScore))
+               .ToList();
+
+    private async Task<CustomTrack?> FindCustomTrack(string trackId)
+    {
+        var result = await client.GetCustomTracksAsync();
+
+        if (!result.Success || result.Response == null)
         {
-            embed.AddField(new EmbedFieldBuilder()
-                .WithName($"{emote} {MessageTextFormat.Bold(title)}")
-                .WithValue(string.Join("\n", content))
-                .WithIsInline(true));
+            return null;
         }
 
-        private List<string> GetPlacements(List<TrackLeaderboardEntry> entries) =>
-            entries.Take(configuration.MaxLeaderboardEntries)
-                   .Select(e => RankFormatter.ToMedalFormat(e.Rank))
-                   .ToList();
+        return result.Response.Data.FirstOrDefault(customTrack => customTrack.Id == trackId);
+    }
 
-        private List<string> GetPlayers(List<TrackLeaderboardEntry> entries) =>
-            entries.Take(configuration.MaxLeaderboardEntries)
-                   .Select(e => MessageTextFormat.Bold(e.Holder))
-                   .ToList();
+    private async Task<Category?> FindCategory(string categoryId)
+    {
+        var result = await client.GetCategoriesAsync();
 
-        private List<string> GetTimes(List<TrackLeaderboardEntry> entries) =>
-            entries.Take(configuration.MaxLeaderboardEntries)
-                   .Select(e => ScoreFormatter.AsIngameTime(e.MinScore))
-                   .ToList();
-
-        private async Task<CustomTrack?> FindCustomTrack(string trackId)
+        if (!result.Success || result.Response == null)
         {
-            var result = await client.GetCustomTracksAsync();
-
-            if (!result.Success || result.Response == null)
-            {
-                return null;
-            }
-
-            return result.Response.Data.FirstOrDefault(customTrack => customTrack.Id == trackId);
+            return null;
         }
 
-        private async Task<Category?> FindCategory(string categoryId)
-        {
-            var result = await client.GetCategoriesAsync();
-
-            if (!result.Success || result.Response == null)
-            {
-                return null;
-            }
-
-            return result.Response.Data.FirstOrDefault(category => category.Id == categoryId);
-        }
+        return result.Response.Data.FirstOrDefault(category => category.Id == categoryId);
     }
 }

@@ -1,23 +1,21 @@
-﻿using Discord;
-using Microsoft.Extensions.Caching.Memory;
+using Discord;
 using Saphira.Saphi.Api;
 using Saphira.Util.Logging;
 
-namespace Saphira.Commands.Autocompletion.ValueProvider
+namespace Saphira.Commands.Autocompletion.ValueProvider;
+
+public class CustomTrackValueProvider(CachedClient client, IMessageLogger logger) : IValueProvider
 {
-    public class CustomTrackValueProvider(CachedClient client, IMessageLogger logger, IMemoryCache cache) : IValueProvider
+    public async Task<List<Value>> GetValuesAsync()
     {
-        public async Task<List<Value>> GetValuesAsync()
+        var result = await client.GetCustomTracksAsync();
+
+        if (!result.Success || result.Response == null)
         {
-            var result = await client.GetCustomTracksAsync();
-
-            if (!result.Success || result.Response == null)
-            {
-                logger.Log(LogSeverity.Error, "Saphira", $"Failed to fetch custom tracks: {result.ErrorMessage ?? "Unknown error"}");
-                return [];
-            }
-
-            return [.. result.Response.Data.Select(ct => new Value(int.Parse(ct.Id), ct.Name))];
+            logger.Log(LogSeverity.Error, "Saphira", $"Failed to fetch custom tracks: {result.ErrorMessage ?? "Unknown error"}");
+            return [];
         }
+
+        return [.. result.Response.Data.Select(ct => new Value(int.Parse(ct.Id), ct.Name))];
     }
 }

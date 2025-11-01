@@ -1,13 +1,12 @@
-﻿namespace Saphira.Commands.Autocompletion.ValueProvider
-{
-    public class Value(int id, string name)
-    {
-        public readonly int Id = id;
-        public readonly string Name = name;
-    }
+namespace Saphira.Commands.Autocompletion.ValueProvider;
 
-    public interface IValueProvider
-    {
-        public Task<List<Value>> GetValuesAsync();
-    }
+public class Value(int id, string name)
+{
+    public readonly int Id = id;
+    public readonly string Name = name;
+}
+
+public interface IValueProvider
+{
+    public Task<List<Value>> GetValuesAsync();
 }

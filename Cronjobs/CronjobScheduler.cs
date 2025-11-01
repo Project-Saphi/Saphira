@@ -1,56 +1,55 @@
-﻿using Discord;
+using Discord;
 using Saphira.Util.Logging;
 
-namespace Saphira.Cronjobs
+namespace Saphira.Cronjobs;
+
+public class CronjobScheduler(IMessageLogger logger)
 {
-    public class CronjobScheduler(IMessageLogger logger)
+    private readonly List<ICronjob> _cronjobs = [];
+    private readonly List<Timer> _timers = [];
+
+    public void RegisterCronjob(ICronjob cronjob)
     {
-        private List<ICronjob> _cronjobs = new();
-        private List<Timer> _timers = new();
+        if (!_cronjobs.Contains(cronjob))
+            _cronjobs.Add(cronjob);
+    }
 
-        public void RegisterCronjob(ICronjob cronjob)
+    public void UnregisterCronjob(ICronjob cronjob) => _cronjobs.Remove(cronjob);
+
+    public void ScheduleCronjobs()
+    {
+        foreach (var cronjob in _cronjobs)
         {
-            if (!_cronjobs.Contains(cronjob))
-                _cronjobs.Add(cronjob);
+            var timer = new Timer(
+                state => ExecuteCronjob(cronjob),
+                null,
+                cronjob.GetStartDelay(),
+                cronjob.GetInterval());
+
+            _timers.Add(timer);
         }
+    }
 
-        public void UnregisterCronjob(ICronjob cronjob) => _cronjobs.Remove(cronjob);
-
-        public void ScheduleCronjobs()
+    private void ExecuteCronjob(ICronjob cronjob)
+    {
+        _ = Task.Run(async () =>
         {
-            foreach (var cronjob in _cronjobs)
+            try
             {
-                var timer = new Timer(
-                    state => ExecuteCronjob(cronjob),
-                    null,
-                    cronjob.GetStartDelay(),
-                    cronjob.GetInterval());
-
-                _timers.Add(timer);
+                await cronjob.ExecuteAsync();
             }
-        }
-
-        private void ExecuteCronjob(ICronjob cronjob)
-        {
-            _ = Task.Run(async () =>
+            catch (Exception ex)
             {
-                try
-                {
-                    await cronjob.ExecuteAsync();
-                }
-                catch (Exception ex)
-                {
-                    logger.Log(LogSeverity.Error, "Saphira", $"Cronjob {cronjob.ToString()} failed: {ex.Message}");
-                }
-            });
-        }
-
-        public void Dispose()
-        {
-            foreach (var timer in _timers)
-            {
-                timer.Dispose();
+                logger.Log(LogSeverity.Error, "Saphira", $"Cronjob {cronjob.ToString()} failed: {ex.Message}");
             }
+        });
+    }
+
+    public void Dispose()
+    {
+        foreach (var timer in _timers)
+        {
+            timer.Dispose();
         }
     }
 }

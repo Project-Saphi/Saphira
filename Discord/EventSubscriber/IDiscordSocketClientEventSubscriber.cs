@@ -1,9 +1,8 @@
-﻿namespace Saphira.Discord.EventSubscriber
-{
-    public interface IDiscordSocketClientEventSubscriber
-    {
-        public void Register();
+﻿namespace Saphira.Discord.EventSubscriber;
 
-        public void Unregister();
-    }
+public interface IDiscordSocketClientEventSubscriber
+{
+    public void Register();
+
+    public void Unregister();
 }

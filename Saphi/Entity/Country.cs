@@ -1,13 +1,12 @@
 using System.Text.Json.Serialization;
 
-namespace Saphira.Saphi.Entity
-{
-    public class Country
-    {
-        [JsonPropertyName("id")]
-        public string Id { get; set; }
+namespace Saphira.Saphi.Entity;
 
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-    }
+public class Country
+{
+    [JsonPropertyName("id")]
+    public string Id { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
 }

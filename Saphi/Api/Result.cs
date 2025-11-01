@@ -1,12 +1,11 @@
-﻿using System.Net;
+using System.Net;
 
-namespace Saphira.Saphi.Api
+namespace Saphira.Saphi.Api;
+
+public class Result<T>
 {
-    public class Result<T>
-    {
-        public bool Success { get; set; }
-        public T? Response { get; init; }
-        public string? ErrorMessage { get; set; }
-        public HttpStatusCode? StatusCode { get; set; }
-    }
+    public bool Success { get; set; }
+    public T? Response { get; init; }
+    public string? ErrorMessage { get; set; }
+    public HttpStatusCode? StatusCode { get; set; }
 }

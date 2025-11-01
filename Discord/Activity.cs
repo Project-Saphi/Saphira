@@ -1,12 +1,11 @@
-﻿using Discord;
+using Discord;
 
-namespace Saphira.Discord
+namespace Saphira.Discord;
+
+public class Activity
 {
-    public class Activity
+    public static bool IsCTRStream(IActivity activity)
     {
-        public static bool IsCTRStream(IActivity activity)
-        {
-            return activity.Type == ActivityType.Streaming && activity.Name.Contains("crash team racing", StringComparison.CurrentCultureIgnoreCase);
-        }
+        return activity.Type == ActivityType.Streaming && activity.Name.Contains("crash team racing", StringComparison.CurrentCultureIgnoreCase);
     }
 }
