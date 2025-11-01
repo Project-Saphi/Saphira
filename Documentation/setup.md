@@ -67,10 +67,7 @@ Saphira needs a number of different roles to work properly:
 Saphira requires the following Discord bot permissions to function properly:
 
 - **Manage Messages** - Required for the `/purge` command to delete messages
-- **Manage Roles** - Required for the `/verify` command to assign roles to users
-- **Kick Members** - Required for the `/kick` command
-- **Ban Members** - Required for the `/ban` command
-- **Moderate Members** - Required for the `/timeout` command to timeout users
+- **Manage Roles** - Required for the `/verify` and `/toggle` commands to assign roles to users
 - **Add Reactions** - Required for the `/react` command to add reactions to messages
 - **Send Messages** - Required for posting messages via `/post` command and general bot responses
 - **Embed Links** - Required for sending rich embed responses
