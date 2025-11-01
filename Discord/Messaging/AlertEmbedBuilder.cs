@@ -57,17 +57,27 @@ namespace Saphira.Discord.Messaging
             AddField(fieldBuilder);
         }
 
-        protected string GetEmoteString(AlertEmote emote)
+        private static readonly Dictionary<AlertEmote, string> EmoteMap = new()
         {
-            var emotes = new[] { "📝", "ℹ️", "✅", "⚠️", "⛔" };
-            return emotes[(int)emote];
-        }
+            { AlertEmote.Primary, "📝" },
+            { AlertEmote.Info, "ℹ️" },
+            { AlertEmote.Success, "✅" },
+            { AlertEmote.Warning, "⚠️" },
+            { AlertEmote.Error, "⛔" }
+        };
 
-        protected string GetTitleString(AlertTitle title)
+        private static readonly Dictionary<AlertTitle, string> TitleMap = new()
         {
-            var titles = new[] { "Message", "Info", "Success", "Warning", "Error" };
-            return titles[(int)title];
-        }
+            { AlertTitle.Primary, "Message" },
+            { AlertTitle.Info, "Info" },
+            { AlertTitle.Success, "Success" },
+            { AlertTitle.Warning, "Warning" },
+            { AlertTitle.Error, "Error" }
+        };
+
+        protected string GetEmoteString(AlertEmote emote) => EmoteMap[emote];
+
+        protected string GetTitleString(AlertTitle title) => TitleMap[title];
     }
 
     public class InfoAlertEmbedBuilder : AlertEmbedBuilder

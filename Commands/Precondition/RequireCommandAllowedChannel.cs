@@ -14,9 +14,7 @@ namespace Saphira.Commands.Precondition
             IServiceProvider services
             )
         {
-            var textChannel = context.Channel as SocketTextChannel;
-
-            if (textChannel == null)
+            if (context.Channel is not SocketTextChannel textChannel)
             {
                 return Task.FromResult(PreconditionResult.FromError("The channel does not exist."));
             }

@@ -10,15 +10,8 @@ namespace Saphira.Commands
 {
     [RequireTextChannel]
     [RequireCommandAllowedChannel]
-    public class ToggleCommand : InteractionModuleBase<SocketInteractionContext>
+    public class ToggleCommand(GuildRoleManager guildRoleManager) : InteractionModuleBase<SocketInteractionContext>
     {
-        private readonly GuildRoleManager _guildRoleManager;
-
-        public ToggleCommand(GuildRoleManager guildRoleManager)
-        {
-            _guildRoleManager = guildRoleManager;
-        }
-
         [CommandContextType(InteractionContextType.Guild)]
         [SlashCommand("toggle", "Toggle one of your roles off or on")]
         public async Task HandleCommand(
@@ -27,7 +20,7 @@ namespace Saphira.Commands
         {
             await DeferAsync();
 
-            var toggleableRoles = _guildRoleManager.GetToggleableRoles();
+            var toggleableRoles = guildRoleManager.GetToggleableRoles();
             var toggledRole = toggleableRoles[role];
 
             if (Context.User is not SocketGuildUser guildUser)
@@ -46,20 +39,17 @@ namespace Saphira.Commands
                 return;
             }
 
-            if (guildUser.Roles.Contains(guildRole))
-            {
-                await guildUser.RemoveRoleAsync(guildRole);
+            var hasRole = guildUser.Roles.Contains(guildRole);
+            await (hasRole
+                ? guildUser.RemoveRoleAsync(guildRole)
+                : guildUser.AddRoleAsync(guildRole));
 
-                var successAlert = new SuccessAlertEmbedBuilder($"Removed role {MessageTextFormat.Bold(guildRole.Name)} from you.");
-                await FollowupAsync(embed: successAlert.Build());
-            }
-            else
-            {
-                await guildUser.AddRoleAsync(guildRole);
+            var action = hasRole ? "Removed" : "Added";
+            var preposition = hasRole ? "from" : "to";
+            var message = $"{action} role {MessageTextFormat.Bold(guildRole.Name)} {preposition} you.";
 
-                var successAlert = new SuccessAlertEmbedBuilder($"Added role {MessageTextFormat.Bold(guildRole.Name)} to you.");
-                await FollowupAsync(embed: successAlert.Build());
-            }
+            var successAlert = new SuccessAlertEmbedBuilder(message);
+            await FollowupAsync(embed: successAlert.Build());
         }
     }
 }

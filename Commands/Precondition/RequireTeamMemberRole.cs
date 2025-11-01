@@ -13,9 +13,7 @@ namespace Saphira.Commands.Precondition
             IServiceProvider services
             )
         {
-            var socketGuildUser = context.User as SocketGuildUser;
-
-            if (socketGuildUser == null)
+            if (context.User is not SocketGuildUser socketGuildUser)
             {
                 return Task.FromResult(PreconditionResult.FromError("User not found."));
             }

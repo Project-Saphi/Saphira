@@ -52,8 +52,8 @@ namespace Saphira.Commands
 
             var profileFields = new[]
             {
-                $"{MessageTextFormat.Bold("Joined")}: {guildUser?.JoinedAt.ToString().Substring(0, 10)}",
-                $"{MessageTextFormat.Bold("Registered")}: {user.CreatedAt.ToString().Substring(0, 10)}"
+                $"{MessageTextFormat.Bold("Joined")}: {guildUser?.JoinedAt:yyyy-MM-dd}",
+                $"{MessageTextFormat.Bold("Registered")}: {user.CreatedAt:yyyy-MM-dd}"
             };
 
             profileField.WithValue(String.Join("\n", profileFields));

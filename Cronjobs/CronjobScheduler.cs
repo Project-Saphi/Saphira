@@ -3,37 +3,18 @@ using Saphira.Util.Logging;
 
 namespace Saphira.Cronjobs
 {
-    public class CronjobScheduler
+    public class CronjobScheduler(IMessageLogger logger)
     {
-        private readonly IMessageLogger _logger;
-
-        private List<ICronjob> _cronjobs = new List<ICronjob>();
-        private List<Timer> _timers = new List<Timer>();
-
-        public CronjobScheduler(IMessageLogger logger)
-        {
-            _logger = logger;
-        }
+        private List<ICronjob> _cronjobs = new();
+        private List<Timer> _timers = new();
 
         public void RegisterCronjob(ICronjob cronjob)
         {
-            if (_cronjobs.Any(c => c == cronjob))
-            {
-                return;
-            }
-
-            _cronjobs.Add(cronjob);
+            if (!_cronjobs.Contains(cronjob))
+                _cronjobs.Add(cronjob);
         }
 
-        public void UnregisterCronjob(ICronjob cronjob)
-        {
-            if (!_cronjobs.Any(c => c == cronjob))
-            {
-                return;
-            }
-
-            _cronjobs.Remove(cronjob);
-        }
+        public void UnregisterCronjob(ICronjob cronjob) => _cronjobs.Remove(cronjob);
 
         public void ScheduleCronjobs()
         {
@@ -59,7 +40,7 @@ namespace Saphira.Cronjobs
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log(LogSeverity.Error, "Saphira", $"Cronjob {cronjob.ToString()} failed: {ex.Message}");
+                    logger.Log(LogSeverity.Error, "Saphira", $"Cronjob {cronjob.ToString()} failed: {ex.Message}");
                 }
             });
         }

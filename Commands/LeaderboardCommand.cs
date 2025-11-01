@@ -11,24 +11,15 @@ namespace Saphira.Commands
 {
     [RequireTextChannel]
     [RequireCommandAllowedChannel]
-    public class LeaderboardCommand : InteractionModuleBase<SocketInteractionContext>
+    public class LeaderboardCommand(CachedClient client, Configuration configuration) : InteractionModuleBase<SocketInteractionContext>
     {
-        private readonly CachedClient _client;
-        private readonly Configuration _configuration;
-
-        public LeaderboardCommand(CachedClient client, Configuration configuration)
-        {
-            _client = client;
-            _configuration = configuration;
-        }
-
         [SlashCommand("leaderboard", "Get the leaderboard for a single track (limited to 20 players)")]
         public async Task HandleCommand(
             [Autocomplete(typeof(CustomTrackAutocompleteHandler))] string customTrack,
             [Autocomplete(typeof(CategoryAutocompleteHandler))] string category
             )
         {
-            var result = await _client.GetTrackLeaderboardAsync(customTrack, category);
+            var result = await client.GetTrackLeaderboardAsync(customTrack, category);
 
             if (!result.Success || result.Response == null)
             {
@@ -41,84 +32,41 @@ namespace Saphira.Commands
             var categoryEntity = await FindCategory(category);
 
             var embed = new EmbedBuilder();
-            embed.WithAuthor($"Top {_configuration.MaxLeaderboardEntries} {categoryEntity?.Name ?? "Unknown"} times on {customTrackEntity?.Name ?? "Unknown"}");
+            embed.WithAuthor($"Top {configuration.MaxLeaderboardEntries} {categoryEntity?.Name ?? "Unknown"} times on {customTrackEntity?.Name ?? "Unknown"}");
 
-            var placementsField = new EmbedFieldBuilder();
-            placementsField.WithName($":trophy: {MessageTextFormat.Bold("Placement")}");
-            placementsField.WithValue(String.Join("\n", GetPlacements(result.Response.Data)));
-            placementsField.WithIsInline(true);
-
-            var playersField = new EmbedFieldBuilder();
-            playersField.WithName($":bust_in_silhouette: {MessageTextFormat.Bold("Player")}");
-            playersField.WithValue(String.Join("\n", GetPlayers(result.Response.Data)));
-            playersField.WithIsInline(true);
-
-            var timesField = new EmbedFieldBuilder();
-            timesField.WithName($":stopwatch: {MessageTextFormat.Bold("Time")}");
-            timesField.WithValue(String.Join("\n", GetTimes(result.Response.Data)));
-            timesField.WithIsInline(true);
-
-            embed.AddField(placementsField);
-            embed.AddField(playersField);
-            embed.AddField(timesField);
+            AddEmbedField(embed, ":trophy:", "Placement", GetPlacements(result.Response.Data));
+            AddEmbedField(embed, ":bust_in_silhouette:", "Player", GetPlayers(result.Response.Data));
+            AddEmbedField(embed, ":stopwatch:", "Time", GetTimes(result.Response.Data));
 
             await RespondAsync(embed: embed.Build());
         }
 
-        private List<string> GetPlacements(List<TrackLeaderboardEntry> leaderboardEntries)
+        private void AddEmbedField(EmbedBuilder embed, string emote, string title, List<string> content)
         {
-            var placements = new List<string>();
-
-            foreach (var entry in leaderboardEntries)
-            {
-                placements.Add($"{RankFormatter.ToMedalFormat(entry.Rank)}");
-
-                if (entry.Rank == _configuration.MaxLeaderboardEntries)
-                {
-                    break;
-                }
-            }
-
-            return placements;
+            embed.AddField(new EmbedFieldBuilder()
+                .WithName($"{emote} {MessageTextFormat.Bold(title)}")
+                .WithValue(string.Join("\n", content))
+                .WithIsInline(true));
         }
 
-        private List<string> GetPlayers(List<TrackLeaderboardEntry> leaderboardEntries)
-        {
-            var players = new List<string>();
+        private List<string> GetPlacements(List<TrackLeaderboardEntry> entries) =>
+            entries.Take(configuration.MaxLeaderboardEntries)
+                   .Select(e => RankFormatter.ToMedalFormat(e.Rank))
+                   .ToList();
 
-            foreach (var entry in leaderboardEntries)
-            {
-                players.Add(MessageTextFormat.Bold(entry.Holder));
+        private List<string> GetPlayers(List<TrackLeaderboardEntry> entries) =>
+            entries.Take(configuration.MaxLeaderboardEntries)
+                   .Select(e => MessageTextFormat.Bold(e.Holder))
+                   .ToList();
 
-                if (entry.Rank == _configuration.MaxLeaderboardEntries)
-                {
-                    break;
-                }
-            }
-
-            return players;
-        }
-
-        private List<string> GetTimes(List<TrackLeaderboardEntry> leaderboardEntries)
-        {
-            var times = new List<string>();
-
-            foreach (var entry in leaderboardEntries)
-            {
-                times.Add(ScoreFormatter.AsIngameTime(entry.MinScore));
-
-                if (entry.Rank == _configuration.MaxLeaderboardEntries)
-                {
-                    break;
-                }
-            }
-
-            return times;
-        }
+        private List<string> GetTimes(List<TrackLeaderboardEntry> entries) =>
+            entries.Take(configuration.MaxLeaderboardEntries)
+                   .Select(e => ScoreFormatter.AsIngameTime(e.MinScore))
+                   .ToList();
 
         private async Task<CustomTrack?> FindCustomTrack(string trackId)
         {
-            var result = await _client.GetCustomTracksAsync();
+            var result = await client.GetCustomTracksAsync();
 
             if (!result.Success || result.Response == null)
             {
@@ -130,7 +78,7 @@ namespace Saphira.Commands
 
         private async Task<Category?> FindCategory(string categoryId)
         {
-            var result = await _client.GetCategoriesAsync();
+            var result = await client.GetCategoriesAsync();
 
             if (!result.Success || result.Response == null)
             {

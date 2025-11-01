@@ -4,12 +4,12 @@
     {
         public List<string> GetToggleableRoles()
         {
-            return new List<string>()
-            {
-                GuildRole.SaphiUpdatesRole,
-                GuildRole.ServerUpdatesRole,
-                GuildRole.WRFeedRole
-            };
+            return
+        [
+            GuildRole.SaphiUpdatesRole,
+            GuildRole.ServerUpdatesRole,
+            GuildRole.WRFeedRole
+        ];
         }
     }
 }

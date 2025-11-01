@@ -9,14 +9,9 @@ namespace Saphira.Commands
     [RequireTextChannel]
     [RequireCommandAllowedChannel]
     [RequireTeamMemberRole]
-    public class ClearCacheCommand : InteractionModuleBase<SocketInteractionContext>
+    public class ClearCacheCommand(CacheInvalidationService cacheInvalidationService) : InteractionModuleBase<SocketInteractionContext>
     {
-        private readonly CacheInvalidationService _cacheInvalidationService;
-
-        public ClearCacheCommand(CacheInvalidationService cacheInvalidationService)
-        {
-            _cacheInvalidationService = cacheInvalidationService;
-        }
+        private readonly CacheInvalidationService _cacheInvalidationService = cacheInvalidationService;
 
         [CommandContextType(InteractionContextType.Guild)]
         [SlashCommand("clearcache", "Invalidate all cached data")]

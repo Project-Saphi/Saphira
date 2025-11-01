@@ -4,24 +4,15 @@ using Saphira.Extensions.DependencyInjection;
 namespace Saphira.Discord.EventSubscriber
 {
     [AutoRegister]
-    public class UserJoinedEventSubscriber : IDiscordSocketClientEventSubscriber
+    public class UserJoinedEventSubscriber(DiscordSocketClient client, Configuration configuration) : IDiscordSocketClientEventSubscriber
     {
-        private readonly DiscordSocketClient _client;
-        private readonly Configuration _configuration;
-
         private bool _isRegistered = false;
-
-        public UserJoinedEventSubscriber(DiscordSocketClient client, Configuration configuration)
-        {
-            _client = client;
-            _configuration = configuration;
-        }
 
         public void Register()
         {
             if (_isRegistered) return;
 
-            _client.UserJoined += HandleUserJoinedAsync;
+            client.UserJoined += HandleUserJoinedAsync;
             _isRegistered = true;
         }
 
@@ -29,7 +20,7 @@ namespace Saphira.Discord.EventSubscriber
         {
             if (!_isRegistered) return;
 
-            _client.UserJoined -= HandleUserJoinedAsync;
+            client.UserJoined -= HandleUserJoinedAsync;
             _isRegistered = false;
         }
 
@@ -39,7 +30,7 @@ namespace Saphira.Discord.EventSubscriber
 
             if (guild.Users.Count % 100 == 0)
             {
-                var mainChannel = guild.Channels.FirstOrDefault(channel => channel.Name == _configuration.MainChannel);
+                var mainChannel = guild.Channels.FirstOrDefault(channel => channel.Name == configuration.MainChannel);
                 if (mainChannel is not SocketTextChannel textChannel)
                 {
                     return;

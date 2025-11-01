@@ -103,143 +103,87 @@ namespace Saphira.Saphi.Api
             return await GetAsync<T>(url);
         }
 
-        public async Task<Result<GetCustomTracksResponse>> GetCustomTracksAsync(TimeSpan? cacheDuration = null)
+        private async Task<Result<T>> GetCachedAsync<T>(
+            string cacheKey,
+            Func<Task<Result<T>>> fetchFunc,
+            TimeSpan cacheDuration) where T : class
         {
-            return await _cache.GetOrCreateAsync("api:custom_tracks", async entry =>
+            return await _cache.GetOrCreateAsync(cacheKey, async entry =>
             {
-                entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.CustomTrack;
+                entry.AbsoluteExpirationRelativeToNow = cacheDuration;
                 entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
-
-                return await GetAsync<GetCustomTracksResponse>(Endpoint.GetCustomTracks);
-            }) ?? new Result<GetCustomTracksResponse>
+                return await fetchFunc();
+            }) ?? new Result<T>
             {
                 Success = false,
                 ErrorMessage = "Cache returned null"
             };
         }
 
-        public async Task<Result<GetPlayerPBsResponse>> GetPlayerPBsAsync(string playerId, TimeSpan? cacheDuration = null)
-        {
-            var cacheKey = $"api:player_pbs:{playerId}";
-            return await _cache.GetOrCreateAsync(cacheKey, async entry =>
-            {
-                entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.PlayerPB;
-                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
+        public async Task<Result<GetCustomTracksResponse>> GetCustomTracksAsync(TimeSpan? cacheDuration = null) =>
+            await GetCachedAsync(
+                "api:custom_tracks",
+                () => GetAsync<GetCustomTracksResponse>(Endpoint.GetCustomTracks),
+                cacheDuration ?? DefaultCacheDuration.CustomTrack
+            );
 
-                var queryParams = new Dictionary<string, string>
+        public async Task<Result<GetPlayerPBsResponse>> GetPlayerPBsAsync(string playerId, TimeSpan? cacheDuration = null) =>
+            await GetCachedAsync(
+                $"api:player_pbs:{playerId}",
+                () => GetAsync<GetPlayerPBsResponse>(Endpoint.GetPlayerPBs, new Dictionary<string, string>
                 {
                     { "player_id", playerId }
-                };
+                }),
+                cacheDuration ?? DefaultCacheDuration.PlayerPB
+            );
 
-                return await GetAsync<GetPlayerPBsResponse>(Endpoint.GetPlayerPBs, queryParams);
-            }) ?? new Result<GetPlayerPBsResponse>
-            {
-                Success = false,
-                ErrorMessage = "Cache returned null"
-            };
-        }
-
-        public async Task<Result<GetTrackLeaderboardResponse>> GetTrackLeaderboardAsync(string trackId, string categoryId, TimeSpan? cacheDuration = null)
-        {
-            var cacheKey = $"api:track_leaderboard:{trackId}:{categoryId}";
-            return await _cache.GetOrCreateAsync(cacheKey, async entry =>
-            {
-                entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.Leaderboard;
-                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
-
-                var queryParams = new Dictionary<string, string>
+        public async Task<Result<GetTrackLeaderboardResponse>> GetTrackLeaderboardAsync(string trackId, string categoryId, TimeSpan? cacheDuration = null) =>
+            await GetCachedAsync(
+                $"api:track_leaderboard:{trackId}:{categoryId}",
+                () => GetAsync<GetTrackLeaderboardResponse>(Endpoint.GetTrackLeaderboard, new Dictionary<string, string>
                 {
                     { "id", trackId },
                     { "type", categoryId }
-                };
+                }),
+                cacheDuration ?? DefaultCacheDuration.Leaderboard
+            );
 
-                return await GetAsync<GetTrackLeaderboardResponse>(Endpoint.GetTrackLeaderboard, queryParams);
-            }) ?? new Result<GetTrackLeaderboardResponse>
-            {
-                Success = false,
-                ErrorMessage = "Cache returned null"
-            };
-        }
-
-        public async Task<Result<GetUserProfileResponse>> GetUserProfileAsync(string userId, TimeSpan? cacheDuration = null)
-        {
-            var cacheKey = $"api:user_profile:{userId}";
-            return await _cache.GetOrCreateAsync(cacheKey, async entry =>
-            {
-                entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.Player;
-                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
-
-                var queryParams = new Dictionary<string, string>
+        public async Task<Result<GetUserProfileResponse>> GetUserProfileAsync(string userId, TimeSpan? cacheDuration = null) =>
+            await GetCachedAsync(
+                $"api:user_profile:{userId}",
+                () => GetAsync<GetUserProfileResponse>(Endpoint.GetUserProfile, new Dictionary<string, string>
                 {
                     { "user_id", userId }
-                };
+                }),
+                cacheDuration ?? DefaultCacheDuration.Player
+            );
 
-                return await GetAsync<GetUserProfileResponse>(Endpoint.GetUserProfile, queryParams);
-            }) ?? new Result<GetUserProfileResponse>
-            {
-                Success = false,
-                ErrorMessage = "Cache returned null"
-            };
-        }
+        public async Task<Result<GetCountriesResponse>> GetCountriesAsync(TimeSpan? cacheDuration = null) =>
+            await GetCachedAsync(
+                "api:countries",
+                () => GetAsync<GetCountriesResponse>(Endpoint.GetCountries),
+                cacheDuration ?? DefaultCacheDuration.Country
+            );
 
-        public async Task<Result<GetCountriesResponse>> GetCountriesAsync(TimeSpan? cacheDuration = null)
-        {
-            return await _cache.GetOrCreateAsync("api:countries", async entry =>
-            {
-                entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.Country;
-                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
+        public async Task<Result<GetCharactersResponse>> GetCharactersAsync(TimeSpan? cacheDuration = null) =>
+            await GetCachedAsync(
+                "api:characters",
+                () => GetAsync<GetCharactersResponse>(Endpoint.GetCharacters),
+                cacheDuration ?? DefaultCacheDuration.Character
+            );
 
-                return await GetAsync<GetCountriesResponse>(Endpoint.GetCountries);
-            }) ?? new Result<GetCountriesResponse>
-            {
-                Success = false,
-                ErrorMessage = "Cache returned null"
-            };
-        }
+        public async Task<Result<GetEngineTypesResponse>> GetEngineTypesAsync(TimeSpan? cacheDuration = null) =>
+            await GetCachedAsync(
+                "api:engine_types",
+                () => GetAsync<GetEngineTypesResponse>(Endpoint.GetEngineTypes),
+                cacheDuration ?? DefaultCacheDuration.Engine
+            );
 
-        public async Task<Result<GetCharactersResponse>> GetCharactersAsync(TimeSpan? cacheDuration = null)
-        {
-            return await _cache.GetOrCreateAsync("api:characters", async entry =>
-            {
-                entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.Character;
-                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
-
-                return await GetAsync<GetCharactersResponse>(Endpoint.GetCharacters);
-            }) ?? new Result<GetCharactersResponse>
-            {
-                Success = false,
-                ErrorMessage = "Cache returned null"
-            };
-        }
-
-        public async Task<Result<GetEngineTypesResponse>> GetEngineTypesAsync(TimeSpan? cacheDuration = null)
-        {
-            return await _cache.GetOrCreateAsync("api:engine_types", async entry =>
-            {
-                entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.Engine;
-                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
-
-                return await GetAsync<GetEngineTypesResponse>(Endpoint.GetEngineTypes);
-            }) ?? new Result<GetEngineTypesResponse>
-            {
-                Success = false,
-                ErrorMessage = "Cache returned null"
-            };
-        }
-
-        public async Task<Result<GetCategoriesResponse>> GetCategoriesAsync(TimeSpan? cacheDuration = null)
-        {
-            return await _cache.GetOrCreateAsync("api:categories", async entry =>
-            {
-                entry.AbsoluteExpirationRelativeToNow = cacheDuration ?? DefaultCacheDuration.Category;
-                entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
-
-                return await GetAsync<GetCategoriesResponse>(Endpoint.GetCategories);
-            }) ?? new Result<GetCategoriesResponse>
-            {
-                Success = false,
-                ErrorMessage = "Cache returned null"
-            };
-        }
+        public async Task<Result<GetCategoriesResponse>> GetCategoriesAsync(TimeSpan? cacheDuration = null) =>
+            await GetCachedAsync(
+                "api:categories",
+                () => GetAsync<GetCategoriesResponse>(Endpoint.GetCategories),
+                cacheDuration ?? DefaultCacheDuration.Category
+            );
     }
 }

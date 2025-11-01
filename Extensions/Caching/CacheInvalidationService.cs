@@ -4,8 +4,8 @@ namespace Saphira.Extensions.Caching
 {
     public class CacheInvalidationService
     {
-        private CancellationTokenSource _invalidationTokenSource = new CancellationTokenSource();
-        private readonly object _lock = new object();
+        private CancellationTokenSource _invalidationTokenSource = new();
+        private readonly Lock _lock = new();
 
         public IChangeToken GetInvalidationToken()
         {

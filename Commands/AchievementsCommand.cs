@@ -8,19 +8,12 @@ namespace Saphira.Commands
 {
     [RequireTextChannel]
     [RequireCommandAllowedChannel]
-    public class AchievementsCommand : InteractionModuleBase<SocketInteractionContext>
+    public class AchievementsCommand(CachedClient client) : InteractionModuleBase<SocketInteractionContext>
     {
-        private readonly CachedClient _client;
-
-        public AchievementsCommand(CachedClient client)
-        {
-            _client = client;
-        }
-
         [SlashCommand("achievements", "Show a player's achievements")]
         public async Task HandleCommand(string player)
         {
-            var result = await _client.GetUserProfileAsync(player);
+            var result = await client.GetUserProfileAsync(player);
 
             if (!result.Success || result.Response == null)
             {
@@ -41,9 +34,11 @@ namespace Saphira.Commands
             };
 
             var embed = new EmbedBuilder();
+            
             var field = new EmbedFieldBuilder();
             field.WithName($"{result.Response.Data.Username}'s Achievements");
             field.WithValue(String.Join("\n", content));
+
             embed.AddField(field);
 
             await RespondAsync(embed: embed.Build());

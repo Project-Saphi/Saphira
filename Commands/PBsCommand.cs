@@ -10,19 +10,12 @@ namespace Saphira.Commands
 {
     [RequireTextChannel]
     [RequireCommandAllowedChannel]
-    public class PBsCommand : InteractionModuleBase<SocketInteractionContext>
+    public class PBsCommand(CachedClient client) : InteractionModuleBase<SocketInteractionContext>
     {
-        private readonly CachedClient _client;
-
-        public PBsCommand(CachedClient client)
-        {
-            _client = client;
-        }
-
         [SlashCommand("pbs", "Get personal best times of a player")]
         public async Task HandleCommand(string player)
         {
-            var result = await _client.GetPlayerPBsAsync(player);
+            var result = await client.GetPlayerPBsAsync(player);
 
             if (!result.Success || result.Response == null)
             {
@@ -35,74 +28,28 @@ namespace Saphira.Commands
 
             var embed = new EmbedBuilder();
 
-            var customTracksField = new EmbedFieldBuilder();
-            customTracksField.WithName($":motorway: {MessageTextFormat.Bold("Track")}");
-            customTracksField.WithValue(String.Join("\n", GetCustomTracks(result.Response.Data)));
-            customTracksField.WithIsInline(true);
-
-            var timesField = new EmbedFieldBuilder();
-            timesField.WithName($":stopwatch: {MessageTextFormat.Bold("Time")}");
-            timesField.WithValue(String.Join("\n", GetTimes(result.Response.Data)));
-            timesField.WithIsInline(true);
-
-            var placementsField = new EmbedFieldBuilder();
-            placementsField.WithName($":trophy: {MessageTextFormat.Bold("Placement")}");
-            placementsField.WithValue(String.Join("\n", GetPlacements(result.Response.Data)));
-            placementsField.WithIsInline(true);
-
-            embed.AddField(customTracksField);
-            embed.AddField(timesField);
-            embed.AddField(placementsField);
+            AddEmbedField(embed, ":motorway:", "Track", GetCustomTracks(result.Response.Data));
+            AddEmbedField(embed, ":stopwatch:", "Time", GetTimes(result.Response.Data));
+            AddEmbedField(embed, ":trophy:", "Placement", GetPlacements(result.Response.Data));
 
             await RespondAsync(embed: embed.Build());
         }
 
-        private List<string> GetCustomTracks(List<PlayerPB> playerPBs)
+        private void AddEmbedField(EmbedBuilder embed, string emote, string title, List<string> content)
         {
-            var customTracks = new List<string>();
-
-            foreach (var playerPB in playerPBs)
-            {
-                customTracks.Add(MessageTextFormat.Bold(playerPB.TrackName));
-            }
-
-            return customTracks;
+            embed.AddField(new EmbedFieldBuilder()
+                .WithName($"{emote} {MessageTextFormat.Bold(title)}")
+                .WithValue(string.Join("\n", content))
+                .WithIsInline(true));
         }
 
-        private List<string> GetTimes(List<PlayerPB> playerPBs)
-        {
-            var times = new List<string>();
+        private List<string> GetCustomTracks(List<PlayerPB> pbs) =>
+            pbs.Select(p => MessageTextFormat.Bold(p.TrackName)).ToList();
 
-            foreach (var playerPB in playerPBs)
-            {
-                times.Add(ScoreFormatter.AsIngameTime(playerPB.Time));
-            }
+        private List<string> GetTimes(List<PlayerPB> pbs) =>
+            pbs.Select(p => ScoreFormatter.AsIngameTime(p.Time)).ToList();
 
-            return times;
-        }
-
-        private List<string> GetPlacements(List<PlayerPB> playerPBs)
-        {
-            var placements = new List<string>();
-
-            foreach (var playerPB in playerPBs)
-            {
-                placements.Add(RankFormatter.ToMedalFormat(int.Parse(playerPB.Rank)));
-            }
-
-            return placements;
-        }
-
-        private async Task<Category?> FindCategory(string categoryId)
-        {
-            var result = await _client.GetCategoriesAsync();
-
-            if (!result.Success || result.Response == null)
-            {
-                return null;
-            }
-
-            return result.Response.Data.FirstOrDefault(category => category.Id == categoryId);
-        }
+        private List<string> GetPlacements(List<PlayerPB> pbs) =>
+            pbs.Select(p => RankFormatter.ToMedalFormat(int.Parse(p.Rank))).ToList();
     }
 }

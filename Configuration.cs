@@ -2,22 +2,22 @@ namespace Saphira
 {
     public class Configuration
     {
-        public string BotToken { get; set; } = string.Empty;
+        public string BotToken { get; set; } = "";
 
-        public ulong BotOwnerId { get; set; } = 0;
+        public ulong BotOwnerId { get; set; }
 
-        public ulong GuildId { get; set; } = 0;
-        
-        public string MainChannel { get; set; } = string.Empty;
+        public ulong GuildId { get; set; }
 
-        public string SubmissionFeedChannel {  get; set; } = string.Empty;
+        public string MainChannel { get; set; } = "";
 
-        public List<string> CommandsAllowedChannels {  get; set; } = new List<string>();
+        public string SubmissionFeedChannel { get; set; } = "";
 
-        public string SaphiApiKey { get; set; } = string.Empty;
+        public List<string> CommandsAllowedChannels { get; set; } = new();
 
-        public string SaphiApiBaseUrl { get; set; } = string.Empty;
+        public string SaphiApiKey { get; set; } = "";
 
-        public int MaxLeaderboardEntries { get; set; } = 0;
+        public string SaphiApiBaseUrl { get; set; } = "";
+
+        public int MaxLeaderboardEntries { get; set; }
     }
 }

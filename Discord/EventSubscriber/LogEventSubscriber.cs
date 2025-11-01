@@ -6,24 +6,15 @@ using Saphira.Util.Logging;
 namespace Saphira.Discord.EventSubscriber
 {
     [AutoRegister]
-    public class LogEventSubscriber : IDiscordSocketClientEventSubscriber
+    public class LogEventSubscriber(DiscordSocketClient client, IMessageLogger logger) : IDiscordSocketClientEventSubscriber
     {
-        private readonly DiscordSocketClient _client;
-        private readonly IMessageLogger _logger;
-
         private bool _isRegistered = false;
-
-        public LogEventSubscriber(DiscordSocketClient client, IMessageLogger logger)
-        {
-            _client = client;
-            _logger = logger;
-        }
 
         public void Register()
         {
             if (_isRegistered) return;
 
-            _client.Log += HandleLogAsync;
+            client.Log += HandleLogAsync;
             _isRegistered = true;
         }
 
@@ -31,13 +22,13 @@ namespace Saphira.Discord.EventSubscriber
         {
             if (!_isRegistered) return;
 
-            _client.Log -= HandleLogAsync;
+            client.Log -= HandleLogAsync;
             _isRegistered = false;
         }
 
         private Task HandleLogAsync(LogMessage message)
         {
-            _logger.Log(message);
+            logger.Log(message);
             return Task.CompletedTask;
         }
     }

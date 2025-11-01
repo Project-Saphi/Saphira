@@ -10,9 +10,7 @@ namespace Saphira.Discord.Guild
 
         public static bool IsNewUser(SocketUser user)
         {
-            var guildUser = user as SocketGuildUser;
-
-            if (guildUser == null || guildUser.JoinedAt == null)
+            if (user is not SocketGuildUser guildUser || guildUser.JoinedAt == null)
             {
                 return false;
             }

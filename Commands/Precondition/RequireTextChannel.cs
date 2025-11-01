@@ -12,9 +12,7 @@ namespace Saphira.Commands.Precondition
             IServiceProvider services
             )
         {
-            var textChannel = context.Channel as SocketTextChannel;
-
-            if (textChannel != null)
+            if (context.Channel is SocketTextChannel textChannel)
             {
                 return Task.FromResult(PreconditionResult.FromSuccess());
             }

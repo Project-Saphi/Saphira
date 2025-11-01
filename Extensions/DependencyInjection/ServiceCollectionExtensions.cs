@@ -11,16 +11,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddCronjobs(this IServiceCollection services, bool requireAttribute = false)
     {
-        var assembly = Assembly.GetExecutingAssembly();
-        var cronjobType = typeof(ICronjob);
-        var attributeType = typeof(AutoRegisterAttribute);
-
-        var cronjobTypes = assembly.GetTypes()
-            .Where(t => cronjobType.IsAssignableFrom(t)
-                     && t is { IsInterface: false, IsAbstract: false }
-                     && (!requireAttribute || t.GetCustomAttribute(attributeType) != null));
-
-        foreach (var type in cronjobTypes)
+        foreach (var type in GetTypesImplementing(typeof(ICronjob), requireAttribute))
         {
             services.AddSingleton(type);
         }
@@ -30,19 +21,10 @@ public static class ServiceCollectionExtensions
 
     public static void RegisterCronjobs(this IServiceProvider serviceProvider, bool requireAttribute = false)
     {
-        var assembly = Assembly.GetExecutingAssembly();
-        var cronjobType = typeof(ICronjob);
-        var attributeType = typeof(AutoRegisterAttribute);
-
-        var cronjobTypes = assembly.GetTypes()
-            .Where(t => cronjobType.IsAssignableFrom(t)
-                     && t is { IsInterface: false, IsAbstract: false }
-                     && (!requireAttribute || t.GetCustomAttribute(attributeType) != null));
-
         var cronjobScheduler = serviceProvider.GetRequiredService<CronjobScheduler>();
         var logger = serviceProvider.GetRequiredService<IMessageLogger>();
 
-        foreach (var type in cronjobTypes)
+        foreach (var type in GetTypesImplementing(typeof(ICronjob), requireAttribute))
         {
             var cronjob = (ICronjob)serviceProvider.GetRequiredService(type);
             cronjobScheduler.RegisterCronjob(cronjob);
@@ -53,16 +35,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddEventSubscribers(this IServiceCollection services, bool requireAttribute = false)
     {
-        var assembly = Assembly.GetExecutingAssembly();
-        var subscriberType = typeof(IDiscordSocketClientEventSubscriber);
-        var attributeType = typeof(AutoRegisterAttribute);
-
-        var subscriberTypes = assembly.GetTypes()
-            .Where(t => subscriberType.IsAssignableFrom(t)
-                     && t is { IsInterface: false, IsAbstract: false }
-                     && (!requireAttribute || t.GetCustomAttribute(attributeType) != null));
-
-        foreach (var type in subscriberTypes)
+        foreach (var type in GetTypesImplementing(typeof(IDiscordSocketClientEventSubscriber), requireAttribute))
         {
             services.AddSingleton(type);
         }
@@ -72,23 +45,25 @@ public static class ServiceCollectionExtensions
 
     public static void RegisterEventSubscribers(this IServiceProvider serviceProvider, bool requireAttribute = false)
     {
-        var assembly = Assembly.GetExecutingAssembly();
-        var subscriberType = typeof(IDiscordSocketClientEventSubscriber);
-        var attributeType = typeof(AutoRegisterAttribute);
-
-        var subscriberTypes = assembly.GetTypes()
-            .Where(t => subscriberType.IsAssignableFrom(t)
-                     && t is { IsInterface: false, IsAbstract: false }
-                     && (!requireAttribute || t.GetCustomAttribute(attributeType) != null));
-
         var logger = serviceProvider.GetRequiredService<IMessageLogger>();
 
-        foreach (var type in subscriberTypes)
+        foreach (var type in GetTypesImplementing(typeof(IDiscordSocketClientEventSubscriber), requireAttribute))
         {
             var subscriber = (IDiscordSocketClientEventSubscriber)serviceProvider.GetRequiredService(type);
             subscriber.Register();
 
             logger.Log(LogSeverity.Info, "Saphira", $"Registered event subscriber {subscriber.ToString()}");
         }
+    }
+
+    private static IEnumerable<Type> GetTypesImplementing(Type interfaceType, bool requireAttribute = false)
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var attributeType = typeof(AutoRegisterAttribute);
+
+        return assembly.GetTypes()
+            .Where(t => interfaceType.IsAssignableFrom(t)
+                     && t is { IsInterface: false, IsAbstract: false }
+                     && (!requireAttribute || t.GetCustomAttribute(attributeType) != null));
     }
 }

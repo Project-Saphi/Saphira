@@ -6,26 +6,15 @@ using Saphira.Extensions.DependencyInjection;
 namespace Saphira.Discord.EventSubscriber
 {
     [AutoRegister]
-    public class MessageReceivedEventSubscriber : IDiscordSocketClientEventSubscriber
+    public class MessageReceivedEventSubscriber(DiscordSocketClient client, InviteLinkDetector inviteLinkDetector, RestrictedContentDetector restrictedContentDetector) : IDiscordSocketClientEventSubscriber
     {
-        private readonly DiscordSocketClient _client;
-        private readonly InviteLinkDetector _inviteLinkDetector;
-        private readonly RestrictedContentDetector _restrictedContentDetector;
-
         private bool _isRegistered = false;
-
-        public MessageReceivedEventSubscriber(DiscordSocketClient client, InviteLinkDetector inviteLinkDetector, RestrictedContentDetector restrictedContentDetector)
-        {
-            _client = client;
-            _inviteLinkDetector = inviteLinkDetector;
-            _restrictedContentDetector = restrictedContentDetector;
-        }
 
         public void Register()
         {
             if (_isRegistered) return;
 
-            _client.MessageReceived += HandleMessageReceivedAsync;
+            client.MessageReceived += HandleMessageReceivedAsync;
             _isRegistered = true;
         }
 
@@ -33,34 +22,20 @@ namespace Saphira.Discord.EventSubscriber
         {
             if (!_isRegistered) return;
 
-            _client.MessageReceived -= HandleMessageReceivedAsync;
+            client.MessageReceived -= HandleMessageReceivedAsync;
             _isRegistered = false;
         }
 
         private async Task HandleMessageReceivedAsync(SocketMessage message)
         {
             if (message.Author.IsBot || GuildMember.IsTeamMember(message.Author))
-            {
                 return;
-            }
 
-            if (message.Channel is not SocketTextChannel textChannel)
-            {
+            if (message.Channel is not SocketTextChannel textChannel ||
+                message.Author is not SocketGuildUser guildUser)
                 return;
-            }
 
-            if (message.Author is not SocketGuildUser guildUser)
-            {
-                return;
-            }
-
-            // None of the checks below apply to team members
-            if (GuildMember.IsTeamMember(guildUser))
-            {
-                return;
-            }
-
-            if (_inviteLinkDetector.MessageContainsInviteLink(message.Content))
+            if (inviteLinkDetector.MessageContainsInviteLink(message.Content))
             {
                 await message.DeleteAsync();
 
@@ -69,7 +44,7 @@ namespace Saphira.Discord.EventSubscriber
                 return;
             }
 
-            if (!GuildMember.IsVerified(guildUser) && GuildMember.IsNewUser(guildUser) && _restrictedContentDetector.MessageContainsRestrictedContent(message))
+            if (!GuildMember.IsVerified(guildUser) && GuildMember.IsNewUser(guildUser) && restrictedContentDetector.MessageContainsRestrictedContent(message))
             {
                 await message.DeleteAsync();
 

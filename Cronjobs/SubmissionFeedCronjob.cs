@@ -6,22 +6,11 @@ using Saphira.Util.Logging;
 namespace Saphira.Cronjobs
 {
     [AutoRegister]
-    public class SubmissionFeedCronjob : ICronjob
+    public class SubmissionFeedCronjob(CachedClient client, Configuration configuration, IMessageLogger logger) : ICronjob
     {
-        private readonly CachedClient _client;
-        private readonly Configuration _configuration;
-        private readonly IMessageLogger _logger;
-
-        public SubmissionFeedCronjob(CachedClient client, Configuration configuration, IMessageLogger logger)
-        {
-            _client = client;
-            _configuration = configuration;
-            _logger = logger;
-        }
-
         public Task ExecuteAsync()
         {
-            _logger.Log(LogSeverity.Info, "Saphira", "Posting new submissions ...");
+            logger.Log(LogSeverity.Info, "Saphira", "Posting new submissions ...");
             return Task.CompletedTask;
         }
 

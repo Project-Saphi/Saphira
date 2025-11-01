@@ -5,37 +5,19 @@ using Saphira.Util.Logging;
 
 namespace Saphira.Commands.Autocompletion.ValueProvider
 {
-    public class CustomTrackValueProvider : IValueProvider
+    public class CustomTrackValueProvider(CachedClient client, IMessageLogger logger, IMemoryCache cache) : IValueProvider
     {
-        private readonly CachedClient _client;
-        private readonly IMessageLogger _logger;
-        private readonly IMemoryCache _cache;
-
-        public CustomTrackValueProvider(CachedClient client, IMessageLogger logger, IMemoryCache cache)
-        {
-            _client = client;
-            _logger = logger;
-            _cache = cache;
-        }
-
         public async Task<List<Value>> GetValuesAsync()
         {
-            var values = new List<Value>();
-            var result = await _client.GetCustomTracksAsync();
+            var result = await client.GetCustomTracksAsync();
 
             if (!result.Success || result.Response == null)
             {
-                _logger.Log(LogSeverity.Error, "Saphira", $"Failed to fetch custom tracks: {result.ErrorMessage ?? "Unknown error"}");
-                return values;
+                logger.Log(LogSeverity.Error, "Saphira", $"Failed to fetch custom tracks: {result.ErrorMessage ?? "Unknown error"}");
+                return [];
             }
 
-            foreach (var customTrack in result.Response.Data)
-            {
-                var value = new Value(int.Parse(customTrack.Id), customTrack.Name);
-                values.Add(value);
-            }
-
-            return values;
+            return [.. result.Response.Data.Select(ct => new Value(int.Parse(ct.Id), ct.Name))];
         }
     }
 }

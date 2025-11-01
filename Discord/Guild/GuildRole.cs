@@ -4,11 +4,11 @@ namespace Saphira.Discord.Guild
 {
     public class GuildRole
     {
-        public static string TeamRole = "Saphi Team";
-        public static string SaphiUpdatesRole = "Saphi Updates";
-        public static string ServerUpdatesRole = "Server Updates";
-        public static string VerifiedRole = "Verified";
-        public static string WRFeedRole = "WR Feed";
+        public static readonly string TeamRole = "Saphi Team";
+        public static readonly string SaphiUpdatesRole = "Saphi Updates";
+        public static readonly string ServerUpdatesRole = "Server Updates";
+        public static readonly string VerifiedRole = "Verified";
+        public static readonly string WRFeedRole = "WR Feed";
 
         public static bool IsTeamRole(IRole role) => role.Name == TeamRole;
 

@@ -6,7 +6,7 @@ namespace Saphira.Discord
     {
         public static bool IsCTRStream(IActivity activity)
         {
-            return activity.Type == ActivityType.Streaming && activity.Name.ToLower().Contains("crash team racing");
+            return activity.Type == ActivityType.Streaming && activity.Name.Contains("crash team racing", StringComparison.CurrentCultureIgnoreCase);
         }
     }
 }

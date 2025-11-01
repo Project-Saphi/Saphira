@@ -45,22 +45,19 @@ namespace Saphira.Commands
 
             var embed = new EmbedBuilder();
 
-            embed.AddField(new EmbedFieldBuilder()
-                .WithName(MessageTextFormat.Bold("Information"))
-                .WithValue(String.Join("\n", generalInfo))
-                .WithIsInline(true));
-
-            embed.AddField(new EmbedFieldBuilder()
-                .WithName(MessageTextFormat.Bold("Statistics"))
-                .WithValue(String.Join("\n", statistics))
-                .WithIsInline(true));
-
-            embed.AddField(new EmbedFieldBuilder()
-                .WithName("Metrics")
-                .WithValue(String.Join("\n", data))
-                .WithIsInline(true));
+            AddEmbedField(embed, ":desktop:", "Information", generalInfo);
+            AddEmbedField(embed, ":bar_chart:", "Statistics", statistics);
+            AddEmbedField(embed, ":level_slider:", "Metrics", data);
 
             await RespondAsync(embed: embed.Build());
+        }
+
+        private void AddEmbedField(EmbedBuilder embed, string emote, string title, string[] content)
+        {
+            embed.AddField(new EmbedFieldBuilder()
+                .WithName($"{emote} {MessageTextFormat.Bold(title)}")
+                .WithValue(string.Join("\n", content))
+                .WithIsInline(true));
         }
     }
 }

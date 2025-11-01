@@ -5,37 +5,19 @@ using Saphira.Util.Logging;
 
 namespace Saphira.Commands.Autocompletion.ValueProvider
 {
-    public class CharacterValueProvider : IValueProvider
+    public class CharacterValueProvider(CachedClient client, IMessageLogger logger, IMemoryCache cache) : IValueProvider
     {
-        private readonly CachedClient _client;
-        private readonly IMessageLogger _logger;
-        private readonly IMemoryCache _cache;
-
-        public CharacterValueProvider(CachedClient client, IMessageLogger logger, IMemoryCache cache)
-        {
-            _client = client;        
-            _logger = logger;
-            _cache = cache;
-        }
-
         public async Task<List<Value>> GetValuesAsync()
         {
-            var values = new List<Value>();
-            var result = await _client.GetCharactersAsync();
+            var result = await client.GetCharactersAsync();
 
-            if (!result.Success || result.Response == null)
+            if (!result.Success || result.Response?.Data == null)
             {
-                _logger.Log(LogSeverity.Error, "Saphira", $"Failed to fetch characters: {result.ErrorMessage ?? "Unknown error"}");
-                return values;
+                logger.Log(LogSeverity.Error, "Saphira", $"Failed to fetch characters: {result.ErrorMessage ?? "Unknown error"}");
+                return [];
             }
 
-            foreach (var character in result.Response.Data)
-            {
-                var value = new Value(int.Parse(character.Id), character.Name);
-                values.Add(value);
-            }
-
-            return values;
+            return [.. result.Response.Data.Select(c => new Value(int.Parse(c.Id), c.Name))];
         }
     }
 }

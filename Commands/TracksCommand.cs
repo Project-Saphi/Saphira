@@ -9,19 +9,12 @@ namespace Saphira.Commands
 {
     [RequireTextChannel]
     [RequireCommandAllowedChannel]
-    public class TracksCommand : InteractionModuleBase<SocketInteractionContext>
+    public class TracksCommand(CachedClient client) : InteractionModuleBase<SocketInteractionContext>
     {
-        private readonly CachedClient _client;
-
-        public TracksCommand(CachedClient client)
-        {
-            _client = client;
-        }
-
         [SlashCommand("tracks", "Get the list of supported custom tracks")]
         public async Task HandleCommand()
         {
-            var result = await _client.GetCustomTracksAsync();
+            var result = await client.GetCustomTracksAsync();
 
             if (!result.Success || result.Response == null)
             {
@@ -32,62 +25,28 @@ namespace Saphira.Commands
 
             var embed = new EmbedBuilder();
 
-            var idsField = new EmbedFieldBuilder();
-            idsField.WithName($":identification_card: {MessageTextFormat.Bold("ID")}");
-            idsField.WithValue(String.Join("\n", GetIds(result.Response.Data)));
-            idsField.WithIsInline(true);
-
-            var customTracksField = new EmbedFieldBuilder();
-            customTracksField.WithName($":motorway: {MessageTextFormat.Bold("Name")}");
-            customTracksField.WithValue(String.Join("\n", GetCustomTrackNames(result.Response.Data)));
-            customTracksField.WithIsInline(true);
-
-            var authorsField = new EmbedFieldBuilder();
-            authorsField.WithName($":art: {MessageTextFormat.Bold("Designer")}");
-            authorsField.WithValue(String.Join("\n", GetAuthors(result.Response.Data)));
-            authorsField.WithIsInline(true);
-
-            embed.AddField(idsField);
-            embed.AddField(customTracksField);
-            embed.AddField(authorsField);
+            AddEmbedField(embed, ":identification_card:", "ID", GetIds(result.Response.Data));
+            AddEmbedField(embed, ":motorway:", "Name", GetCustomTrackNames(result.Response.Data));
+            AddEmbedField(embed, ":art:", "Designer", GetAuthors(result.Response.Data));
 
             await RespondAsync(embed: embed.Build());
         }
 
-        private List<string> GetIds(List<CustomTrack> customTracks)
+        private void AddEmbedField(EmbedBuilder embed, string emote, string title, List<string> content)
         {
-            var ids = new List<string>();
-
-            foreach (var customTrack in customTracks)
-            {
-                ids.Add($"#{customTrack.Id.ToString()}");
-            }
-
-            return ids;
+            embed.AddField(new EmbedFieldBuilder()
+                .WithName($"{emote} {MessageTextFormat.Bold(title)}")
+                .WithValue(string.Join("\n", content))
+                .WithIsInline(true));
         }
 
-        private List<string> GetCustomTrackNames(List<CustomTrack> customTracks)
-        {
-            var customTrackNames = new List<string>();
+        private List<string> GetIds(List<CustomTrack> tracks) =>
+            tracks.Select(t => $"#{t.Id}").ToList();
 
-            foreach (var customTrack in customTracks)
-            {
-                customTrackNames.Add(customTrack.Name);
-            }
+        private List<string> GetCustomTrackNames(List<CustomTrack> tracks) =>
+            tracks.Select(t => t.Name).ToList();
 
-            return customTrackNames;
-        }
-
-        private List<string> GetAuthors(List<CustomTrack> customTracks)
-        {
-            var authors = new List<string>();
-
-            foreach (var customTrack in customTracks)
-            {
-                authors.Add(customTrack.Author);
-            }
-
-            return authors;
-        }
+        private List<string> GetAuthors(List<CustomTrack> tracks) =>
+            tracks.Select(t => t.Author).ToList();
     }
 }

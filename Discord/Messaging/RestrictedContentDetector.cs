@@ -6,19 +6,16 @@ namespace Saphira.Discord.Messaging
     {
         public bool MessageContainsRestrictedContent(SocketMessage message)
         {
-            return (message.Attachments.Any() || message.Embeds.Any() || MessageContainsUrl(message.Content));
+            return message.Attachments.Count != 0 || message.Embeds.Count != 0 || MessageContainsUrl(message.Content);
         }
 
         public bool MessageContainsUrl(string content)
         {
             if (string.IsNullOrWhiteSpace(content))
-            {
                 return false;
-            }
 
-            return content.Contains("http://", StringComparison.OrdinalIgnoreCase) ||
-                   content.Contains("https://", StringComparison.OrdinalIgnoreCase) ||
-                   content.Contains("www.", StringComparison.OrdinalIgnoreCase);
+            var urlPatterns = new[] { "http://", "https://", "www." };
+            return urlPatterns.Any(pattern => content.Contains(pattern, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

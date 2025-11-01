@@ -8,20 +8,13 @@ namespace Saphira.Commands
 {
     [RequireTextChannel]
     [RequireCommandAllowedChannel]
-    public class LivestreamsCommand : InteractionModuleBase<SocketInteractionContext>
+    public class LivestreamsCommand(GuildManager guildManager) : InteractionModuleBase<SocketInteractionContext>
     {
-        private readonly GuildManager _guildManager;
-
-        public LivestreamsCommand(GuildManager guildManager)
-        {
-            _guildManager = guildManager;
-        }
-
         [CommandContextType(InteractionContextType.Guild)]
         [SlashCommand("livestreams", "List all CTR livestreams from server members")]
         public async Task HandleCommand()
         {
-            var livestreams = _guildManager.GetCTRStreamActivites(Context.Guild);
+            var livestreams = guildManager.GetCTRStreamActivites(Context.Guild);
 
             if (livestreams.Count > 0)
             {
