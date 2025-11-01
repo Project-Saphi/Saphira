@@ -36,7 +36,7 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, CachedClie
             return;
         }
 
-        var result = await saphiClient.GetRecentSubmissionsAsync("1m");
+        var result = await saphiClient.GetRecentSubmissionsAsync("1m", cacheDuration: TimeSpan.FromSeconds(1));
 
         if (!result.Success || result.Response == null)
         {
@@ -50,7 +50,7 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, CachedClie
             return;
         }
 
-        logger.Log(LogSeverity.Info, "Saphira", $"Found {result.Response.Data.Count} new submissions to post");
+        logger.Log(LogSeverity.Info, "Saphira", $"Found {result.Response.Data.Count} new submission(s) to post");
 
         var submissions = result.Response.Data;
         submissions.Reverse();
