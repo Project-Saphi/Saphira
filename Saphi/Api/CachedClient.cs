@@ -152,8 +152,6 @@ public class CachedClient
             var response = await _httpClient.GetAsync(endpoint);
             var content = await response.Content.ReadAsStringAsync();
 
-            Console.WriteLine(content);
-
             if (!response.IsSuccessStatusCode)
             {
                 return new Result<T>
