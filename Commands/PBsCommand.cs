@@ -24,13 +24,20 @@ public class PBsCommand(CachedClient client) : InteractionModuleBase<SocketInter
             return;
         }
 
+        if (result.Response.Data.Count == 0)
+        {
+            var warningAlert = new WarningAlertEmbedBuilder("You don't have any PBs set yet.");
+            await RespondAsync(embed: warningAlert.Build());
+            return;
+        }
+
         var playerName = result.Response.Data.First().Holder;
 
         var embed = new EmbedBuilder();
 
         AddEmbedField(embed, ":motorway:", "Track", GetCustomTracks(result.Response.Data));
+        AddEmbedField(embed, ":stadium:", "Category", GetCategories(result.Response.Data));
         AddEmbedField(embed, ":stopwatch:", "Time", GetTimes(result.Response.Data));
-        AddEmbedField(embed, ":trophy:", "Placement", GetPlacements(result.Response.Data));
 
         await RespondAsync(embed: embed.Build());
     }
@@ -44,11 +51,11 @@ public class PBsCommand(CachedClient client) : InteractionModuleBase<SocketInter
     }
 
     private List<string> GetCustomTracks(List<PlayerPB> pbs) =>
-        pbs.Select(p => MessageTextFormat.Bold(p.TrackName)).ToList();
+        [.. pbs.Select(p => MessageTextFormat.Bold(p.TrackName))];
+
+    private List<string> GetCategories(List<PlayerPB> pbs) =>
+    [.. pbs.Select(p => MessageTextFormat.Bold(p.CategoryName))];
 
     private List<string> GetTimes(List<PlayerPB> pbs) =>
-        pbs.Select(p => ScoreFormatter.AsIngameTime(p.Time)).ToList();
-
-    private List<string> GetPlacements(List<PlayerPB> pbs) =>
-        pbs.Select(p => RankFormatter.ToMedalFormat(int.Parse(p.Rank))).ToList();
+        [.. pbs.Select(p => $"{RankFormatter.ToMedalFormat(int.Parse(p.Rank))} - {ScoreFormatter.AsIngameTime(p.Time)}")];
 }

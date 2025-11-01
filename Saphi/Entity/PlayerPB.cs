@@ -16,8 +16,17 @@ public class PlayerPB
     [JsonPropertyName("category_id")]
     public string CategoryId { get; set; }
 
+    [JsonPropertyName("category_name")]
+    public string CategoryName { get; set; }
+
     [JsonPropertyName("character_id")]
     public string CharacterId { get; set; }
+
+    [JsonPropertyName("character_name")]
+    public string CharacterName { get; set; }
+
+    [JsonPropertyName("engine_name")]
+    public string EngineName { get; set; }
 
     [JsonPropertyName("time")]
     public string Time { get; set; }
@@ -30,6 +39,9 @@ public class PlayerPB
 
     [JsonPropertyName("country_id")]
     public string CountryId { get; set; }
+
+    [JsonPropertyName("country_name")]
+    public string CountryName { get; set; }
 
     [JsonPropertyName("rank")]
     public string Rank { get; set; }

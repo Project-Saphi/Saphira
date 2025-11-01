@@ -29,10 +29,18 @@ public class LeaderboardCommand(CachedClient client, Configuration configuration
         }
 
         var customTrackEntity = await FindCustomTrack(customTrack);
-        var categoryEntity = await FindCategory(category);
+
+        if (result.Response.Data.Count == 0)
+        {
+            var warningAlert = new WarningAlertEmbedBuilder($"Nobody has set a time on {customTrackEntity?.Name ?? "Unknown"} yet.");
+            await RespondAsync(embed: warningAlert.Build());
+            return;
+        }
+
+        var firstEntry = result.Response.Data.First();
 
         var embed = new EmbedBuilder();
-        embed.WithAuthor($"Top {configuration.MaxLeaderboardEntries} {categoryEntity?.Name ?? "Unknown"} times on {customTrackEntity?.Name ?? "Unknown"}");
+        embed.WithAuthor($"Top {configuration.MaxLeaderboardEntries} {firstEntry?.CategoryName ?? "Unknown"} times on {customTrackEntity?.Name ?? "Unknown"}");
 
         AddEmbedField(embed, ":trophy:", "Placement", GetPlacements(result.Response.Data));
         AddEmbedField(embed, ":bust_in_silhouette:", "Player", GetPlayers(result.Response.Data));
@@ -50,19 +58,13 @@ public class LeaderboardCommand(CachedClient client, Configuration configuration
     }
 
     private List<string> GetPlacements(List<TrackLeaderboardEntry> entries) =>
-        entries.Take(configuration.MaxLeaderboardEntries)
-               .Select(e => RankFormatter.ToMedalFormat(e.Rank))
-               .ToList();
+        [.. entries.Take(configuration.MaxLeaderboardEntries).Select(e => RankFormatter.ToMedalFormat(e.Rank))];
 
     private List<string> GetPlayers(List<TrackLeaderboardEntry> entries) =>
-        entries.Take(configuration.MaxLeaderboardEntries)
-               .Select(e => MessageTextFormat.Bold(e.Holder))
-               .ToList();
+        [.. entries.Take(configuration.MaxLeaderboardEntries).Select(e => MessageTextFormat.Bold(e.Holder))];
 
     private List<string> GetTimes(List<TrackLeaderboardEntry> entries) =>
-        entries.Take(configuration.MaxLeaderboardEntries)
-               .Select(e => ScoreFormatter.AsIngameTime(e.MinScore))
-               .ToList();
+        [.. entries.Take(configuration.MaxLeaderboardEntries).Select(e => ScoreFormatter.AsIngameTime(e.MinScore))];
 
     private async Task<CustomTrack?> FindCustomTrack(string trackId)
     {
@@ -74,17 +76,5 @@ public class LeaderboardCommand(CachedClient client, Configuration configuration
         }
 
         return result.Response.Data.FirstOrDefault(customTrack => customTrack.Id == trackId);
-    }
-
-    private async Task<Category?> FindCategory(string categoryId)
-    {
-        var result = await client.GetCategoriesAsync();
-
-        if (!result.Success || result.Response == null)
-        {
-            return null;
-        }
-
-        return result.Response.Data.FirstOrDefault(category => category.Id == categoryId);
     }
 }

@@ -63,6 +63,36 @@ public class CachedClient
             cacheDuration ?? DefaultCacheDuration.Leaderboard
         );
 
+    public async Task<Result<GetRecentSubmissionsResponse>> GetRecentSubmissionsAsync(
+        string? timeFilter = null,
+        string? trackId = null,
+        string? categoryId = null,
+        string? userId = null,
+        TimeSpan? cacheDuration = null)
+    {
+        var queryParams = new Dictionary<string, string>();
+
+        if (!string.IsNullOrWhiteSpace(timeFilter))
+            queryParams["time_filter"] = timeFilter;
+
+        if (!string.IsNullOrWhiteSpace(trackId))
+            queryParams["track_id"] = trackId;
+
+        if (!string.IsNullOrWhiteSpace(categoryId))
+            queryParams["category_id"] = categoryId;
+
+        if (!string.IsNullOrWhiteSpace(userId))
+            queryParams["user_id"] = userId;
+
+        var cacheKey = $"api:recent_submissions:{timeFilter ?? "24h"}:{trackId ?? "all"}:{categoryId ?? "all"}:{userId ?? "all"}";
+
+        return await GetCachedAsync(
+            cacheKey,
+            () => GetAsync<GetRecentSubmissionsResponse>(Endpoint.GetRecentSubmissions, queryParams),
+            cacheDuration ?? DefaultCacheDuration.RecentSubmission
+        );
+    }
+
     public async Task<Result<GetUserProfileResponse>> GetUserProfileAsync(string userId, TimeSpan? cacheDuration = null) =>
         await GetCachedAsync(
             $"api:user_profile:{userId}",
@@ -121,6 +151,8 @@ public class CachedClient
         {
             var response = await _httpClient.GetAsync(endpoint);
             var content = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine(content);
 
             if (!response.IsSuccessStatusCode)
             {

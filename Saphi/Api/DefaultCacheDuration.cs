@@ -10,4 +10,5 @@ public class DefaultCacheDuration
     public static readonly TimeSpan Leaderboard = TimeSpan.FromMinutes(10);
     public static readonly TimeSpan Player = TimeSpan.FromMinutes(30);
     public static readonly TimeSpan PlayerPB = TimeSpan.FromMinutes(10);
+    public static readonly TimeSpan RecentSubmission = TimeSpan.FromMinutes(5);
 }

@@ -23,6 +23,13 @@ public class TracksCommand(CachedClient client) : InteractionModuleBase<SocketIn
             return;
         }
 
+        if (result.Response.Data.Count == 0)
+        {
+            var warningAlert = new WarningAlertEmbedBuilder("There are no custom tracks supported yet.");
+            await RespondAsync(embed:  warningAlert.Build());
+            return;
+        }
+
         var embed = new EmbedBuilder();
 
         AddEmbedField(embed, ":identification_card:", "ID", GetIds(result.Response.Data));
@@ -41,11 +48,11 @@ public class TracksCommand(CachedClient client) : InteractionModuleBase<SocketIn
     }
 
     private List<string> GetIds(List<CustomTrack> tracks) =>
-        tracks.Select(t => $"#{t.Id}").ToList();
+        [.. tracks.Select(t => $"#{t.Id}")];
 
     private List<string> GetCustomTrackNames(List<CustomTrack> tracks) =>
-        tracks.Select(t => t.Name).ToList();
+        [.. tracks.Select(t => t.Name)];
 
     private List<string> GetAuthors(List<CustomTrack> tracks) =>
-        tracks.Select(t => t.Author).ToList();
+        [.. tracks.Select(t => t.Author)];
 }

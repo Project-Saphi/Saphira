@@ -16,6 +16,6 @@ public class CategoryValueProvider(CachedClient client, IMessageLogger logger) :
             return [];
         }
 
-        return [.. result.Response.Data.Select(c => new Value(int.Parse(c.Id), c.Name))];
+        return [.. result.Response.Data.Select(c => new Value(c.Id, c.Name))];
     }
 }
