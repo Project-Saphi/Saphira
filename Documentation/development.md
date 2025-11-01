@@ -2,6 +2,14 @@
 
 # Developer Documentation
 
+## Table of Contents
+
+- [Command Preconditions](#command-preconditions)
+- [Autocompletion and ValueProviders](#autocompletion-and-valueproviders)
+- [Event Subscribers](#event-subscribers)
+- [Cronjobs](#cronjobs)
+- [Logging](#logging)
+
 ## Command Preconditions
 
 There are 3 command preconditions that I find useful when developing new commands:

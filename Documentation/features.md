@@ -4,6 +4,13 @@
 
 Saphira has a bunch of built-in features that cannot be directly controlled via commands or settings. This document provides an overview about those features, along with conditions under which they are triggered.
 
+## Table of Contents
+
+- [Submission Feed](#submission-feed)
+- [Invite Link Blocker](#invite-link-blocker)
+- [Restricted Content for new Members](#restricted-content-for-new-members)
+- [Member Count Celebration](#member-count-celebration)
+
 ## Submission Feed
 
 Every 10 minutes, Saphira will automatically post the newest submissions to a dedicated channel. In cases of new world records, Saphira will ping the `WR Feed` role.
