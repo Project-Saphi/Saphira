@@ -11,8 +11,6 @@ namespace Saphira.Commands;
 [RequireTeamMemberRole]
 public class ClearCacheCommand(CacheInvalidationService cacheInvalidationService) : InteractionModuleBase<SocketInteractionContext>
 {
-    private readonly CacheInvalidationService _cacheInvalidationService = cacheInvalidationService;
-
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("clearcache", "Invalidate all cached data")]
     public async Task HandleCommand()
@@ -21,7 +19,7 @@ public class ClearCacheCommand(CacheInvalidationService cacheInvalidationService
 
         try
         {
-            _cacheInvalidationService.InvalidateAll();
+            cacheInvalidationService.InvalidateAll();
 
             var successAlert = new SuccessAlertEmbedBuilder("Successfully invalidated all cache entries. Data will be refreshed on next request.");
             await FollowupAsync(embed: successAlert.Build());
