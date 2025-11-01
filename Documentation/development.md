@@ -21,6 +21,8 @@ Most commands I develop are text-based and don't make any sense for non-text cha
 Using a `ValueProvider` is really simple. First, you need an entity:
 
 ```csharp
+namespace Saphira.Saphi.Entity;
+
 public class Player
 {
     [JsonPropertyName("id")]
@@ -34,31 +36,14 @@ public class Player
 The entity can come from anywhere - in this example it's a REST entity from an external API, so it also contains JSON decoding instructions. Next, you can implement the actual `ValueProvider`.
 
 ```csharp
-namespace Saphira.Commands.Autocompletion.ValueProvider
+namespace Saphira.Commands.Autocompletion.ValueProvider;
+
+public class PlayerValueProvider(CachedClient client) : IValueProvider
 {
-    public class PlayerValueProvider : IValueProvider
+    public async Task<List<Value>> GetValuesAsync()
     {
-        private readonly Client _client;
-        private readonly IMemoryCache _cache;
-
-        public PlayerValueProvider(Client client)
-        {
-            _client = client;
-        }
-
-        public async Task<List<Value>> GetValuesAsync()
-        {
-            var values = new List<Value>();
-            var players = await _client.GetPlayersAsync(); // We assume GetPlayersAsync() returns a List<Player>
-
-            foreach (var player in players)
-            {
-                var value = new Value(int.Parse(player.Id), player.Name);
-                values.Add(value);
-            }
-
-            return values;
-        }
+        var players = await client.GetPlayersAsync(); // We assume GetPlayersAsync() returns a List<Player>
+        return [.. players.Select(p => new Value(int.Parse(p.Id), p.Name))];
     }
 }
 ```
@@ -72,10 +57,15 @@ public class PlayerAutocompleteHandler : BasicAutocompleteHandler<PlayerValuePro
 You don't even need to implement anything because the `BasicAutocompleteHandler` already does all the logic for you! Now you can specify the `PlayerAutocompleteHandler` when creating a new command:
 
 ```csharp
-[SlashCommand("pbs", "Get personal best times of a player")]
-public async Task HandleCommand([Autocomplete(typeof(PlayerAutocompleteHandler))] string player)
+namespace Saphira.Commands;
+
+public class PBsCommand() : InteractionModuleBase<SocketInteractionContext>
 {
-    // Other code ...
+    [SlashCommand("pbs", "Get personal best times of a player")]
+    public async Task HandleCommand([Autocomplete(typeof(PlayerAutocompleteHandler))] string player)
+    {
+        // Other code ...
+    }
 }
 ```
 
@@ -86,40 +76,33 @@ Since [Discord.NET](https://docs.discordnet.dev/index.html)'s way of subscribing
 First, create your event subscriber:
 
 ```csharp
-namespace Saphira.Discord.EventSubscriber
+namespace Saphira.Discord.EventSubscriber;
+
+public class CustomReadyEventSubscriber(DiscordSocketClient client) : IDiscordSocketClientEventSubscriber
 {
-    public class CustomReadyEventSubscriber : IDiscordSocketClientEventSubscriber
+
+    private bool _isRegistered = false;
+
+    public void Register()
     {
-        private readonly DiscordSocketClient _client;
+        if (_isRegistered) return;
 
-        private bool _isRegistered = false;
+        client.Ready += HandleReadyAsync;
+        _isRegistered = true;
+    }
 
-        public CustomReadyEventSubscriber(DiscordSocketClient client)
-        {
-            _client = client;
-        }
+    public void Unregister()
+    {
+        if (!_isRegistered) return;
 
-        public void Register()
-        {
-            if (_isRegistered) return;
+        client.Ready -= HandleReadyAsync;
+        _isRegistered = false;
+    }
 
-            _client.Ready += HandleReadyAsync;
-            _isRegistered = true;
-        }
-
-        public void Unregister()
-        {
-            if (!_isRegistered) return;
-
-            _client.Ready -= HandleReadyAsync;
-            _isRegistered = false;
-        }
-
-        private Task HandleReadyAsync()
-        {
-            Console.WriteLine("Bot is ready");
-            return Task.CompletedTask;
-        }
+    private Task HandleReadyAsync()
+    {
+        Console.WriteLine("Bot is ready");
+        return Task.CompletedTask;
     }
 }
 ```
@@ -129,37 +112,70 @@ Event subscribers need to implement the `IDiscordSocketClientEventSubscriber` in
 After creating your event subscriber, you can attach the custom `AutoRegister` attribute to it:
 
 ```csharp
-namespace Saphira.Discord.EventSubscriber
+namespace Saphira.Discord.EventSubscriber;
+
+[AutoRegister]
+public class CustomReadyEventSubscriber : IDiscordSocketClientEventSubscriber
 {
-    [AutoRegister]
-    public class CustomReadyEventSubscriber : IDiscordSocketClientEventSubscriber
-    {
-        // Other code ...
-    }
+    // Other code ...
 }
 ```
 
 And that's it! The event subscriber will now automatically be loaded into the service collection.
+
+## Cronjobs
+
+I am going to preface this section by saying: What I implemented aren't cronjobs, even though I call them that. They are tasks which are scheduled at a certain interval. I call them cronjobs because I feel the word "cronjob" is associated more with any kind of time-based execution these days.
+
+Creating a new cronjob is super easy:
+
+```csharp
+namespace Saphira.Cronjobs;
+
+[AutoRegister]
+public class TestCronjob : ICronjob
+{
+    public Task ExecuteAsync()
+    {
+        Console.WriteLine("Running test cronjob!")
+        return Task.CompletedTask;
+    }
+
+    public TimeSpan GetStartDelay()
+    {
+        return GetInterval();
+    }
+
+    public TimeSpan GetInterval()
+    {
+        return TimeSpan.FromMinutes(30);
+    }
+}
+```
+
+Cronjobs need to implement the `ICronjob` interface, which requires 3 methods to be implemented:
+
+- `ExecuteAsync()` contains the execution logic of the cronjob
+- `GetStartDelay()` must return a `TimeSpan` which defines how long the first execution is delayed after the bot is started
+- `GetInterval()` must return a `TimeSpan` which defines how long the next execution is delayed
+
+When creating a cronjob, you can attach the `AutoRegister` attribute to it, so that the cronjob is automatically registered in the `CronjobScheduler`.
 
 ## Logging
 
 There is a `ConsoleMessageLogger` utility, which allows logging messages at different severities and in different colors to the console. Using the `ConsoleMessageLogger` is really simple:
 
 ```csharp
-public class ReadyEventSubscriber : IDiscordSocketClientEventSubscriber
-{
-    private readonly IMessageLogger _logger;
-    private bool _isRegistered = false;
+namespace Saphira.Discord.EventSubscriber;
 
-    public ReadyEventSubscriber(IMessageLogger logger)
-    {
-        _logger = logger;
-    }
+public class ReadyEventSubscriber(IMessageLogger logger) : IDiscordSocketClientEventSubscriber
+{
+    private bool _isRegistered = false;
 
     private Task HandleReadyAsync()
     {
-        _logger.Log(LogSeverity.Info, "Saphira", "Connection to Discord established.");
-        _logger.Log(LogSeverity.Info, "Saphira", "Saphira started successfully.");
+        logger.Log(LogSeverity.Info, "Saphira", "Connection to Discord established.");
+        logger.Log(LogSeverity.Info, "Saphira", "Saphira started successfully.");
 
         return Task.CompletedTask;
     }
