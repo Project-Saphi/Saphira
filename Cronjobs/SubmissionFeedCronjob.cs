@@ -36,7 +36,7 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, CachedClie
             return;
         }
 
-        var result = await saphiClient.GetRecentSubmissionsAsync("1h");
+        var result = await saphiClient.GetRecentSubmissionsAsync("1m");
 
         if (!result.Success || result.Response == null)
         {
