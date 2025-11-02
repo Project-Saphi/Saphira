@@ -11,4 +11,5 @@ public class Endpoint
     public static readonly string GetCharacters = "characters.php";
     public static readonly string GetEngineTypes = "engine-types.php";
     public static readonly string GetCategories = "types.php";
+    public static readonly string GetPlayers = "players.php";
 }

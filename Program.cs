@@ -95,6 +95,7 @@ public class Program
             .AddTransient<CustomTrackValueProvider>()
             .AddTransient<CategoryValueProvider>()
             .AddTransient<CharacterValueProvider>()
+            .AddTransient<PlayerValueProvider>()
             .AddTransient<ToggleableRoleValueProvider>()
             .AddTransient<GuildManager>()
             .AddTransient<ScoreFormatter>()

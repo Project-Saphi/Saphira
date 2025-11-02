@@ -131,6 +131,13 @@ public class CachedClient
             cacheDuration ?? DefaultCacheDuration.Category
         );
 
+    public async Task<Result<GetPlayersResponse>> GetPlayersAsync(TimeSpan? cacheDuration = null) => 
+        await  GetCachedAsync(
+            "api:players",
+            () => GetAsync<GetPlayersResponse>(Endpoint.GetPlayers),
+            cacheDuration ?? DefaultCacheDuration.Players
+        );
+
     private string BuildUrlWithQuery(string endpoint, Dictionary<string, string>? queryParams)
     {
         if (queryParams == null || queryParams.Count == 0)

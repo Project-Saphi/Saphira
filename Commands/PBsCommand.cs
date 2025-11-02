@@ -1,5 +1,6 @@
 using Discord;
 using Discord.Interactions;
+using Saphira.Commands.Autocompletion;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 using Saphira.Saphi.Api;
@@ -13,7 +14,9 @@ namespace Saphira.Commands;
 public class PBsCommand(CachedClient client) : InteractionModuleBase<SocketInteractionContext>
 {
     [SlashCommand("pbs", "Get personal best times of a player")]
-    public async Task HandleCommand(string player)
+    public async Task HandleCommand(
+        [Autocomplete(typeof(PlayerAutocompleteHandler))] string player
+        )
     {
         var result = await client.GetPlayerPBsAsync(player);
 
@@ -26,14 +29,15 @@ public class PBsCommand(CachedClient client) : InteractionModuleBase<SocketInter
 
         if (result.Response.Data.Count == 0)
         {
-            var warningAlert = new WarningAlertEmbedBuilder("You don't have any PBs set yet.");
+            var warningAlert = new WarningAlertEmbedBuilder("This player doesn't have any PBs set yet.");
             await RespondAsync(embed: warningAlert.Build());
             return;
         }
 
         var playerName = result.Response.Data.First().Holder;
 
-        var embed = new EmbedBuilder();
+        var embed = new EmbedBuilder()
+            .WithAuthor($"Personal best times of {playerName}");
 
         AddEmbedField(embed, ":motorway:", "Track", GetCustomTracks(result.Response.Data));
         AddEmbedField(embed, ":stadium:", "Category", GetCategories(result.Response.Data));

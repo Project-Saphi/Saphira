@@ -47,4 +47,5 @@ public abstract class BasicAutocompleteHandler<TProvider> : AutocompleteHandler
 public class CustomTrackAutocompleteHandler : BasicAutocompleteHandler<CustomTrackValueProvider> { }
 public class CategoryAutocompleteHandler : BasicAutocompleteHandler<CategoryValueProvider> { }
 public class CharacterAutocompleteHandler : BasicAutocompleteHandler<CharacterValueProvider> { }
+public class PlayerAutocompleteHandler : BasicAutocompleteHandler<PlayerValueProvider> { }
 public class ToggleableRoleAutocompleteHandler : BasicAutocompleteHandler<ToggleableRoleValueProvider> { }
