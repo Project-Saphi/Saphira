@@ -30,7 +30,8 @@ public class TracksCommand(CachedClient client) : InteractionModuleBase<SocketIn
             return;
         }
 
-        var embed = new EmbedBuilder();
+        var embed = new EmbedBuilder()
+            .WithAuthor("Custom Track List");
 
         AddEmbedField(embed, ":identification_card:", "ID", GetIds(result.Response.Data));
         AddEmbedField(embed, ":motorway:", "Name", GetCustomTrackNames(result.Response.Data));

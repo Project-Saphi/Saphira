@@ -16,20 +16,18 @@ public class ProfileCommand : InteractionModuleBase<SocketInteractionContext>
     {
         if (Context.User is not SocketGuildUser guildUser)
         {
-            // I don't think this should happen?
-            // The user can't execute that command if he's not even a server member
             var errorAlert = new ErrorAlertEmbedBuilder("Your profile data cannot be fetched.");
             await RespondAsync(embed: errorAlert.Build());
             return;
         }
 
-        var embed = new EmbedBuilder();
-        embed.WithTimestamp(DateTimeOffset.UtcNow);
-        embed.WithThumbnailUrl(guildUser.GetDisplayAvatarUrl());
-        embed.WithAuthor($"{guildUser.GlobalName}'s profile", guildUser.GetDisplayAvatarUrl());
+        var embed = new EmbedBuilder()
+            .WithTimestamp(DateTimeOffset.Now)
+            .WithThumbnailUrl(guildUser.GetDisplayAvatarUrl())
+            .WithAuthor($"{guildUser.GlobalName}'s profile", guildUser.GetDisplayAvatarUrl());
 
-        var footer = new EmbedFooterBuilder();
-        footer.WithText($"ID: {guildUser.Id}");
+        var footer = new EmbedFooterBuilder()
+            .WithText($"ID: {guildUser.Id}");
 
         embed.WithFooter(footer);
 
@@ -47,8 +45,8 @@ public class ProfileCommand : InteractionModuleBase<SocketInteractionContext>
         var guildUser = user as SocketGuildUser;
         var embedFields = new List<EmbedFieldBuilder>();
 
-        var profileField = new EmbedFieldBuilder();
-        profileField.WithName(":busts_in_silhouette: Profile");
+        var profileField = new EmbedFieldBuilder()
+            .WithName(":busts_in_silhouette: Profile");
 
         var profileFields = new[]
         {

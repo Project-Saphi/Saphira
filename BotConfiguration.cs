@@ -1,6 +1,6 @@
 namespace Saphira;
 
-public class Configuration
+public class BotConfiguration
 {
     public string BotToken { get; set; } = "";
 

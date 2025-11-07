@@ -4,7 +4,7 @@ using Saphira.Extensions.DependencyInjection;
 namespace Saphira.Discord.EventSubscriber;
 
 [AutoRegister]
-public class JoinedGuildEventSubscriber(DiscordSocketClient client, Configuration configuration) : IDiscordSocketClientEventSubscriber
+public class JoinedGuildEventSubscriber(DiscordSocketClient client, BotConfiguration botConfiguration) : IDiscordSocketClientEventSubscriber
 {
     private bool _isRegistered = false;
 
@@ -26,7 +26,7 @@ public class JoinedGuildEventSubscriber(DiscordSocketClient client, Configuratio
 
     private async Task HandleGuildJoinedAsync(SocketGuild guild)
     {
-        var mainChannel = guild.Channels.FirstOrDefault(channel => channel.Name == configuration.MainChannel);
+        var mainChannel = guild.Channels.FirstOrDefault(channel => channel.Name == botConfiguration.MainChannel);
 
         if (mainChannel is not SocketTextChannel textChannel)
         {

@@ -10,7 +10,7 @@ namespace Saphira.Discord;
 
 public class InteractionHandler(DiscordSocketClient client, InteractionService interactionService, IServiceProvider serviceProvider)
 {
-    private readonly Configuration _configuration = serviceProvider.GetRequiredService<Configuration>();
+    private readonly BotConfiguration _botConfiguration = serviceProvider.GetRequiredService<BotConfiguration>();
     private readonly IMessageLogger _logger = serviceProvider.GetRequiredService<IMessageLogger>();
 
     public async Task InitializeAsync()
@@ -27,8 +27,8 @@ public class InteractionHandler(DiscordSocketClient client, InteractionService i
 
     private async Task RegisterCommandsAsync()
     {
-        await interactionService.RegisterCommandsToGuildAsync(_configuration.GuildId);
-        _logger.Log(LogSeverity.Info, "Saphira", $"Registered commands to guild {_configuration.GuildId}");
+        await interactionService.RegisterCommandsToGuildAsync(_botConfiguration.GuildId);
+        _logger.Log(LogSeverity.Info, "Saphira", $"Registered commands to guild {_botConfiguration.GuildId}");
     }
 
     private async Task RespondToInteractionAsync(IDiscordInteraction interaction, string message)

@@ -24,8 +24,8 @@ public class RequireCommandAllowedChannel : PreconditionAttribute
             return Task.FromResult(PreconditionResult.FromError("The user does not exist."));
         }
 
-        var configuration = services.GetRequiredService<Configuration>();
-        if (configuration.CommandsAllowedChannels.Any(channel => channel == textChannel.Name) || GuildMember.IsTeamMember(user))
+        var botConfiguration = services.GetRequiredService<BotConfiguration>();
+        if (botConfiguration.CommandsAllowedChannels.Any(channel => channel == textChannel.Name) || GuildMember.IsTeamMember(user))
         {
             return Task.FromResult(PreconditionResult.FromSuccess());
         }

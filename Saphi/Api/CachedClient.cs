@@ -11,25 +11,25 @@ namespace Saphira.Saphi.Api;
 public class CachedClient
 {
     private readonly HttpClient _httpClient;
-    private readonly Configuration _configuration;
+    private readonly BotConfiguration _botConfiguration;
     private readonly IMemoryCache _cache;
     private readonly CacheInvalidationService _cacheInvalidationService;
 
-    public CachedClient(HttpClient httpClient, Configuration configuration, IMemoryCache cache, CacheInvalidationService cacheInvalidationService)
+    public CachedClient(HttpClient httpClient, BotConfiguration botConfiguration, IMemoryCache cache, CacheInvalidationService cacheInvalidationService)
     {
         _httpClient = httpClient;
-        _configuration = configuration;
+        _botConfiguration = botConfiguration;
         _cache = cache;
         _cacheInvalidationService = cacheInvalidationService;
 
-        if (!string.IsNullOrWhiteSpace(_configuration.SaphiApiBaseUrl))
+        if (!string.IsNullOrWhiteSpace(_botConfiguration.SaphiApiBaseUrl))
         {
-            _httpClient.BaseAddress = new Uri(_configuration.SaphiApiBaseUrl);
+            _httpClient.BaseAddress = new Uri(_botConfiguration.SaphiApiBaseUrl);
         }
 
-        if (!string.IsNullOrWhiteSpace(_configuration.SaphiApiKey))
+        if (!string.IsNullOrWhiteSpace(_botConfiguration.SaphiApiKey))
         {
-            _httpClient.DefaultRequestHeaders.Add("Saphi-Api-Key", _configuration.SaphiApiKey);
+            _httpClient.DefaultRequestHeaders.Add("Saphi-Api-Key", _botConfiguration.SaphiApiKey);
         }
 
         _httpClient.Timeout = TimeSpan.FromSeconds(30);

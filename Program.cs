@@ -12,6 +12,7 @@ using Saphira.Extensions.Caching;
 using Saphira.Extensions.DependencyInjection;
 using Saphira.Saphi.Api;
 using Saphira.Util.Game;
+using Saphira.Util.Game.Matchup;
 using Saphira.Util.Logging;
 
 namespace Saphira;
@@ -26,21 +27,21 @@ public class Program
 
     public static async Task Main()
     {
-        var config = BuildConfiguration();
+        var botConfig = BuildBotConfiguration();
 
-        if (!ValidateConfiguration(config))
+        if (!ValidateBotConfiguration(botConfig))
         {
             return;
         }
 
         _discordSocketClient = CreateClient();
         _interactionService = new InteractionService(_discordSocketClient.Rest);
-        _serviceProvider = BuildServiceProvider(_discordSocketClient, _interactionService, config);
+        _serviceProvider = BuildServiceProvider(_discordSocketClient, _interactionService, botConfig);
 
         var interactionHandler = new InteractionHandler(_discordSocketClient, _interactionService, _serviceProvider);
         await interactionHandler.InitializeAsync();
 
-        await _discordSocketClient.LoginAsync(TokenType.Bot, config.BotToken);
+        await _discordSocketClient.LoginAsync(TokenType.Bot, botConfig.BotToken);
         await _discordSocketClient.StartAsync();
 
         _serviceProvider.RegisterCronjobs();
@@ -52,25 +53,25 @@ public class Program
         await Task.Delay(-1);
     }
 
-    private static Configuration BuildConfiguration()
+    private static BotConfiguration BuildBotConfiguration()
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("config.json", optional: false, reloadOnChange: true)
             .Build();
 
-        return configuration.Get<Configuration>() ?? throw new Exception("Failed to load configuration from config.json");
+        return configuration.Get<BotConfiguration>() ?? throw new Exception("Failed to load configuration from config.json");
     }
 
-    private static bool ValidateConfiguration(Configuration config)
+    private static bool ValidateBotConfiguration(BotConfiguration botConfig)
     {
-        if (string.IsNullOrWhiteSpace(config.BotToken))
+        if (string.IsNullOrWhiteSpace(botConfig.BotToken))
         {
             Console.WriteLine("Bot token is missing in config.json. Unable to start Saphira.");
             return false;
         }
 
-        if (!config.SaphiApiBaseUrl.StartsWith("https"))
+        if (!botConfig.SaphiApiBaseUrl.StartsWith("https"))
         {
             Console.WriteLine("Connection to the Saphi API can only be established via HTTPS.");
             return false;
@@ -94,7 +95,7 @@ public class Program
     private static IServiceProvider BuildServiceProvider(
         DiscordSocketClient discordSocketClient,
         InteractionService interactionService,
-        Configuration configuration
+        BotConfiguration configuration
         )
     {
         return new ServiceCollection()
@@ -115,6 +116,7 @@ public class Program
             .AddTransient<ScoreFormatter>()
             .AddTransient<InviteLinkDetector>()
             .AddTransient<RestrictedContentDetector>()
+            .AddTransient<PlayerMatchupCalculator>()
             .AddHttpClient()
             .AddMemoryCache()
             .AddCronjobs()

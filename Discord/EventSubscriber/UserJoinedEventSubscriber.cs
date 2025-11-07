@@ -4,7 +4,7 @@ using Saphira.Extensions.DependencyInjection;
 namespace Saphira.Discord.EventSubscriber;
 
 [AutoRegister]
-public class UserJoinedEventSubscriber(DiscordSocketClient client, Configuration configuration) : IDiscordSocketClientEventSubscriber
+public class UserJoinedEventSubscriber(DiscordSocketClient client, BotConfiguration configuration) : IDiscordSocketClientEventSubscriber
 {
     private bool _isRegistered = false;
 

@@ -43,7 +43,8 @@ public class ServerCommand : InteractionModuleBase<SocketInteractionContext>
             $"{MessageTextFormat.Bold("Max Members")}: {guild.MaxMembers}"
         };
 
-        var embed = new EmbedBuilder();
+        var embed = new EmbedBuilder()
+            .WithAuthor("Server Data");
 
         AddEmbedField(embed, ":desktop:", "Information", generalInfo);
         AddEmbedField(embed, ":bar_chart:", "Statistics", statistics);

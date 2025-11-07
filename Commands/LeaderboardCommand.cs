@@ -11,7 +11,7 @@ namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class LeaderboardCommand(CachedClient client, Configuration configuration) : InteractionModuleBase<SocketInteractionContext>
+public class LeaderboardCommand(CachedClient client, BotConfiguration botConfiguration) : InteractionModuleBase<SocketInteractionContext>
 {
     [SlashCommand("leaderboard", "Get the leaderboard for a single track (limited to 20 players)")]
     public async Task HandleCommand(
@@ -39,8 +39,8 @@ public class LeaderboardCommand(CachedClient client, Configuration configuration
 
         var firstEntry = result.Response.Data.First();
 
-        var embed = new EmbedBuilder();
-        embed.WithAuthor($"Top {configuration.MaxLeaderboardEntries} {firstEntry?.CategoryName ?? "Unknown"} times on {customTrackEntity?.Name ?? "Unknown"}");
+        var embed = new EmbedBuilder()
+            .WithAuthor($"Top {botConfiguration.MaxLeaderboardEntries} {firstEntry?.CategoryName ?? "Unknown"} times on {customTrackEntity?.Name ?? "Unknown"}");
 
         AddEmbedField(embed, ":trophy:", "Placement", GetPlacements(result.Response.Data));
         AddEmbedField(embed, ":bust_in_silhouette:", "Player", GetPlayers(result.Response.Data));
@@ -58,13 +58,13 @@ public class LeaderboardCommand(CachedClient client, Configuration configuration
     }
 
     private List<string> GetPlacements(List<TrackLeaderboardEntry> entries) =>
-        [.. entries.Take(configuration.MaxLeaderboardEntries).Select(e => RankFormatter.ToMedalFormat(e.Rank))];
+        [.. entries.Take(botConfiguration.MaxLeaderboardEntries).Select(e => RankFormatter.ToMedalFormat(e.Rank))];
 
     private List<string> GetPlayers(List<TrackLeaderboardEntry> entries) =>
-        [.. entries.Take(configuration.MaxLeaderboardEntries).Select(e => MessageTextFormat.Bold(e.Holder))];
+        [.. entries.Take(botConfiguration.MaxLeaderboardEntries).Select(e => MessageTextFormat.Bold(e.Holder))];
 
     private List<string> GetTimes(List<TrackLeaderboardEntry> entries) =>
-        [.. entries.Take(configuration.MaxLeaderboardEntries).Select(e => ScoreFormatter.AsIngameTime(e.MinScore))];
+        [.. entries.Take(botConfiguration.MaxLeaderboardEntries).Select(e => ScoreFormatter.AsIngameTime(e.MinScore))];
 
     private async Task<CustomTrack?> FindCustomTrack(string trackId)
     {
