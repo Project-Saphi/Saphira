@@ -85,6 +85,26 @@ Get the leaderboard for a specific track and category.
 **Response:**
 - Top 20 times for the specified track and category
 
+### `/matchup`
+Get the matchup between 2 players for a particular category.
+
+**Usage:**
+```
+/matchup player1:<player-name> player2:<player-name> category:<category-name>
+```
+
+**Parameters:**
+- `player1` - The name of the first player (autocomplete available)
+- `player2` - The name of the second player (autocomplete available)
+- `category` - The racing category (autocomplete available)
+
+**Response:**
+- A detailed matchup containing the winner score and loser score, as well as a comparison of personal best times on all common tracks
+
+**Notes:**
+- Player 1 and Player 2 must be 2 different players
+- Player 1 and Player 2 must have at least one track in common that they have played
+
 ### `/pbs`
 Get personal best times for a player across all tracks.
 
