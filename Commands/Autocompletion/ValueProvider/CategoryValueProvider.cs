@@ -1,9 +1,11 @@
 using Discord;
+using Saphira.Extensions.DependencyInjection;
 using Saphira.Saphi.Api;
 using Saphira.Util.Logging;
 
 namespace Saphira.Commands.Autocompletion.ValueProvider;
 
+[AutoRegister]
 public class CategoryValueProvider(CachedClient client, IMessageLogger logger) : IValueProvider
 {
     public async Task<List<Value>> GetValuesAsync()

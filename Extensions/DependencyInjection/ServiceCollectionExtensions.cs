@@ -1,5 +1,6 @@
 using Discord;
 using Microsoft.Extensions.DependencyInjection;
+using Saphira.Commands.Autocompletion.ValueProvider;
 using Saphira.Cronjobs;
 using Saphira.Discord.EventSubscriber;
 using Saphira.Util.Logging;
@@ -9,7 +10,7 @@ namespace Saphira.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCronjobs(this IServiceCollection services, bool requireAttribute = false)
+    public static IServiceCollection AddCronjobs(this IServiceCollection services, bool requireAttribute = true)
     {
         foreach (var type in GetTypesImplementing(typeof(ICronjob), requireAttribute))
         {
@@ -19,7 +20,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static void RegisterCronjobs(this IServiceProvider serviceProvider, bool requireAttribute = false)
+    public static void RegisterCronjobs(this IServiceProvider serviceProvider, bool requireAttribute = true)
     {
         var cronjobScheduler = serviceProvider.GetRequiredService<CronjobScheduler>();
         var logger = serviceProvider.GetRequiredService<IMessageLogger>();
@@ -33,7 +34,7 @@ public static class ServiceCollectionExtensions
         }
     }
 
-    public static IServiceCollection AddEventSubscribers(this IServiceCollection services, bool requireAttribute = false)
+    public static IServiceCollection AddEventSubscribers(this IServiceCollection services, bool requireAttribute = true)
     {
         foreach (var type in GetTypesImplementing(typeof(IDiscordSocketClientEventSubscriber), requireAttribute))
         {
@@ -43,7 +44,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static void RegisterEventSubscribers(this IServiceProvider serviceProvider, bool requireAttribute = false)
+    public static void RegisterEventSubscribers(this IServiceProvider serviceProvider, bool requireAttribute = true)
     {
         var logger = serviceProvider.GetRequiredService<IMessageLogger>();
 
@@ -56,7 +57,17 @@ public static class ServiceCollectionExtensions
         }
     }
 
-    private static IEnumerable<Type> GetTypesImplementing(Type interfaceType, bool requireAttribute = false)
+    public static IServiceCollection AddValueProviders(this IServiceCollection services, bool requireAttribute = true)
+    {
+        foreach (var type in GetTypesImplementing(typeof(IValueProvider), requireAttribute))
+        {
+            services.AddTransient(type);
+        }
+
+        return services;
+    }
+
+    private static IEnumerable<Type> GetTypesImplementing(Type interfaceType, bool requireAttribute = true)
     {
         var assembly = Assembly.GetExecutingAssembly();
         var attributeType = typeof(AutoRegisterAttribute);

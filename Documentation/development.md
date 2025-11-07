@@ -77,6 +77,20 @@ public class PBsCommand() : InteractionModuleBase<SocketInteractionContext>
 }
 ```
 
+To be able to use a `ValueProvider` as a dependency, you can attach the `AutoRegister` attribute to it. That way, the `ValueProvider` is automatically added to the service collection when Saphira is started:
+
+```csharp
+using Saphira.Extensions.DependencyInjection;
+
+namespace Saphira.Commands.Autocompletion.ValueProvider;
+
+[AutoRegister]
+public class PlayerValueProvider(CachedClient client) : IValueProvider
+{
+    // Other code ...
+}
+```
+
 ## Event Subscribers
 
 Since [Discord.NET](https://docs.discordnet.dev/index.html)'s way of subscribing to events is very barebones, I decided to wrap a thin layer around the event system. Basically, it allows you to move event subscribers to a separate class and auto-register them, so you don't need to take care of instantiating the class and manually registering the event subscriber.

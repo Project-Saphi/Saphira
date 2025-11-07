@@ -107,11 +107,6 @@ public class Program
             .AddSingleton<CachedClient>()
             .AddSingleton<IMessageLogger, ConsoleMessageLogger>()
             .AddSingleton<CronjobScheduler>()
-            .AddTransient<CustomTrackValueProvider>()
-            .AddTransient<CategoryValueProvider>()
-            .AddTransient<CharacterValueProvider>()
-            .AddTransient<PlayerValueProvider>()
-            .AddTransient<ToggleableRoleValueProvider>()
             .AddTransient<GuildManager>()
             .AddTransient<ScoreFormatter>()
             .AddTransient<InviteLinkDetector>()
@@ -121,6 +116,7 @@ public class Program
             .AddMemoryCache()
             .AddCronjobs()
             .AddEventSubscribers()
+            .AddValueProviders()
             .BuildServiceProvider();
     }
 }
