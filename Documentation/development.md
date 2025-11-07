@@ -9,6 +9,7 @@
 - [Event Subscribers](#event-subscribers)
 - [Cronjobs](#cronjobs)
 - [Logging](#logging)
+- [ASCII Tables](#ascii-tables)
 
 ## Command Preconditions
 
@@ -234,3 +235,93 @@ Messages written to the console using the `ConsoleMessageLogger` will look like 
 ```
 
 All messages contain the current timestamp, the source, and the message.
+
+## ASCII Tables
+
+It's 2025 and yet Discord still provides no way to display content as a table. While embeds support up to 3 columns they don't have a very nice mobile layout and are also limited by the maximum amount of characters in embed fields.
+
+That's where ASCII tables come into play: Free from some of the restrictions of embeds, ASCII tables can be a nice alternative to displaying tables. The `AsciiTableBuilder` is a utility class to build such tables and render them. It automatically handles column width calculations, text alignment, and wrapping content in code blocks for proper monospace formatting.
+
+### Basic Usage
+
+```csharp
+using Saphira.Discord.Messaging;
+
+var table = new AsciiTableBuilder()
+    .AddHeader("Track", "Player", "Time")
+    .AddRow("Crash Cove", "Garma", "1:15.23")
+    .AddRow("Roo's Tubes", "Niikasd", "1:42.89")
+    .AddRow("Tiger Temple", "RedHot", "1:38.45")
+    .Build();
+
+await ReplyAsync(table);
+```
+
+This produces:
+
+```
+| Track        | Player  | Time    |
+|--------------|---------|---------|
+| Crash Cove   | Garma   | 1:15.23 |
+| Roo's Tubes  | Niikasd | 1:42.89 |
+| Tiger Temple | RedHot  | 1:38.45 |
+```
+
+### Available Methods
+
+#### AddHeader(params string[] headers)
+
+Adds column headers to the table. This should be called before adding rows.
+
+```csharp
+.AddHeader("Column1", "Column2", "Column3")
+```
+
+#### AddRow(params object[] cells)
+
+Adds a data row to the table. Accepts any type of object (will be converted to string). If fewer cells are provided than there are headers, the remaining cells will be empty.
+
+```csharp
+.AddRow("Value1", "Value2", "Value3")
+.AddRow(123, 456.78, true)  // Works with any object type
+```
+
+#### SetColumnAlignment(int columnIndex, ColumnAlignment alignment)
+
+Sets the text alignment for a specific column. Available alignments: `Left`, `Right`, `Center`.
+
+```csharp
+.SetColumnAlignment(0, AsciiTableBuilder.ColumnAlignment.Left)
+.SetColumnAlignment(1, AsciiTableBuilder.ColumnAlignment.Right)
+.SetColumnAlignment(2, AsciiTableBuilder.ColumnAlignment.Center)
+```
+
+#### SetColumnSeparator(char separator)
+
+Changes the column separator character (default: `|`).
+
+```csharp
+.SetColumnSeparator('│')  // Unicode box drawing character
+```
+
+#### SetHeaderSeparator(char separator)
+
+Changes the header separator character (default: `-`).
+
+```csharp
+.SetHeaderSeparator('═')  // Unicode box drawing character
+```
+
+#### SetWrapInCodeBlock(bool wrap)
+
+Controls whether the table should be wrapped in Discord code blocks (default: `true`). When enabled, the table is wrapped in triple backticks for proper monospace formatting.
+
+```csharp
+.SetWrapInCodeBlock(false)  // Don't wrap in code block
+```
+
+There is generally no reason to disable this, as rendering without monospace formatting will likely mess up the layout of the table.
+
+#### Build()
+
+Builds and returns the final table as a string.
