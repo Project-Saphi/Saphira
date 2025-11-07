@@ -3,13 +3,14 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
+using Saphira.Util.Logging;
 
 namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 [RequireTeamMemberRole]
-public class PurgeCommand : InteractionModuleBase<SocketInteractionContext>
+public class PurgeCommand(IMessageLogger logger) : InteractionModuleBase<SocketInteractionContext>
 {
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("purge", "Delete the last X messages in the current channel")]
@@ -41,6 +42,7 @@ public class PurgeCommand : InteractionModuleBase<SocketInteractionContext>
         try
         {
             await textChannel.DeleteMessagesAsync(messagesToDelete);
+            logger.Log(LogSeverity.Info, Context.User.Username, $"Purged {messagesToDelete.Count} messages in channel {textChannel.Name} ({textChannel.Id})");
         }
         catch (Exception ex)
         {

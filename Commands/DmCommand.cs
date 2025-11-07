@@ -3,17 +3,18 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
+using Saphira.Util.Logging;
 
 namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 [RequireTeamMemberRole]
-public class DmCommand : InteractionModuleBase<SocketInteractionContext>
+public class DmCommand(IMessageLogger logger) : InteractionModuleBase<SocketInteractionContext>
 {
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("dm", "DM someone as Saphira")]
-    public async Task HandleCommand(string message, SocketGuildUser user)
+    public async Task HandleCommand([MaxLength(2000)] string message, SocketGuildUser user)
     {
         await DeferAsync();
 
@@ -23,6 +24,8 @@ public class DmCommand : InteractionModuleBase<SocketInteractionContext>
 
             var successAlert = new SuccessAlertEmbedBuilder($"Successfully sent DM to {user.Mention}.");
             await FollowupAsync(embed: successAlert.Build());
+
+            logger.Log(LogSeverity.Info, Context.User.Username, $"DM send to {user.Username} ({user.Id}): {message}");
         }
         catch (Exception ex)
         {

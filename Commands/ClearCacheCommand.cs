@@ -3,13 +3,14 @@ using Discord.Interactions;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 using Saphira.Extensions.Caching;
+using Saphira.Util.Logging;
 
 namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 [RequireTeamMemberRole]
-public class ClearCacheCommand(CacheInvalidationService cacheInvalidationService) : InteractionModuleBase<SocketInteractionContext>
+public class ClearCacheCommand(CacheInvalidationService cacheInvalidationService, IMessageLogger logger) : InteractionModuleBase<SocketInteractionContext>
 {
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("clearcache", "Invalidate all cached data")]
@@ -23,6 +24,8 @@ public class ClearCacheCommand(CacheInvalidationService cacheInvalidationService
 
             var successAlert = new SuccessAlertEmbedBuilder("Successfully invalidated all cache entries. Data will be refreshed on next request.");
             await FollowupAsync(embed: successAlert.Build());
+
+            logger.Log(LogSeverity.Info, Context.User.Username, "Cache invalidated");
         }
         catch (Exception ex)
         {

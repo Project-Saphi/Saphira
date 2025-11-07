@@ -3,17 +3,18 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
+using Saphira.Util.Logging;
 
 namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 [RequireTeamMemberRole]
-public class PostCommand : InteractionModuleBase<SocketInteractionContext>
+public class PostCommand(IMessageLogger logger) : InteractionModuleBase<SocketInteractionContext>
 {
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("post", "Send a message as Saphira")]
-    public async Task HandleCommand(string message, SocketChannel channel)
+    public async Task HandleCommand([MaxLength(2000)] string message, SocketChannel channel)
     {
         await DeferAsync();
 
@@ -28,5 +29,7 @@ public class PostCommand : InteractionModuleBase<SocketInteractionContext>
 
         var successAlert = new SuccessAlertEmbedBuilder("Message has been sent successfully.");
         await FollowupAsync(embed: successAlert.Build());
+
+        logger.Log(LogSeverity.Info, Context.User.Username, $"Message sent as Saphira in channel {textChannel.Name} ({textChannel.Id}): {message}");
     }
 }

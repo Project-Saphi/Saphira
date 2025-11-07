@@ -56,7 +56,7 @@ public class InteractionHandler(DiscordSocketClient client, InteractionService i
 
             if (interaction.Type == InteractionType.ApplicationCommand)
             {
-                await RespondToInteractionAsync(interaction, $"An error occurred: {ex.Message}");
+                await RespondToInteractionAsync(interaction, $"An error occurred executing the command. See console log for more information.");
             }
         }
     }
@@ -79,7 +79,7 @@ public class InteractionHandler(DiscordSocketClient client, InteractionService i
 
             try
             {
-                await RespondToInteractionAsync(context.Interaction, errorMessage);
+                await RespondToInteractionAsync(context.Interaction, "An error occurred while handling this interaction. See console log for more information.");
             }
             catch (Exception ex)
             {

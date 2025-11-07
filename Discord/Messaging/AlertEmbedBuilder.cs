@@ -4,7 +4,8 @@ namespace Saphira.Discord.Messaging;
 
 public class AlertEmbedBuilder : EmbedBuilder
 {
-    public enum AlertType {
+    public enum AlertType
+    {
         Primary,
         Info,
         Success,

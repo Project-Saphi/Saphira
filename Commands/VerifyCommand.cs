@@ -3,13 +3,14 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
+using Saphira.Util.Logging;
 
 namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 [RequireTeamMemberRole]
-public class VerifyCommand : InteractionModuleBase<SocketInteractionContext>
+public class VerifyCommand(IMessageLogger logger) : InteractionModuleBase<SocketInteractionContext>
 {
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("verify", "Verify a user")]
@@ -39,6 +40,8 @@ public class VerifyCommand : InteractionModuleBase<SocketInteractionContext>
 
             var successAlert = new SuccessAlertEmbedBuilder($"Successfully verified {user.Mention}.");
             await FollowupAsync(embed: successAlert.Build());
+
+            logger.Log(LogSeverity.Info, Context.User.Username, $"Verified user {user.Username} ({user.Id})");
         }
         catch (Exception ex)
         {

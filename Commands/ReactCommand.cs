@@ -3,13 +3,14 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
+using Saphira.Util.Logging;
 
 namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 [RequireTeamMemberRole]
-public class ReactCommand : InteractionModuleBase<SocketInteractionContext>
+public class ReactCommand(IMessageLogger logger) : InteractionModuleBase<SocketInteractionContext>
 {
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("react", "React to a message as Saphira")]
@@ -46,6 +47,8 @@ public class ReactCommand : InteractionModuleBase<SocketInteractionContext>
 
             var successAlert = new SuccessAlertEmbedBuilder($"Successfully reacted to message {parsedMessageId} with {emote.Name}");
             await FollowupAsync(embed: successAlert.Build());
+
+            logger.Log(LogSeverity.Info, Context.User.Username, $"Reacted to message {parsedMessageId} with emote {emote.Name}");
         }
         catch (Exception ex)
         {

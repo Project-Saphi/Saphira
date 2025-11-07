@@ -32,6 +32,7 @@ public class CachedClient
             _httpClient.DefaultRequestHeaders.Add("Saphi-Api-Key", _configuration.SaphiApiKey);
         }
 
+        _httpClient.Timeout = TimeSpan.FromSeconds(30);
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
@@ -190,6 +191,14 @@ public class CachedClient
                 ErrorMessage = $"Failed to parse JSON: {ex.Message}"
             };
         }
+        catch (TaskCanceledException ex)
+        {
+            return new Result<T>
+            {
+                Success = false,
+                ErrorMessage = $"A timeout occured when calling the API: {ex.Message}"
+            };
+        }
         catch (Exception ex)
         {
             return new Result<T>
@@ -215,7 +224,17 @@ public class CachedClient
         {
             entry.AbsoluteExpirationRelativeToNow = cacheDuration;
             entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
-            return await fetchFunc();
+            
+            var result = await fetchFunc();
+
+            // it is possible that the request fails and the result is not successfull,
+            // so we set the cache duration to 0 to avoid cache poisoning
+            if (!result.Success)
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.Zero;
+            }
+
+            return result;
         }) ?? new Result<T>
         {
             Success = false,

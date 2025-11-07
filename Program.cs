@@ -28,9 +28,8 @@ public class Program
     {
         var config = BuildConfiguration();
 
-        if (string.IsNullOrWhiteSpace(config.BotToken))
+        if (!ValidateConfiguration(config))
         {
-            Console.WriteLine("Bot token is missing in config.json. Unable to start Saphira.");
             return;
         }
 
@@ -63,14 +62,29 @@ public class Program
         return configuration.Get<Configuration>() ?? throw new Exception("Failed to load configuration from config.json");
     }
 
+    private static bool ValidateConfiguration(Configuration config)
+    {
+        if (string.IsNullOrWhiteSpace(config.BotToken))
+        {
+            Console.WriteLine("Bot token is missing in config.json. Unable to start Saphira.");
+            return false;
+        }
+
+        if (!config.SaphiApiBaseUrl.StartsWith("https"))
+        {
+            Console.WriteLine("Connection to the Saphi API can only be established via HTTPS.");
+            return false;
+        }
+
+        return true;
+    }
+
     private static DiscordSocketClient CreateClient()
     {
         var clientConfig = new DiscordSocketConfig
         {
-            AlwaysDownloadUsers = true,
             AuditLogCacheSize = 0,
-            GatewayIntents = GatewayIntents.All,
-            LogGatewayIntentWarnings = false,
+            GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMembers | GatewayIntents.GuildMessages | GatewayIntents.MessageContent,
             MessageCacheSize = 100
         };
 
