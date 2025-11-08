@@ -4,6 +4,7 @@ using Saphira.Commands.Autocompletion;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 using Saphira.Util.Game.Matchup;
+using Saphira.Util.Mapper;
 
 namespace Saphira.Commands;
 
@@ -79,12 +80,12 @@ public class MatchupCommand(PlayerMatchupCalculator playerMatchupGenerator) : In
             .WithIsInline(true);
 
         var winnerTimesField = new EmbedFieldBuilder()
-            .WithName($":bust_in_silhouette: {MessageTextFormat.Bold(playerMatchup.PlayerName1)}")
+            .WithName($"{CountryEmoteMapper.MapCountryToEmote(playerMatchup.CountryName1)} {MessageTextFormat.Bold(playerMatchup.PlayerName1)}")
             .WithValue(String.Join("\n", player1Times))
             .WithIsInline(true);
 
         var loserTimesField = new EmbedFieldBuilder()
-            .WithName($":bust_in_silhouette: {MessageTextFormat.Bold(playerMatchup.PlayerName2)}")
+            .WithName($"{CountryEmoteMapper.MapCountryToEmote(playerMatchup.CountryName2)} {MessageTextFormat.Bold(playerMatchup.PlayerName2)}")
             .WithValue(String.Join ("\n", player2Times))
             .WithIsInline(true);
 

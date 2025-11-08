@@ -4,6 +4,7 @@ using Saphira.Commands.Autocompletion;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 using Saphira.Saphi.Api;
+using Saphira.Util.Mapper;
 
 namespace Saphira.Commands;
 
@@ -26,6 +27,7 @@ public class AchievementsCommand(CachedClient client) : InteractionModuleBase<So
         }
 
         var stats = result.Response.Data.Stats;
+        var country = result.Response.Data.Country;
 
         var content = new[]
         {
@@ -38,9 +40,9 @@ public class AchievementsCommand(CachedClient client) : InteractionModuleBase<So
 
         var embed = new EmbedBuilder();
         
-        var field = new EmbedFieldBuilder();
-        field.WithName($"{result.Response.Data.Username}'s Achievements");
-        field.WithValue(String.Join("\n", content));
+        var field = new EmbedFieldBuilder()
+            .WithName($"{CountryEmoteMapper.MapCountryToEmote(country.Name)} {result.Response.Data.Username}'s Achievements")
+            .WithValue(String.Join("\n", content));
 
         embed.AddField(field);
 

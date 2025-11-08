@@ -6,6 +6,7 @@ using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
 using Saphira.Util.Game;
 using Saphira.Util.Logging;
+using Saphira.Util.Mapper;
 
 namespace Saphira.Cronjobs;
 
@@ -69,15 +70,16 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, CachedClie
             $"{MessageTextFormat.Bold("Track")}: {submission.TrackName}",
             $"{MessageTextFormat.Bold("Category")}: {submission.CategoryName}",
             $"{MessageTextFormat.Bold("Time")}: {ScoreFormatter.AsIngameTime(submission.Score.ToString())}",
-            $"{MessageTextFormat.Bold("Character")}: {submission.CharacterName}",
-            $"{MessageTextFormat.Bold("Engine")}: {submission.EngineName}"
+            $"{MessageTextFormat.Bold("Character")}: {CharacterEmoteMapper.MapCharacterToEmote(submission.CharacterName)}",
+            $"{MessageTextFormat.Bold("Engine")}: {EngineEmoteMapper.MapEngineToEmote(submission.EngineName)}",
+            $"{MessageTextFormat.Bold("Country")}: {CountryEmoteMapper.MapCountryToEmote(submission.CountryName)}"
         };
 
         var embed = new EmbedBuilder()
             .WithColor(5526696)
             .WithThumbnailUrl("https://i.imgur.com/esMgq3Y.png")
             .WithAuthor($"New submission by {submission.Username}")
-            .WithFooter($"Time: {submission.SubmitDate}");
+            .WithTimestamp(DateTimeOffset.Now);
 
         var dataField = new EmbedFieldBuilder()
             .WithName($":receipt: {MessageTextFormat.Bold("Details")}")

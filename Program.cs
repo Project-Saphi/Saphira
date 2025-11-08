@@ -3,7 +3,6 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Saphira.Commands.Autocompletion.ValueProvider;
 using Saphira.Cronjobs;
 using Saphira.Discord;
 using Saphira.Discord.Guild;

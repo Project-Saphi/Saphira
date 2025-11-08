@@ -1,0 +1,1007 @@
+[
+  {
+    "id": "0",
+    "name": "N/A",
+    "emote": ":united_nations:"
+  },
+  {
+    "id": "1",
+    "name": "Afghanistan",
+    "emote": ":flag_af:"
+  },
+  {
+    "id": "2",
+    "name": "Albania",
+    "emote": ":flag_al:"
+  },
+  {
+    "id": "3",
+    "name": "Algeria",
+    "emote": ":flag_dz:"
+  },
+  {
+    "id": "4",
+    "name": "Andorra",
+    "emote": ":flag_ad:"
+  },
+  {
+    "id": "5",
+    "name": "Angola",
+    "emote": ":flag_ao:"
+  },
+  {
+    "id": "6",
+    "name": "Antigua and Barbuda",
+    "emote": ":flag_ag:"
+  },
+  {
+    "id": "7",
+    "name": "Argentina",
+    "emote": ":flag_ar:"
+  },
+  {
+    "id": "8",
+    "name": "Armenia",
+    "emote": ":flag_am:"
+  },
+  {
+    "id": "9",
+    "name": "Australia",
+    "emote": ":flag_au:"
+  },
+  {
+    "id": "10",
+    "name": "Austria",
+    "emote": ":flag_at:"
+  },
+  {
+    "id": "11",
+    "name": "Azerbaijan",
+    "emote": ":flag_az:"
+  },
+  {
+    "id": "12",
+    "name": "Bahamas",
+    "emote": ":flag_bs:"
+  },
+  {
+    "id": "13",
+    "name": "Bahrain",
+    "emote": ":flag_bh:"
+  },
+  {
+    "id": "14",
+    "name": "Bangladesh",
+    "emote": ":flag_bd:"
+  },
+  {
+    "id": "15",
+    "name": "Barbados",
+    "emote": ":flag_bb:"
+  },
+  {
+    "id": "16",
+    "name": "Belarus",
+    "emote": ":flag_by:"
+  },
+  {
+    "id": "17",
+    "name": "Belgium",
+    "emote": ":flag_be:"
+  },
+  {
+    "id": "18",
+    "name": "Belize",
+    "emote": ":flag_bz:"
+  },
+  {
+    "id": "19",
+    "name": "Benin",
+    "emote": ":flag_bj:"
+  },
+  {
+    "id": "20",
+    "name": "Bhutan",
+    "emote": ":flag_bt:"
+  },
+  {
+    "id": "21",
+    "name": "Bolivia",
+    "emote": ":flag_bo:"
+  },
+  {
+    "id": "22",
+    "name": "Bosnia and Herzegovina",
+    "emote": ":flag_ba:"
+  },
+  {
+    "id": "23",
+    "name": "Botswana",
+    "emote": ":flag_bw:"
+  },
+  {
+    "id": "24",
+    "name": "Brazil",
+    "emote": ":flag_br:"
+  },
+  {
+    "id": "25",
+    "name": "Brunei",
+    "emote": ":flag_bn:"
+  },
+  {
+    "id": "26",
+    "name": "Bulgaria",
+    "emote": ":flag_bg:"
+  },
+  {
+    "id": "27",
+    "name": "Burkina Faso",
+    "emote": ":flag_bf:"
+  },
+  {
+    "id": "28",
+    "name": "Burundi",
+    "emote": ":flag_bi:"
+  },
+  {
+    "id": "29",
+    "name": "Cabo Verde",
+    "emote": ":flag_cv:"
+  },
+  {
+    "id": "30",
+    "name": "Cambodia",
+    "emote": ":flag_kh:"
+  },
+  {
+    "id": "31",
+    "name": "Cameroon",
+    "emote": ":flag_cm:"
+  },
+  {
+    "id": "32",
+    "name": "Canada",
+    "emote": ":flag_ca:"
+  },
+  {
+    "id": "33",
+    "name": "Central African Republic",
+    "emote": ":flag_cf:"
+  },
+  {
+    "id": "34",
+    "name": "Chad",
+    "emote": ":flag_td:"
+  },
+  {
+    "id": "35",
+    "name": "Chile",
+    "emote": ":flag_cl:"
+  },
+  {
+    "id": "36",
+    "name": "China",
+    "emote": ":flag_cn:"
+  },
+  {
+    "id": "37",
+    "name": "Colombia",
+    "emote": ":flag_co:"
+  },
+  {
+    "id": "38",
+    "name": "Comoros",
+    "emote": ":flag_km:"
+  },
+  {
+    "id": "39",
+    "name": "DR Congo",
+    "emote": ":flag_cd:"
+  },
+  {
+    "id": "40",
+    "name": "The Congo",
+    "emote": ":flag_cg:"
+  },
+  {
+    "id": "41",
+    "name": "Costa Rica",
+    "emote": ":flag_cr:"
+  },
+  {
+    "id": "42",
+    "name": "Cote d'Ivoire",
+    "emote": ":flag_ci:"
+  },
+  {
+    "id": "43",
+    "name": "Croatia",
+    "emote": ":flag_hr:"
+  },
+  {
+    "id": "44",
+    "name": "Cuba",
+    "emote": ":flag_cu:"
+  },
+  {
+    "id": "45",
+    "name": "Cyprus",
+    "emote": ":flag_cy:"
+  },
+  {
+    "id": "46",
+    "name": "Czechia",
+    "emote": ":flag_cz:"
+  },
+  {
+    "id": "47",
+    "name": "Denmark",
+    "emote": ":flag_dk:"
+  },
+  {
+    "id": "48",
+    "name": "Djibouti",
+    "emote": ":flag_dj:"
+  },
+  {
+    "id": "49",
+    "name": "Dominica",
+    "emote": ":flag_dm:"
+  },
+  {
+    "id": "50",
+    "name": "Dominican Republic",
+    "emote": ":flag_do:"
+  },
+  {
+    "id": "51",
+    "name": "Ecuador",
+    "emote": ":flag_ec:"
+  },
+  {
+    "id": "52",
+    "name": "Egypt",
+    "emote": ":flag_eg:"
+  },
+  {
+    "id": "53",
+    "name": "El Salvador",
+    "emote": ":flag_sv:"
+  },
+  {
+    "id": "54",
+    "name": "Equatorial Guinea",
+    "emote": ":flag_gq:"
+  },
+  {
+    "id": "55",
+    "name": "Eritrea",
+    "emote": ":flag_er:"
+  },
+  {
+    "id": "56",
+    "name": "Estonia",
+    "emote": ":flag_ee:"
+  },
+  {
+    "id": "57",
+    "name": "Eswatini",
+    "emote": ":flag_sz:"
+  },
+  {
+    "id": "58",
+    "name": "Ethiopia",
+    "emote": ":flag_et:"
+  },
+  {
+    "id": "59",
+    "name": "Fiji",
+    "emote": ":flag_fj:"
+  },
+  {
+    "id": "60",
+    "name": "Finland",
+    "emote": ":flag_fi:"
+  },
+  {
+    "id": "61",
+    "name": "France",
+    "emote": ":flag_fr:"
+  },
+  {
+    "id": "62",
+    "name": "Gabon",
+    "emote": ":flag_ga:"
+  },
+  {
+    "id": "63",
+    "name": "Gambia",
+    "emote": ":flag_gm:"
+  },
+  {
+    "id": "64",
+    "name": "Georgia",
+    "emote": ":flag_ge:"
+  },
+  {
+    "id": "65",
+    "name": "Germany",
+    "emote": ":flag_de:"
+  },
+  {
+    "id": "66",
+    "name": "Ghana",
+    "emote": ":flag_gh:"
+  },
+  {
+    "id": "67",
+    "name": "Greece",
+    "emote": ":flag_gr:"
+  },
+  {
+    "id": "68",
+    "name": "Grenada",
+    "emote": ":flag_gd:"
+  },
+  {
+    "id": "69",
+    "name": "Guatemala",
+    "emote": ":flag_gt:"
+  },
+  {
+    "id": "70",
+    "name": "Guinea",
+    "emote": ":flag_gn:"
+  },
+  {
+    "id": "71",
+    "name": "Guinea-Bissau",
+    "emote": ":flag_gw:"
+  },
+  {
+    "id": "72",
+    "name": "Guyana",
+    "emote": ":flag_gy:"
+  },
+  {
+    "id": "73",
+    "name": "Haiti",
+    "emote": ":flag_ht:"
+  },
+  {
+    "id": "74",
+    "name": "Honduras",
+    "emote": ":flag_hn:"
+  },
+  {
+    "id": "75",
+    "name": "Hungary",
+    "emote": ":flag_hu:"
+  },
+  {
+    "id": "76",
+    "name": "Iceland",
+    "emote": ":flag_is:"
+  },
+  {
+    "id": "77",
+    "name": "India",
+    "emote": ":flag_in:"
+  },
+  {
+    "id": "78",
+    "name": "Indonesia",
+    "emote": ":flag_id:"
+  },
+  {
+    "id": "79",
+    "name": "Iran",
+    "emote": ":flag_ir:"
+  },
+  {
+    "id": "80",
+    "name": "Iraq",
+    "emote": ":flag_iq:"
+  },
+  {
+    "id": "81",
+    "name": "Ireland",
+    "emote": ":flag_ie:"
+  },
+  {
+    "id": "82",
+    "name": "Israel",
+    "emote": ":flag_il:"
+  },
+  {
+    "id": "83",
+    "name": "Italy",
+    "emote": ":flag_it:"
+  },
+  {
+    "id": "84",
+    "name": "Jamaica",
+    "emote": ":flag_jm:"
+  },
+  {
+    "id": "85",
+    "name": "Japan",
+    "emote": ":flag_jp:"
+  },
+  {
+    "id": "86",
+    "name": "Jordan",
+    "emote": ":flag_jo:"
+  },
+  {
+    "id": "87",
+    "name": "Kazakhstan",
+    "emote": ":flag_kz:"
+  },
+  {
+    "id": "88",
+    "name": "Kenya",
+    "emote": ":flag_ke:"
+  },
+  {
+    "id": "89",
+    "name": "Kiribati",
+    "emote": ":flag_ki:"
+  },
+  {
+    "id": "90",
+    "name": "Kosovo",
+    "emote": ":flag_xk:"
+  },
+  {
+    "id": "91",
+    "name": "Kuwait",
+    "emote": ":flag_kw:"
+  },
+  {
+    "id": "92",
+    "name": "Kyrgyzstan",
+    "emote": ":flag_kg:"
+  },
+  {
+    "id": "93",
+    "name": "Laos",
+    "emote": ":flag_la:"
+  },
+  {
+    "id": "94",
+    "name": "Latvia",
+    "emote": ":flag_lv:"
+  },
+  {
+    "id": "95",
+    "name": "Lebanon",
+    "emote": ":flag_lb:"
+  },
+  {
+    "id": "96",
+    "name": "Lesotho",
+    "emote": ":flag_ls:"
+  },
+  {
+    "id": "97",
+    "name": "Liberia",
+    "emote": ":flag_lr:"
+  },
+  {
+    "id": "98",
+    "name": "Libya",
+    "emote": ":flag_ly:"
+  },
+  {
+    "id": "99",
+    "name": "Liechtenstein",
+    "emote": ":flag_li:"
+  },
+  {
+    "id": "100",
+    "name": "Lithuania",
+    "emote": ":flag_lt:"
+  },
+  {
+    "id": "101",
+    "name": "Luxembourg",
+    "emote": ":flag_lu:"
+  },
+  {
+    "id": "102",
+    "name": "Madagascar",
+    "emote": ":flag_mg:"
+  },
+  {
+    "id": "103",
+    "name": "Malawi",
+    "emote": ":flag_mw:"
+  },
+  {
+    "id": "104",
+    "name": "Malaysia",
+    "emote": ":flag_my:"
+  },
+  {
+    "id": "105",
+    "name": "Maldives",
+    "emote": ":flag_mv:"
+  },
+  {
+    "id": "106",
+    "name": "Mali",
+    "emote": ":flag_ml:"
+  },
+  {
+    "id": "107",
+    "name": "Malta",
+    "emote": ":flag_mt:"
+  },
+  {
+    "id": "108",
+    "name": "Marshall Islands",
+    "emote": ":flag_mh:"
+  },
+  {
+    "id": "109",
+    "name": "Mauritania",
+    "emote": ":flag_mr:"
+  },
+  {
+    "id": "110",
+    "name": "Mauritius",
+    "emote": ":flag_mu:"
+  },
+  {
+    "id": "111",
+    "name": "Mexico",
+    "emote": ":flag_mx:"
+  },
+  {
+    "id": "112",
+    "name": "Micronesia",
+    "emote": ":flag_fm:"
+  },
+  {
+    "id": "113",
+    "name": "Moldova",
+    "emote": ":flag_md:"
+  },
+  {
+    "id": "114",
+    "name": "Monaco",
+    "emote": ":flag_mc:"
+  },
+  {
+    "id": "115",
+    "name": "Mongolia",
+    "emote": ":flag_mn:"
+  },
+  {
+    "id": "116",
+    "name": "Montenegro",
+    "emote": ":flag_me:"
+  },
+  {
+    "id": "117",
+    "name": "Morocco",
+    "emote": ":flag_ma:"
+  },
+  {
+    "id": "118",
+    "name": "Mozambique",
+    "emote": ":flag_mz:"
+  },
+  {
+    "id": "119",
+    "name": "Myanmar",
+    "emote": ":flag_mm:"
+  },
+  {
+    "id": "120",
+    "name": "Namibia",
+    "emote": ":flag_na:"
+  },
+  {
+    "id": "121",
+    "name": "Nauru",
+    "emote": ":flag_nr:"
+  },
+  {
+    "id": "122",
+    "name": "Nepal",
+    "emote": ":flag_np:"
+  },
+  {
+    "id": "123",
+    "name": "Netherlands",
+    "emote": ":flag_nl:"
+  },
+  {
+    "id": "124",
+    "name": "New Zealand",
+    "emote": ":flag_nz:"
+  },
+  {
+    "id": "125",
+    "name": "Nicaragua",
+    "emote": ":flag_ni:"
+  },
+  {
+    "id": "126",
+    "name": "Niger",
+    "emote": ":flag_ne:"
+  },
+  {
+    "id": "127",
+    "name": "Nigeria",
+    "emote": ":flag_ng:"
+  },
+  {
+    "id": "128",
+    "name": "North Korea",
+    "emote": ":flag_kp:"
+  },
+  {
+    "id": "129",
+    "name": "North Macedonia",
+    "emote": ":flag_mk:"
+  },
+  {
+    "id": "130",
+    "name": "Norway",
+    "emote": ":flag_no:"
+  },
+  {
+    "id": "131",
+    "name": "Oman",
+    "emote": ":flag_om:"
+  },
+  {
+    "id": "132",
+    "name": "Pakistan",
+    "emote": ":flag_pk:"
+  },
+  {
+    "id": "133",
+    "name": "Palau",
+    "emote": ":flag_pw:"
+  },
+  {
+    "id": "134",
+    "name": "Palestine",
+    "emote": ":flag_ps:"
+  },
+  {
+    "id": "135",
+    "name": "Panama",
+    "emote": ":flag_pa:"
+  },
+  {
+    "id": "136",
+    "name": "Papua New Guinea",
+    "emote": ":flag_pg:"
+  },
+  {
+    "id": "137",
+    "name": "Paraguay",
+    "emote": ":flag_py:"
+  },
+  {
+    "id": "138",
+    "name": "Peru",
+    "emote": ":flag_pe:"
+  },
+  {
+    "id": "139",
+    "name": "Philippines",
+    "emote": ":flag_ph:"
+  },
+  {
+    "id": "140",
+    "name": "Poland",
+    "emote": ":flag_pl:"
+  },
+  {
+    "id": "141",
+    "name": "Portugal",
+    "emote": ":flag_pt:"
+  },
+  {
+    "id": "142",
+    "name": "Qatar",
+    "emote": ":flag_qa:"
+  },
+  {
+    "id": "143",
+    "name": "Romania",
+    "emote": ":flag_ro:"
+  },
+  {
+    "id": "144",
+    "name": "Russia",
+    "emote": ":flag_ru:"
+  },
+  {
+    "id": "145",
+    "name": "Rwanda",
+    "emote": ":flag_rw:"
+  },
+  {
+    "id": "146",
+    "name": "Saint Kitts and Nevis",
+    "emote": ":flag_kn:"
+  },
+  {
+    "id": "147",
+    "name": "Saint Lucia",
+    "emote": ":flag_lc:"
+  },
+  {
+    "id": "148",
+    "name": "Saint Vincent",
+    "emote": ":flag_vc:"
+  },
+  {
+    "id": "149",
+    "name": "Samoa",
+    "emote": ":flag_ws:"
+  },
+  {
+    "id": "150",
+    "name": "San Marino",
+    "emote": ":flag_sm:"
+  },
+  {
+    "id": "151",
+    "name": "Sao Tome and Principe",
+    "emote": ":flag_st:"
+  },
+  {
+    "id": "152",
+    "name": "Saudi Arabia",
+    "emote": ":flag_sa:"
+  },
+  {
+    "id": "153",
+    "name": "Senegal",
+    "emote": ":flag_sn:"
+  },
+  {
+    "id": "154",
+    "name": "Serbia",
+    "emote": ":flag_rs:"
+  },
+  {
+    "id": "155",
+    "name": "Seychelles",
+    "emote": ":flag_sc:"
+  },
+  {
+    "id": "156",
+    "name": "Sierra Leone",
+    "emote": ":flag_sl:"
+  },
+  {
+    "id": "157",
+    "name": "Singapore",
+    "emote": ":flag_sg:"
+  },
+  {
+    "id": "158",
+    "name": "Slovakia",
+    "emote": ":flag_sk:"
+  },
+  {
+    "id": "159",
+    "name": "Slovenia",
+    "emote": ":flag_si:"
+  },
+  {
+    "id": "160",
+    "name": "Solomon Islands",
+    "emote": ":flag_sb:"
+  },
+  {
+    "id": "161",
+    "name": "Somalia",
+    "emote": ":flag_so:"
+  },
+  {
+    "id": "162",
+    "name": "South Africa",
+    "emote": ":flag_za:"
+  },
+  {
+    "id": "163",
+    "name": "South Korea",
+    "emote": ":flag_kr:"
+  },
+  {
+    "id": "164",
+    "name": "South Sudan",
+    "emote": ":flag_ss:"
+  },
+  {
+    "id": "165",
+    "name": "Spain",
+    "emote": ":flag_es:"
+  },
+  {
+    "id": "166",
+    "name": "Sri Lanka",
+    "emote": ":flag_lk:"
+  },
+  {
+    "id": "167",
+    "name": "Sudan",
+    "emote": ":flag_sd:"
+  },
+  {
+    "id": "168",
+    "name": "Suriname",
+    "emote": ":flag_sr:"
+  },
+  {
+    "id": "169",
+    "name": "Sweden",
+    "emote": ":flag_se:"
+  },
+  {
+    "id": "170",
+    "name": "Switzerland",
+    "emote": ":flag_ch:"
+  },
+  {
+    "id": "171",
+    "name": "Syria",
+    "emote": ":flag_sy:"
+  },
+  {
+    "id": "172",
+    "name": "Taiwan",
+    "emote": ":flag_tw:"
+  },
+  {
+    "id": "173",
+    "name": "Tajikistan",
+    "emote": ":flag_tj:"
+  },
+  {
+    "id": "174",
+    "name": "Tanzania",
+    "emote": ":flag_tz:"
+  },
+  {
+    "id": "175",
+    "name": "Thailand",
+    "emote": ":flag_th:"
+  },
+  {
+    "id": "176",
+    "name": "Timor-Leste",
+    "emote": ":flag_tl:"
+  },
+  {
+    "id": "177",
+    "name": "Togo",
+    "emote": ":flag_tg:"
+  },
+  {
+    "id": "178",
+    "name": "Tonga",
+    "emote": ":flag_to:"
+  },
+  {
+    "id": "179",
+    "name": "Trinidad and Tobago",
+    "emote": ":flag_tt:"
+  },
+  {
+    "id": "180",
+    "name": "Tunisia",
+    "emote": ":flag_tn:"
+  },
+  {
+    "id": "181",
+    "name": "Turkey",
+    "emote": ":flag_tr:"
+  },
+  {
+    "id": "182",
+    "name": "Turkmenistan",
+    "emote": ":flag_tm:"
+  },
+  {
+    "id": "183",
+    "name": "Tuvalu",
+    "emote": ":flag_tv:"
+  },
+  {
+    "id": "184",
+    "name": "Uganda",
+    "emote": ":flag_ug:"
+  },
+  {
+    "id": "185",
+    "name": "Ukraine",
+    "emote": ":flag_ua:"
+  },
+  {
+    "id": "186",
+    "name": "United Arab Emirates",
+    "emote": ":flag_ae:"
+  },
+  {
+    "id": "187",
+    "name": "United Kingdom",
+    "emote": ":flag_gb:"
+  },
+  {
+    "id": "188",
+    "name": "England",
+    "emote": ":england:"
+  },
+  {
+    "id": "189",
+    "name": "Scotland",
+    "emote": ":scotland:"
+  },
+  {
+    "id": "190",
+    "name": "Wales",
+    "emote": ":wales:"
+  },
+  {
+    "id": "191",
+    "name": "Northern Ireland",
+    "emote": ":flag_gb:"
+  },
+  {
+    "id": "192",
+    "name": "United States of America",
+    "emote": ":flag_us:"
+  },
+  {
+    "id": "193",
+    "name": "Uruguay",
+    "emote": ":flag_uy:"
+  },
+  {
+    "id": "194",
+    "name": "Uzbekistan",
+    "emote": ":flag_uz:"
+  },
+  {
+    "id": "195",
+    "name": "Vanuatu",
+    "emote": ":flag_vu:"
+  },
+  {
+    "id": "196",
+    "name": "Venezuela",
+    "emote": ":flag_ve:"
+  },
+  {
+    "id": "197",
+    "name": "Vietnam",
+    "emote": ":flag_vn:"
+  },
+  {
+    "id": "198",
+    "name": "Yemen",
+    "emote": ":flag_ye:"
+  },
+  {
+    "id": "199",
+    "name": "Zambia",
+    "emote": ":flag_zm:"
+  },
+  {
+    "id": "200",
+    "name": "Zimbabwe",
+    "emote": ":flag_zw:"
+  }
+]

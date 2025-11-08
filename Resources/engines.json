@@ -1,0 +1,22 @@
+[
+  {
+    "id": "0",
+    "name": "Balanced",
+    "emote": "<:balanced:1436694959892992072>"
+  },
+  {
+    "id": "1",
+    "name": "Acceleration",
+    "emote": "<:accel:1436694958328512593>"
+  },
+  {
+    "id": "2",
+    "name": "Speed",
+    "emote": "<:speed:1436694961063071764>"
+  },
+  {
+    "id": "3",
+    "name": "Turn",
+    "emote": "<:turn:1436694962342461612>"
+  }
+]

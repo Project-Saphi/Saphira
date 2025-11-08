@@ -6,6 +6,7 @@ using Saphira.Discord.Messaging;
 using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
 using Saphira.Util.Game;
+using Saphira.Util.Mapper;
 
 namespace Saphira.Commands;
 
@@ -28,23 +29,24 @@ public class LeaderboardCommand(CachedClient client, BotConfiguration botConfigu
             return;
         }
 
-        var customTrackEntity = await FindCustomTrack(customTrack);
+        var trackEntity = await FindCustomTrack(customTrack);
 
         if (result.Response.Data.Count == 0)
         {
-            var warningAlert = new WarningAlertEmbedBuilder($"Nobody has set a time on {customTrackEntity?.Name ?? "Unknown"} yet.");
+            var warningAlert = new WarningAlertEmbedBuilder($"Nobody has set a time on {trackEntity?.Name ?? "Unknown"} yet.");
             await RespondAsync(embed: warningAlert.Build());
             return;
         }
 
         var firstEntry = result.Response.Data.First();
+        var leaderboardData = GetLeaderboardData(result.Response.Data);
 
         var embed = new EmbedBuilder()
-            .WithAuthor($"Top {botConfiguration.MaxLeaderboardEntries} {firstEntry?.CategoryName ?? "Unknown"} times on {customTrackEntity?.Name ?? "Unknown"}");
+            .WithAuthor($"Top {botConfiguration.MaxLeaderboardEntries} {firstEntry?.CategoryName ?? "Unknown"} times on {trackEntity?.Name ?? "Unknown"}");
 
-        AddEmbedField(embed, ":trophy:", "Placement", GetPlacements(result.Response.Data));
-        AddEmbedField(embed, ":bust_in_silhouette:", "Player", GetPlayers(result.Response.Data));
-        AddEmbedField(embed, ":stopwatch:", "Time", GetTimes(result.Response.Data));
+        AddEmbedField(embed, ":trophy:", "Placement", leaderboardData["placements"]);
+        AddEmbedField(embed, ":bust_in_silhouette:", "Player", leaderboardData["players"]);
+        AddEmbedField(embed, ":stopwatch:", "Time", leaderboardData["times"]);
 
         await RespondAsync(embed: embed.Build());
     }
@@ -57,14 +59,30 @@ public class LeaderboardCommand(CachedClient client, BotConfiguration botConfigu
             .WithIsInline(true));
     }
 
-    private List<string> GetPlacements(List<TrackLeaderboardEntry> entries) =>
-        [.. entries.Take(botConfiguration.MaxLeaderboardEntries).Select(e => RankFormatter.ToMedalFormat(e.Rank))];
+    private Dictionary<string, List<string>> GetLeaderboardData(List<TrackLeaderboardEntry> entries)
+    {
+        var dict = new Dictionary<string, List<string>>()
+        {
+            {
+                "placements", []
+            },
+            {
+                "players", []
+            },
+            {
+                "times", []
+            }
+        };
 
-    private List<string> GetPlayers(List<TrackLeaderboardEntry> entries) =>
-        [.. entries.Take(botConfiguration.MaxLeaderboardEntries).Select(e => MessageTextFormat.Bold(e.Holder))];
+        foreach (var entry in entries.Take(botConfiguration.MaxLeaderboardEntries))
+        {
+            dict["placements"].Add(RankFormatter.ToMedalFormat(entry.Rank));
+            dict["players"].Add($"{CountryEmoteMapper.MapCountryToEmote(entry.CountryName)} {MessageTextFormat.Bold(entry.Holder)}");
+            dict["times"].Add($"{ScoreFormatter.AsIngameTime(entry.MinScore)} {CharacterEmoteMapper.MapCharacterToEmote(entry.CharacterName)}");
+        }
 
-    private List<string> GetTimes(List<TrackLeaderboardEntry> entries) =>
-        [.. entries.Take(botConfiguration.MaxLeaderboardEntries).Select(e => ScoreFormatter.AsIngameTime(e.MinScore))];
+        return dict;
+    }
 
     private async Task<CustomTrack?> FindCustomTrack(string trackId)
     {

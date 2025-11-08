@@ -6,6 +6,7 @@ using Saphira.Discord.Messaging;
 using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
 using Saphira.Util.Game;
+using Saphira.Util.Mapper;
 
 namespace Saphira.Commands;
 
@@ -61,5 +62,5 @@ public class PBsCommand(CachedClient client) : InteractionModuleBase<SocketInter
     [.. pbs.Select(p => MessageTextFormat.Bold(p.CategoryName))];
 
     private List<string> GetTimes(List<PlayerPB> pbs) =>
-        [.. pbs.Select(p => $"{RankFormatter.ToMedalFormat(int.Parse(p.Rank))} - {ScoreFormatter.AsIngameTime(p.Time)}")];
+        [.. pbs.Select(p => $"{RankFormatter.ToMedalFormat(int.Parse(p.Rank))} - {ScoreFormatter.AsIngameTime(p.Time)} {CharacterEmoteMapper.MapCharacterToEmote(p.CharacterName)}")];
 }

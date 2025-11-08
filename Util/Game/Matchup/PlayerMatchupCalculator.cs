@@ -54,6 +54,8 @@ public class PlayerMatchupCalculator(CachedClient client)
 
         var player1Name = player1PBs.FirstOrDefault()?.Holder ?? "Unknown";
         var player2Name = player2PBs.FirstOrDefault()?.Holder ?? "Unknown";
+        var country1Name = player1PBs.FirstOrDefault()?.CountryName ?? string.Empty;
+        var country2Name = player2PBs.FirstOrDefault()?.CountryName ?? string.Empty;
 
         int player1Wins = 0;
         int player2Wins = 0;
@@ -126,7 +128,18 @@ public class PlayerMatchupCalculator(CachedClient client)
             loserWins = player1Wins;
         }
 
-        return new PlayerMatchup(player1Name, player2Name, winnerName, loserName, winnerWins, loserWins, categoryEntity, playerRecordComparisons);
+        return new PlayerMatchup(
+            player1Name,
+            country1Name,
+            player2Name,
+            country2Name,
+            winnerName, 
+            loserName, 
+            winnerWins, 
+            loserWins, 
+            categoryEntity, 
+            playerRecordComparisons
+            );
     }
 
     private async Task<List<PlayerPB>> FetchPlayerPBsAsync(string player)
