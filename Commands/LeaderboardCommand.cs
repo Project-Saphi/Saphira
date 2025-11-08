@@ -16,11 +16,11 @@ public class LeaderboardCommand(CachedClient client, BotConfiguration botConfigu
 {
     [SlashCommand("leaderboard", "Get the leaderboard for a single track (limited to 20 players)")]
     public async Task HandleCommand(
-        [Autocomplete(typeof(CustomTrackAutocompleteHandler))] string customTrack,
+        [Autocomplete(typeof(CustomTrackAutocompleteHandler))] string track,
         [Autocomplete(typeof(CategoryAutocompleteHandler))] string category
         )
     {
-        var result = await client.GetTrackLeaderboardAsync(customTrack, category);
+        var result = await client.GetTrackLeaderboardAsync(track, category);
 
         if (!result.Success || result.Response == null)
         {
@@ -29,7 +29,7 @@ public class LeaderboardCommand(CachedClient client, BotConfiguration botConfigu
             return;
         }
 
-        var trackEntity = await FindCustomTrack(customTrack);
+        var trackEntity = await FindCustomTrack(track);
 
         if (result.Response.Data.Count == 0)
         {
