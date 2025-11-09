@@ -62,15 +62,21 @@ public class Program
         return configuration.Get<BotConfiguration>() ?? throw new Exception("Failed to load configuration from config.json");
     }
 
-    private static bool ValidateBotConfiguration(BotConfiguration botConfig)
+    private static bool ValidateBotConfiguration(BotConfiguration botConfiguration)
     {
-        if (string.IsNullOrWhiteSpace(botConfig.BotToken))
+        if (string.IsNullOrWhiteSpace(botConfiguration.BotToken))
         {
             Console.WriteLine("Bot token is missing in config.json. Unable to start Saphira.");
             return false;
         }
 
-        if (!botConfig.SaphiApiBaseUrl.StartsWith("https"))
+        if (botConfiguration.MaxAutocompleteSuggestions < 1 || botConfiguration.MaxAutocompleteSuggestions > 25)
+        {
+            Console.WriteLine("The number of autocomplete suggestions must be between 1 and 25.");
+            return false;
+        }
+
+        if (!botConfiguration.SaphiApiBaseUrl.StartsWith("https"))
         {
             Console.WriteLine("Connection to the Saphi API can only be established via HTTPS.");
             return false;
@@ -94,13 +100,13 @@ public class Program
     private static IServiceProvider BuildServiceProvider(
         DiscordSocketClient discordSocketClient,
         InteractionService interactionService,
-        BotConfiguration configuration
+        BotConfiguration botConfiguration
         )
     {
         return new ServiceCollection()
             .AddSingleton(discordSocketClient)
             .AddSingleton(interactionService)
-            .AddSingleton(configuration)
+            .AddSingleton(botConfiguration)
             .AddSingleton<GuildRoleManager>()
             .AddSingleton<CacheInvalidationService>()
             .AddSingleton<CachedClient>()

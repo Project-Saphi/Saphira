@@ -1,6 +1,7 @@
 {
   "BotToken": "YOUR_BOT_TOKEN_HERE",
   "BotOwnerId": 0,
+  "MinimumLogLevel": 3,
   "GuildId": 0,
   "MainChannel": "general",
   "SubmissionFeedChannel": "submissions",
@@ -8,6 +9,7 @@
     "time-trials",
     "bot-spam"
   ],
+  "MaxAutocompleteSuggestions": 10,
   "SaphiApiKey": "YOUR_API_KEY_HERE",
   "SaphiApiBaseUrl": "https://api.example.com",
   "MaxLeaderboardEntries": 20

@@ -1,4 +1,5 @@
 using Discord.Interactions;
+using Saphira.Commands.Metadata;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 
@@ -6,8 +7,16 @@ namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class PingCommand : InteractionModuleBase<SocketInteractionContext>
+public class PingCommand : BaseCommand
 {
+    public override CommandMetadata GetMetadata()
+    {
+        return new CommandMetadata(
+            "Check the bot's latency",
+            "/ping"
+        );
+    }
+
     [SlashCommand("ping", "Check the bot's latency")]
     public async Task HandleCommand()
     {

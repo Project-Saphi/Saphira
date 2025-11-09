@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
             var cronjob = (ICronjob)serviceProvider.GetRequiredService(type);
             cronjobScheduler.RegisterCronjob(cronjob);
 
-            logger.Log(LogSeverity.Info, "Saphira", $"Registered cronjob {cronjob.ToString()}");
+            logger.Log(LogSeverity.Verbose, "Saphira", $"Registered cronjob {cronjob.ToString()}");
         }
     }
 
@@ -53,7 +53,7 @@ public static class ServiceCollectionExtensions
             var subscriber = (IDiscordSocketClientEventSubscriber)serviceProvider.GetRequiredService(type);
             subscriber.Register();
 
-            logger.Log(LogSeverity.Info, "Saphira", $"Registered event subscriber {subscriber.ToString()}");
+            logger.Log(LogSeverity.Verbose, "Saphira", $"Registered event subscriber {subscriber.ToString()}");
         }
     }
 

@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Saphira.Commands.Autocompletion;
+using Saphira.Commands.Metadata;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 using Saphira.Saphi.Api;
@@ -12,9 +13,18 @@ namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class LeaderboardCommand(CachedClient client, BotConfiguration botConfiguration) : InteractionModuleBase<SocketInteractionContext>
+public class LeaderboardCommand(CachedClient client, BotConfiguration botConfiguration) : BaseCommand
 {
-    [SlashCommand("leaderboard", "Get the leaderboard for a single track (limited to 20 players)")]
+    public override CommandMetadata GetMetadata()
+    {
+        return new CommandMetadata(
+            "Get the leaderboard for a single track and category",
+            "/leaderboard Frozen Depths Course",
+            $"The amount of entries is currently limited to {botConfiguration.MaxLeaderboardEntries}"
+        );
+    }
+
+    [SlashCommand("leaderboard", "Get the leaderboard for a single track and category")]
     public async Task HandleCommand(
         [Autocomplete(typeof(CustomTrackAutocompleteHandler))] string track,
         [Autocomplete(typeof(CategoryAutocompleteHandler))] string category

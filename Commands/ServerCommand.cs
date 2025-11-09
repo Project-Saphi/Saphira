@@ -1,5 +1,6 @@
 using Discord;
 using Discord.Interactions;
+using Saphira.Commands.Metadata;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 
@@ -7,8 +8,16 @@ namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class ServerCommand : InteractionModuleBase<SocketInteractionContext>
+public class ServerCommand : BaseCommand
 {
+    public override CommandMetadata GetMetadata()
+    {
+        return new CommandMetadata(
+            "Get information about this server",
+            "/server"
+        );
+    }
+
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("server", "Get information about this server")]
     public async Task HandleCommand()

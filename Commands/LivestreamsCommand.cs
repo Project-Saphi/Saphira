@@ -1,5 +1,6 @@
 using Discord;
 using Discord.Interactions;
+using Saphira.Commands.Metadata;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Guild;
 using Saphira.Discord.Messaging;
@@ -8,8 +9,17 @@ namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class LivestreamsCommand(GuildManager guildManager) : InteractionModuleBase<SocketInteractionContext>
+public class LivestreamsCommand(GuildManager guildManager) : BaseCommand
 {
+    public override CommandMetadata GetMetadata()
+    {
+        return new CommandMetadata(
+            "List all CTR livestreams from server members",
+            "/livestreams",
+            "This command can only detect streams from users whose status is set to streaming"
+        );
+    }
+
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("livestreams", "List all CTR livestreams from server members")]
     public async Task HandleCommand()

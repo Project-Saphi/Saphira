@@ -11,6 +11,20 @@
 
 ## 📋 General Commands
 
+### `/help`
+Lists all commands along with description and usage example.
+
+**Usage:**
+```
+/help
+```
+
+**Response:**
+- List of all existing commands
+
+**Note:**
+- Saphira will send the command help via DM, so DMs from server members must be enabled
+
 ### `/livestreams`
 List all CTR livestreams from server members.
 

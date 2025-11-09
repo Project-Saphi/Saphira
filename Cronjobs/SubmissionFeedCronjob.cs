@@ -19,7 +19,7 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, CachedClie
 
         if (guild == null)
         {
-            logger.Log(LogSeverity.Warning, "Saphira", $"No guild with ID {botConfiguration.GuildId} found. Unable to post new submissions.");
+            logger.Log(LogSeverity.Error, "Saphira", $"No guild with ID {botConfiguration.GuildId} found. Unable to post new submissions.");
             return;
         }
 
@@ -27,7 +27,7 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, CachedClie
 
         if (channel == null)
         {
-            logger.Log(LogSeverity.Warning, "Saphira", $"No channel {botConfiguration.SubmissionFeedChannel} exists. Unable to post new submissions.");
+            logger.Log(LogSeverity.Error, "Saphira", $"No channel {botConfiguration.SubmissionFeedChannel} exists. Unable to post new submissions.");
             return;
         }
 
@@ -47,11 +47,11 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, CachedClie
 
         if (result.Response.Data.Count == 0)
         {
-            logger.Log(LogSeverity.Info, "Saphira", "No new submissions found.");
+            logger.Log(LogSeverity.Verbose, "Saphira", "No new submissions found.");
             return;
         }
 
-        logger.Log(LogSeverity.Info, "Saphira", $"Found {result.Response.Data.Count} new submission(s) to post");
+        logger.Log(LogSeverity.Verbose, "Saphira", $"Found {result.Response.Data.Count} new submission(s) to post");
 
         var submissions = result.Response.Data;
         submissions.Reverse();

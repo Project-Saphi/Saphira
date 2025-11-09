@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Saphira.Commands.Metadata;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 
@@ -8,10 +9,18 @@ namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class ProfileCommand : InteractionModuleBase<SocketInteractionContext>
+public class ProfileCommand : BaseCommand
 {
+    public override CommandMetadata GetMetadata()
+    {
+        return new CommandMetadata(
+            "See a user's profile",
+            "/profile @Garma"
+        );
+    }
+
     [CommandContextType(InteractionContextType.Guild)]
-    [SlashCommand("profile", "See your user profile")]
+    [SlashCommand("profile", "See a user's profile")]
     public async Task HandleCommand()
     {
         if (Context.User is not SocketGuildUser guildUser)

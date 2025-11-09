@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Saphira.Commands.Metadata;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 using Saphira.Util.Logging;
@@ -10,8 +11,17 @@ namespace Saphira.Commands;
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 [RequireTeamMemberRole]
-public class ReactCommand(IMessageLogger logger) : InteractionModuleBase<SocketInteractionContext>
+public class ReactCommand(IMessageLogger logger) : BaseCommand
 {
+    public override CommandMetadata GetMetadata()
+    {
+        return new CommandMetadata(
+            "React to a message as Saphira",
+            "/react :flag_de: 1437024317857726505",
+            "Saphira must have access to the channel where the message is"
+        );
+    }
+
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("react", "React to a message as Saphira")]
     public async Task HandleCommand(IEmote emote, string messageId)

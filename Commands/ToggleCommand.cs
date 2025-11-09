@@ -2,6 +2,7 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Saphira.Commands.Autocompletion;
+using Saphira.Commands.Metadata;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Guild;
 using Saphira.Discord.Messaging;
@@ -10,8 +11,17 @@ namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class ToggleCommand(GuildRoleManager guildRoleManager) : InteractionModuleBase<SocketInteractionContext>
+public class ToggleCommand(GuildRoleManager guildRoleManager) : BaseCommand
 {
+    public override CommandMetadata GetMetadata()
+    {
+        return new CommandMetadata(
+            "Toggle one of your roles off or on",
+            "/toggle Server Updates",
+            "Limited to roles which can be toggled on or off (not any arbitrary roles)"
+        );
+    }
+
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("toggle", "Toggle one of your roles off or on")]
     public async Task HandleCommand(

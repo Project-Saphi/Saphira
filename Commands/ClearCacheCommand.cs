@@ -1,5 +1,6 @@
 using Discord;
 using Discord.Interactions;
+using Saphira.Commands.Metadata;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 using Saphira.Extensions.Caching;
@@ -10,8 +11,16 @@ namespace Saphira.Commands;
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 [RequireTeamMemberRole]
-public class ClearCacheCommand(CacheInvalidationService cacheInvalidationService, IMessageLogger logger) : InteractionModuleBase<SocketInteractionContext>
+public class ClearCacheCommand(CacheInvalidationService cacheInvalidationService, IMessageLogger logger) : BaseCommand
 {
+    public override CommandMetadata GetMetadata()
+    {
+        return new CommandMetadata(
+            "Invalidate all cached data",
+            "/clearcache"
+        );
+    }
+
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("clearcache", "Invalidate all cached data")]
     public async Task HandleCommand()

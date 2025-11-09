@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Saphira.Commands.Autocompletion;
+using Saphira.Commands.Metadata;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 using Saphira.Saphi.Api;
@@ -10,8 +11,16 @@ namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class AchievementsCommand(CachedClient client) : InteractionModuleBase<SocketInteractionContext>
+public class AchievementsCommand(CachedClient client) : BaseCommand
 {
+    public override CommandMetadata GetMetadata()
+    {
+        return new CommandMetadata(
+            "Show a player's achievements",
+            "/achievements Niikasd"
+        );
+    }
+
     [SlashCommand("achievements", "Show a player's achievements")]
     public async Task HandleCommand(
         [Autocomplete(typeof(PlayerAutocompleteHandler))] string player

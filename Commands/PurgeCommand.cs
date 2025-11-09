@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Saphira.Commands.Metadata;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 using Saphira.Util.Logging;
@@ -10,8 +11,17 @@ namespace Saphira.Commands;
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 [RequireTeamMemberRole]
-public class PurgeCommand(IMessageLogger logger) : InteractionModuleBase<SocketInteractionContext>
+public class PurgeCommand(IMessageLogger logger) : BaseCommand
 {
+    public override CommandMetadata GetMetadata()
+    {
+        return new CommandMetadata(
+            "Delete the last X messages in the current channel",
+            "/purge 20",
+            "Limited to 100 messages and messages older than 2 weeks cannot be deleted"
+        );
+    }
+
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("purge", "Delete the last X messages in the current channel")]
     public async Task HandleCommand(
@@ -42,7 +52,7 @@ public class PurgeCommand(IMessageLogger logger) : InteractionModuleBase<SocketI
         try
         {
             await textChannel.DeleteMessagesAsync(messagesToDelete);
-            logger.Log(LogSeverity.Info, Context.User.Username, $"Purged {messagesToDelete.Count} messages in channel {textChannel.Name} ({textChannel.Id})");
+            logger.Log(LogSeverity.Info, Context.User.Username, $"Purged {messagesToDelete.Count} message(s) in channel #{textChannel.Name} ({textChannel.Id})");
         }
         catch (Exception ex)
         {

@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Saphira.Commands.Metadata;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 using Saphira.Util.Logging;
@@ -10,8 +11,17 @@ namespace Saphira.Commands;
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 [RequireTeamMemberRole]
-public class DmCommand(IMessageLogger logger) : InteractionModuleBase<SocketInteractionContext>
+public class DmCommand(IMessageLogger logger) : BaseCommand
 {
+    public override CommandMetadata GetMetadata()
+    {
+        return new CommandMetadata(
+            "DM someone as Saphira",
+            "/dm @Garma",
+            "The player must be a member of the server"
+        );
+    }
+
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("dm", "DM someone as Saphira")]
     public async Task HandleCommand([MaxLength(2000)] string message, SocketGuildUser user)

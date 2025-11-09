@@ -11,11 +11,11 @@ public class ScoreFormatter
         return $"{minutes}:{seconds - minutes * 60:00}.{hundreths:00}";
     }
 
-    public static string AsSeconds(string score)
+    public static decimal AsSeconds(string score)
     {
         int hundreths = int.Parse(score[^2..]);
         int seconds = int.Parse(score[..^2]);
 
-        return $"{seconds}.{hundreths}";
+        return seconds + hundreths;
     }
 }

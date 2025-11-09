@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Saphira.Commands.Metadata;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 using Saphira.Util.Logging;
@@ -10,8 +11,17 @@ namespace Saphira.Commands;
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 [RequireTeamMemberRole]
-public class PostCommand(IMessageLogger logger) : InteractionModuleBase<SocketInteractionContext>
+public class PostCommand(IMessageLogger logger) : BaseCommand
 {
+    public override CommandMetadata GetMetadata()
+    {
+        return new CommandMetadata(
+            "Send a message as Saphira",
+            "/post Hello Guys! #general",
+            "Limited to text channels and Discord message length restrictions apply as usual"
+        );
+    }
+
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("post", "Send a message as Saphira")]
     public async Task HandleCommand([MaxLength(2000)] string message, SocketChannel channel)

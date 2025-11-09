@@ -1,6 +1,5 @@
 ﻿using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
-using Saphira.Util.Game;
 
 namespace Saphira.Util.Game.Matchup;
 
@@ -65,8 +64,8 @@ public class PlayerMatchupCalculator(CachedClient client)
             var player1PB = player1PBDict[track];
             var player2PB = player2PBDict[track];
 
-            var player1TimeInSeconds = decimal.Parse(ScoreFormatter.AsSeconds(player1PB.Time));
-            var player2TimeInSeconds = decimal.Parse(ScoreFormatter.AsSeconds(player2PB.Time));
+            var player1TimeInSeconds = ScoreFormatter.AsSeconds(player1PB.Time);
+            var player2TimeInSeconds = ScoreFormatter.AsSeconds(player2PB.Time);
 
             PlayerRecordComparison comparison;
 
@@ -139,7 +138,7 @@ public class PlayerMatchupCalculator(CachedClient client)
             loserWins, 
             categoryEntity, 
             playerRecordComparisons
-            );
+        );
     }
 
     private async Task<List<PlayerPB>> FetchPlayerPBsAsync(string player)

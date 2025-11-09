@@ -1,5 +1,6 @@
 using Discord;
 using Discord.Interactions;
+using Saphira.Commands.Metadata;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 using Saphira.Saphi.Api;
@@ -9,8 +10,16 @@ namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class TracksCommand(CachedClient client) : InteractionModuleBase<SocketInteractionContext>
+public class TracksCommand(CachedClient client) : BaseCommand
 {
+    public override CommandMetadata GetMetadata()
+    {
+        return new CommandMetadata(
+            "Get the list of supported custom tracks",
+            "/tracks"
+        );
+    }
+
     [SlashCommand("tracks", "Get the list of supported custom tracks")]
     public async Task HandleCommand()
     {

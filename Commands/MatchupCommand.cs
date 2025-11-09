@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Saphira.Commands.Autocompletion;
+using Saphira.Commands.Metadata;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 using Saphira.Util.Game.Matchup;
@@ -10,9 +11,18 @@ namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class MatchupCommand(PlayerMatchupCalculator playerMatchupGenerator) : InteractionModuleBase<SocketInteractionContext>
+public class MatchupCommand(PlayerMatchupCalculator playerMatchupGenerator) : BaseCommand
 {
-    [SlashCommand("matchup", "Show the matchup between 2 players")]
+    public override CommandMetadata GetMetadata()
+    {
+        return new CommandMetadata(
+            "Show the matchup between 2 players",
+            "/matchup Niikasd Garma Course",
+            "Players must have at least 1 track in common that they've played"
+        );
+    }
+
+    [SlashCommand("matchup", "Show the matchup between 2 players for a category")]
     public async Task HandleCommand(
         [Autocomplete(typeof(PlayerAutocompleteHandler))] string player1,
         [Autocomplete(typeof(PlayerAutocompleteHandler))] string player2,

@@ -2,10 +2,15 @@ using Discord;
 
 namespace Saphira.Util.Logging;
 
-public class ConsoleMessageLogger : IMessageLogger
+public class ConsoleMessageLogger(BotConfiguration botConfiguration) : IMessageLogger
 {
     public void Log(LogSeverity severity, string source, string message, Exception? exception = null)
     {
+        if (!MeetsLogLevelRequirement(severity))
+        {
+            return;
+        }
+
         var originalColor = Console.ForegroundColor;
         Console.ForegroundColor = GetLogColor(severity);
 
@@ -24,6 +29,11 @@ public class ConsoleMessageLogger : IMessageLogger
     public void Log(LogMessage message)
     {
         Log(message.Severity, message.Source, message.Message, message.Exception);
+    }
+
+    private bool MeetsLogLevelRequirement(LogSeverity severity)
+    {
+        return ((int) severity) <= botConfiguration.MinimumLogLevel;
     }
 
     private static ConsoleColor GetLogColor(LogSeverity severity)

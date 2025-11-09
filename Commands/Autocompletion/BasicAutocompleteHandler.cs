@@ -17,18 +17,18 @@ public abstract class BasicAutocompleteHandler<TProvider> : AutocompleteHandler
     {
         try
         {
+            var botConfiguration = services.GetRequiredService<BotConfiguration>();
             var provider = services.GetRequiredService<TProvider>();
             var values = await provider.GetValuesAsync();
 
             if (values != null && values.Count > 0)
             {
                 var userInput = autocompleteInteraction.Data.Current.Value?.ToString() ?? "";
+                var suggestionCount = GetMaxSuggestionCount(botConfiguration);
 
-                // Discord is limited to 25 suggestions at most, but I think 10 is sufficient
-                // Might increase it to 25 if people complain that 10 is too little ...
                 var suggestions = values
                     .Where(v => v.Name.Contains(userInput, StringComparison.OrdinalIgnoreCase) || v.Id.ToString().Contains(userInput))
-                    .Take(10)
+                    .Take(suggestionCount)
                     .Select(v => new AutocompleteResult(v.Name, v.Id.ToString()));
 
                 return AutocompletionResult.FromSuccess(suggestions);
@@ -41,6 +41,20 @@ public abstract class BasicAutocompleteHandler<TProvider> : AutocompleteHandler
             Console.WriteLine($"Error in {typeof(TProvider).Name} autocompletion: {ex.Message}");
             return AutocompletionResult.FromError(InteractionCommandError.Unsuccessful, "An error occurred");
         }
+    }
+
+    private int GetMaxSuggestionCount(BotConfiguration botConfiguration)
+    {
+        var suggestionsCount = botConfiguration.MaxAutocompleteSuggestions;
+
+        // Discord is limited to 25 suggestions at most
+        // We default to 15 if the owner configures some bullshit
+        if (suggestionsCount < 1 || suggestionsCount > 25)
+        {
+            suggestionsCount = 15;
+        }
+
+        return suggestionsCount;
     }
 }
 

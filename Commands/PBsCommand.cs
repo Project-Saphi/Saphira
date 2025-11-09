@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Saphira.Commands.Autocompletion;
+using Saphira.Commands.Metadata;
 using Saphira.Commands.Precondition;
 using Saphira.Discord.Messaging;
 using Saphira.Saphi.Api;
@@ -12,8 +13,16 @@ namespace Saphira.Commands;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class PBsCommand(CachedClient client) : InteractionModuleBase<SocketInteractionContext>
+public class PBsCommand(CachedClient client) : BaseCommand
 {
+    public override CommandMetadata GetMetadata()
+    {
+        return new CommandMetadata(
+            "Get personal best times of a player",
+            "/pbs TheKoji"
+        );
+    }
+
     [SlashCommand("pbs", "Get personal best times of a player")]
     public async Task HandleCommand(
         [Autocomplete(typeof(PlayerAutocompleteHandler))] string player
