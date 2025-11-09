@@ -14,10 +14,7 @@ public class TracksCommand(CachedClient client) : BaseCommand
 {
     public override CommandMetadata GetMetadata()
     {
-        return new CommandMetadata(
-            "Get the list of supported custom tracks",
-            "/tracks"
-        );
+        return new CommandMetadata("/tracks");
     }
 
     [SlashCommand("tracks", "Get the list of supported custom tracks")]

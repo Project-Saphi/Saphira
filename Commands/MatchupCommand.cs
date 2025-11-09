@@ -16,7 +16,6 @@ public class MatchupCommand(PlayerMatchupCalculator playerMatchupGenerator) : Ba
     public override CommandMetadata GetMetadata()
     {
         return new CommandMetadata(
-            "Show the matchup between 2 players",
             "/matchup Niikasd Garma Course",
             "Players must have at least 1 track in common that they've played"
         );

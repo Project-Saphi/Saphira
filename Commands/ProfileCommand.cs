@@ -13,10 +13,7 @@ public class ProfileCommand : BaseCommand
 {
     public override CommandMetadata GetMetadata()
     {
-        return new CommandMetadata(
-            "See a user's profile",
-            "/profile @Garma"
-        );
+        return new CommandMetadata("/profile @Garma");
     }
 
     [CommandContextType(InteractionContextType.Guild)]

@@ -16,7 +16,6 @@ public class ReactCommand(IMessageLogger logger) : BaseCommand
     public override CommandMetadata GetMetadata()
     {
         return new CommandMetadata(
-            "React to a message as Saphira",
             "/react :flag_de: 1437024317857726505",
             "Saphira must have access to the channel where the message is"
         );

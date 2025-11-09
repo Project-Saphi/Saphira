@@ -16,7 +16,6 @@ public class VerifyCommand(IMessageLogger logger) : BaseCommand
     public override CommandMetadata GetMetadata()
     {
         return new CommandMetadata(
-            "Verify a user",
             "/verify @RedHot",
             "The user must be a member of the server"
         );

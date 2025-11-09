@@ -15,10 +15,7 @@ public class AchievementsCommand(CachedClient client) : BaseCommand
 {
     public override CommandMetadata GetMetadata()
     {
-        return new CommandMetadata(
-            "Show a player's achievements",
-            "/achievements Niikasd"
-        );
+        return new CommandMetadata("/achievements Niikasd");
     }
 
     [SlashCommand("achievements", "Show a player's achievements")]

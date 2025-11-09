@@ -16,9 +16,8 @@ public class PurgeCommand(IMessageLogger logger) : BaseCommand
     public override CommandMetadata GetMetadata()
     {
         return new CommandMetadata(
-            "Delete the last X messages in the current channel",
             "/purge 20",
-            "Limited to 100 messages and messages older than 2 weeks cannot be deleted"
+            "Limited to 100 messages - Messages older than 2 weeks cannot be deleted"
         );
     }
 

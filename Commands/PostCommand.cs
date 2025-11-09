@@ -16,9 +16,8 @@ public class PostCommand(IMessageLogger logger) : BaseCommand
     public override CommandMetadata GetMetadata()
     {
         return new CommandMetadata(
-            "Send a message as Saphira",
             "/post Hello Guys! #general",
-            "Limited to text channels and Discord message length restrictions apply as usual"
+            "Limited to text channels - Discord message length restrictions apply as usual"
         );
     }
 

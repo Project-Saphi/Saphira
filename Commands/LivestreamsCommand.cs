@@ -14,9 +14,8 @@ public class LivestreamsCommand(GuildManager guildManager) : BaseCommand
     public override CommandMetadata GetMetadata()
     {
         return new CommandMetadata(
-            "List all CTR livestreams from server members",
             "/livestreams",
-            "This command can only detect streams from users whose status is set to streaming"
+            "This command can only detect streams from users whose Discord status is set to `Streaming`"
         );
     }
 

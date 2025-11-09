@@ -17,10 +17,7 @@ public class PBsCommand(CachedClient client) : BaseCommand
 {
     public override CommandMetadata GetMetadata()
     {
-        return new CommandMetadata(
-            "Get personal best times of a player",
-            "/pbs TheKoji"
-        );
+        return new CommandMetadata("/pbs TheKoji");
     }
 
     [SlashCommand("pbs", "Get personal best times of a player")]

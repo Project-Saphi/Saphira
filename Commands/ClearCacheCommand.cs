@@ -15,10 +15,7 @@ public class ClearCacheCommand(CacheInvalidationService cacheInvalidationService
 {
     public override CommandMetadata GetMetadata()
     {
-        return new CommandMetadata(
-            "Invalidate all cached data",
-            "/clearcache"
-        );
+        return new CommandMetadata("/clearcache");
     }
 
     [CommandContextType(InteractionContextType.Guild)]

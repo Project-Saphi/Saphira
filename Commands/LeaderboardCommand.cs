@@ -18,7 +18,6 @@ public class LeaderboardCommand(CachedClient client, BotConfiguration botConfigu
     public override CommandMetadata GetMetadata()
     {
         return new CommandMetadata(
-            "Get the leaderboard for a single track and category",
             "/leaderboard Frozen Depths Course",
             $"The amount of entries is currently limited to {botConfiguration.MaxLeaderboardEntries}"
         );

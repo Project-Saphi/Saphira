@@ -12,10 +12,7 @@ public class ServerCommand : BaseCommand
 {
     public override CommandMetadata GetMetadata()
     {
-        return new CommandMetadata(
-            "Get information about this server",
-            "/server"
-        );
+        return new CommandMetadata("/server");
     }
 
     [CommandContextType(InteractionContextType.Guild)]

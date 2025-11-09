@@ -11,10 +11,7 @@ public class HelpCommand(IServiceProvider serviceProvider) : BaseCommand
 {
     public override CommandMetadata GetMetadata()
     {
-        return new CommandMetadata(
-            "Display all available commands",
-            "/help"
-        );
+        return new CommandMetadata("/help");
     }
 
     [SlashCommand("help", "Receive a DM with all available commands")]
@@ -72,12 +69,10 @@ public class HelpCommand(IServiceProvider serviceProvider) : BaseCommand
             .WithName($"{MessageTextFormat.Bold($"/{slashCommandAttribute.Name}")}")
             .WithIsInline(true);
 
-        var content = new List<string>();
-
-        if (metadata.Description != null)
+        var content = new List<string>()
         {
-            content.Add(metadata.Description);
-        }
+            slashCommandAttribute.Description
+        };
 
         if (metadata.Example != null)
         {
