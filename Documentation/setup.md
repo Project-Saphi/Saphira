@@ -32,10 +32,12 @@ A `config.json` file needs to be created with the following structure:
 {
   "BotToken": "",
   "BotOwnerId": 0,
+  "MinimumLogLevel": 3,
   "GuildId": 0,
   "MainChannel": "",
   "SubmissionFeedChannel": "",
   "CommandsAllowedChannels": [],
+  "MaxAutocompleteSuggestions": 10,
   "SaphiApiKey": "",
   "SaphiApiBaseUrl": "https://api.example.com",
   "MaxLeaderboardEntries": 0
@@ -44,10 +46,12 @@ A `config.json` file needs to be created with the following structure:
 
 - `BotToken` is the bot token you can acquire from the Discord Developer Portal
 - `BotOwnerId` is the internal ID of the Discord user who owns Saphira
+- `MinimumLogLevel` is the minimum log level of messages that will be logged (based on Discord.NET's `Discord.LogSeverity` enum)
 - `GuildId` is the internal ID of the server you want to run Saphira on
 - `MainChannel` is the name of the main channel where Saphira will post some messages to (like the member count celebration)
 - `SubmissionFeedChannel` is the name of the channel where Saphira will post the newest submissions to
 - `CommandsAllowedChannels` is a list of channels where users are allowed to use slash commands (unless they have the `Saphi Team` role)
+- `MaxAutocompleteSuggestions` is the number of suggestions that are shown during command parameter autocompletion (hard-limited by Discord to at most 25)
 - `SaphiApiKey` is an API key to access the leaderboard website API
 - `SaphiApiBaseUrl` is the URL to the leaderboard website API
 - `MaxLeaderboardEntries` is the number of entries that will be shown when using `/leaderboard`
