@@ -21,6 +21,4 @@ public class BotConfiguration
     public string SaphiApiKey { get; set; } = "";
 
     public string SaphiApiBaseUrl { get; set; } = "";
-
-    public int MaxLeaderboardEntries { get; set; }
 }

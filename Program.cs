@@ -7,6 +7,7 @@ using Saphira.Cronjobs;
 using Saphira.Discord;
 using Saphira.Discord.Guild;
 using Saphira.Discord.Messaging;
+using Saphira.Discord.Messaging.Pagination;
 using Saphira.Extensions.Caching;
 using Saphira.Extensions.DependencyInjection;
 using Saphira.Saphi.Api;
@@ -112,6 +113,7 @@ public class Program
             .AddSingleton<CachedClient>()
             .AddSingleton<IMessageLogger, ConsoleMessageLogger>()
             .AddSingleton<CronjobScheduler>()
+            .AddSingleton<PaginationComponentHandler>()
             .AddTransient<GuildManager>()
             .AddTransient<ScoreFormatter>()
             .AddTransient<InviteLinkDetector>()

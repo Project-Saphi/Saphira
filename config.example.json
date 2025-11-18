@@ -11,6 +11,5 @@
   ],
   "MaxAutocompleteSuggestions": 10,
   "SaphiApiKey": "YOUR_API_KEY_HERE",
-  "SaphiApiBaseUrl": "https://api.example.com",
-  "MaxLeaderboardEntries": 20
+  "SaphiApiBaseUrl": "https://api.example.com"
 }

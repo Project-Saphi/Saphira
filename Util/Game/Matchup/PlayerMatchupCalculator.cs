@@ -64,8 +64,8 @@ public class PlayerMatchupCalculator(CachedClient client)
             var player1PB = player1PBDict[track];
             var player2PB = player2PBDict[track];
 
-            var player1TimeInSeconds = ScoreFormatter.AsSeconds(player1PB.Time);
-            var player2TimeInSeconds = ScoreFormatter.AsSeconds(player2PB.Time);
+            var player1TimeInSeconds = int.Parse(player1PB.Time);
+            var player2TimeInSeconds = int.Parse(player2PB.Time);
 
             PlayerRecordComparison comparison;
 
@@ -74,9 +74,9 @@ public class PlayerMatchupCalculator(CachedClient client)
                 comparison = new PlayerRecordComparison(
                     track,
                     player1PB.Holder,
-                    ScoreFormatter.AsIngameTime(player1PB.Time),
+                    ScoreFormatter.AsHumanTime(player1PB.Time),
                     player2PB.Holder,
-                    ScoreFormatter.AsIngameTime(player2PB.Time)
+                    ScoreFormatter.AsHumanTime(player2PB.Time)
                 );
                 player1Wins++;
             }
@@ -85,9 +85,9 @@ public class PlayerMatchupCalculator(CachedClient client)
                 comparison = new PlayerRecordComparison(
                     track,
                     player2PB.Holder,
-                    ScoreFormatter.AsIngameTime(player2PB.Time),
+                    ScoreFormatter.AsHumanTime(player2PB.Time),
                     player1PB.Holder,
-                    ScoreFormatter.AsIngameTime(player1PB.Time)
+                    ScoreFormatter.AsHumanTime(player1PB.Time)
                 );
                 player2Wins++;
             }
@@ -96,9 +96,9 @@ public class PlayerMatchupCalculator(CachedClient client)
                 comparison = new PlayerRecordComparison(
                     track,
                     null,
-                    ScoreFormatter.AsIngameTime(player1PB.Time),
+                    ScoreFormatter.AsHumanTime(player1PB.Time),
                     null,
-                    ScoreFormatter.AsIngameTime(player2PB.Time)
+                    ScoreFormatter.AsHumanTime(player2PB.Time)
                 );
             }
 

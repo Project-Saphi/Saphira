@@ -69,7 +69,7 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, CachedClie
         {
             $"{MessageTextFormat.Bold("Track")}: {submission.TrackName}",
             $"{MessageTextFormat.Bold("Category")}: {submission.CategoryName}",
-            $"{MessageTextFormat.Bold("Time")}: {ScoreFormatter.AsIngameTime(submission.Score.ToString())}",
+            $"{MessageTextFormat.Bold("Time")}: {ScoreFormatter.AsHumanTime(submission.Score.ToString())}",
             $"{MessageTextFormat.Bold("Character")}: {CharacterEmoteMapper.MapCharacterToEmote(submission.CharacterName)}",
             $"{MessageTextFormat.Bold("Engine")}: {EngineEmoteMapper.MapEngineToEmote(submission.EngineName)}",
             $"{MessageTextFormat.Bold("Country")}: {CountryEmoteMapper.MapCountryToEmote(submission.CountryName)}"
