@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="3.18.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Saphira.Core.Extensions\Saphira.Core.Extensions.csproj" />
     <ProjectReference Include="..\Saphira.Discord.Logging\Saphira.Discord.Logging.csproj" />
     <ProjectReference Include="..\Saphira.Discord.Messaging\Saphira.Discord.Messaging.csproj" />

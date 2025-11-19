@@ -11,6 +11,7 @@
     <ProjectReference Include="..\Saphira.Discord.Messaging\Saphira.Discord.Messaging.csproj" />
     <ProjectReference Include="..\Saphira.Discord\Saphira.Discord.csproj" />
     <ProjectReference Include="..\Saphira.Saphi\Saphira.Saphi.csproj" />
+    <ProjectReference Include="..\Saphira.Util\Saphira.Util.csproj" />
   </ItemGroup>
 
 </Project>

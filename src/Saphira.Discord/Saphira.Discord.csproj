@@ -9,9 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Saphira.Core\Saphira.Core.csproj" />
     <ProjectReference Include="..\Saphira.Discord.Logging\Saphira.Discord.Logging.csproj" />
-    <ProjectReference Include="..\Saphira.Discord.Messaging\Saphira.Discord.Messaging.csproj" />
     <ProjectReference Include="..\Saphira.Saphi\Saphira.Saphi.csproj" />
-    <ProjectReference Include="..\Saphira.Util\Saphira.Util.csproj" />
   </ItemGroup>
 
 </Project>
