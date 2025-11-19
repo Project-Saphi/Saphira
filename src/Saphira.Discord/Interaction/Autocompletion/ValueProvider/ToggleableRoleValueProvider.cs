@@ -1,4 +1,4 @@
-using Saphira.Discord.Guild;
+using Saphira.Discord.Entity.Guild.Role;
 using Saphira.Discord.Extensions.DependencyInjection;
 
 namespace Saphira.Discord.Interaction.Autocompletion.ValueProvider;

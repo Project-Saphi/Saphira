@@ -1,6 +1,6 @@
 using Discord;
 using Discord.Interactions;
-using Saphira.Discord.Guild;
+using Saphira.Discord.Entity.Guild;
 using Saphira.Discord.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
@@ -9,7 +9,7 @@ namespace Saphira.Discord.Interaction.SlashCommand;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class LivestreamsCommand(GuildManager guildManager) : BaseCommand
+public class LivestreamsCommand : BaseCommand
 {
     public override SlashCommandMetadata GetMetadata()
     {
@@ -23,7 +23,7 @@ public class LivestreamsCommand(GuildManager guildManager) : BaseCommand
     [SlashCommand("livestreams", "List all CTR livestreams from server members")]
     public async Task HandleCommand()
     {
-        var livestreams = guildManager.GetCTRStreamActivites(Context.Guild);
+        var livestreams = GuildManager.GetCTRStreamActivites(Context.Guild);
 
         if (livestreams.Count > 0)
         {
@@ -32,8 +32,8 @@ public class LivestreamsCommand(GuildManager guildManager) : BaseCommand
         }
         else
         {
-            var warningAlert = new WarningAlertEmbedBuilder("There is currently nobody streaming CTR.");
-            await RespondAsync(embed: warningAlert.Build());
+            var infoAlert = new InfoAlertEmbedBuilder("There is currently nobody streaming CTR.");
+            await RespondAsync(embed: infoAlert.Build());
             return;
         }
     }

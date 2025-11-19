@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Saphira.Discord.Interaction.Autocompletion;
+using Saphira.Discord.Interaction.Autocompletion.ValueProvider;
 using Saphira.Discord.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
@@ -20,7 +21,7 @@ public class AchievementsCommand(CachedClient client) : BaseCommand
 
     [SlashCommand("achievements", "Show a player's achievements")]
     public async Task HandleCommand(
-        [Autocomplete(typeof(PlayerAutocompleteHandler))] string player
+        [Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] string player
         )
     {
         var result = await client.GetUserProfileAsync(player);

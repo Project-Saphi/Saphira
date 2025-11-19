@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
 
         foreach (var type in GetTypesImplementing(typeof(ICronjob), requireAttribute))
         {
-            var cronjob = (ICronjob)serviceProvider.GetRequiredService(type);
+            var cronjob = (ICronjob) serviceProvider.GetRequiredService(type);
             cronjobScheduler.RegisterCronjob(cronjob);
 
             logger.Log(LogSeverity.Verbose, "Saphira", $"Registered cronjob {cronjob.ToString()}");
@@ -50,7 +50,7 @@ public static class ServiceCollectionExtensions
 
         foreach (var type in GetTypesImplementing(typeof(IDiscordSocketClientEventSubscriber), requireAttribute))
         {
-            var subscriber = (IDiscordSocketClientEventSubscriber)serviceProvider.GetRequiredService(type);
+            var subscriber = (IDiscordSocketClientEventSubscriber) serviceProvider.GetRequiredService(type);
             subscriber.Register();
 
             logger.Log(LogSeverity.Verbose, "Saphira", $"Registered event subscriber {subscriber.ToString()}");

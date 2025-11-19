@@ -1,6 +1,7 @@
 using Discord.WebSocket;
+using Saphira.Discord.Entity.Guild.Role;
 
-namespace Saphira.Discord.Guild;
+namespace Saphira.Discord.Entity.Guild.Member;
 
 public class GuildMember
 {

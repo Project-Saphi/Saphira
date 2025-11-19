@@ -6,8 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Saphira.Core.Application;
 using Saphira.Core.Extensions.Caching;
 using Saphira.Discord.Cronjob;
+using Saphira.Discord.Entity.Guild;
+using Saphira.Discord.Entity.Guild.Role;
 using Saphira.Discord.Extensions.DependencyInjection;
-using Saphira.Discord.Guild;
 using Saphira.Discord.Interaction;
 using Saphira.Discord.Logging;
 using Saphira.Discord.Messaging;
@@ -24,13 +25,11 @@ public class Program
     private static InteractionService _interactionService = null!;
     private static IServiceProvider _serviceProvider = null!;
 
-    public static DateTime StartTime { get; set; }
-
     public static async Task Main()
     {
         var configuration = BuildConfiguration();
 
-        if (!ValidateBotConfiguration(configuration))
+        if (!ValidateConfiguration(configuration))
         {
             return;
         }
@@ -64,21 +63,21 @@ public class Program
         return configuration.Get<Configuration>() ?? throw new Exception("Failed to load configuration from config.json");
     }
 
-    private static bool ValidateBotConfiguration(Configuration botConfiguration)
+    private static bool ValidateConfiguration(Configuration configuration)
     {
-        if (string.IsNullOrWhiteSpace(botConfiguration.BotToken))
+        if (string.IsNullOrWhiteSpace(configuration.BotToken))
         {
             Console.WriteLine("Bot token is missing in config.json. Unable to start Saphira.");
             return false;
         }
 
-        if (botConfiguration.MaxAutocompleteSuggestions < 1 || botConfiguration.MaxAutocompleteSuggestions > 25)
+        if (configuration.MaxAutocompleteSuggestions < 1 || configuration.MaxAutocompleteSuggestions > 25)
         {
             Console.WriteLine("The number of autocomplete suggestions must be between 1 and 25.");
             return false;
         }
 
-        if (!botConfiguration.SaphiApiBaseUrl.StartsWith("https"))
+        if (!configuration.SaphiApiBaseUrl.StartsWith("https"))
         {
             Console.WriteLine("Connection to the Saphi API can only be established via HTTPS.");
             return false;

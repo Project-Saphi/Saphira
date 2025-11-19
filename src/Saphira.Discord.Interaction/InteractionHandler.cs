@@ -28,6 +28,7 @@ public class InteractionHandler(DiscordSocketClient client, InteractionService i
 
         client.InteractionCreated += HandleInteraction;
         client.Ready += RegisterCommandsAsync;
+
         interactionService.Log += LogAsync;
         interactionService.InteractionExecuted += HandleInteractionExecuted;
     }

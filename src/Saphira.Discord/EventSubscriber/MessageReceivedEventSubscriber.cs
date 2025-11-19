@@ -1,7 +1,7 @@
 using Discord.WebSocket;
-using Saphira.Discord.Guild;
 using Saphira.Discord.Messaging;
 using Saphira.Discord.Extensions.DependencyInjection;
+using Saphira.Discord.Entity.Guild.Member;
 
 namespace Saphira.Discord.EventSubscriber;
 

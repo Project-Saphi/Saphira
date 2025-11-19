@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Saphira.Discord.Entity.Guild.Role;
 using Saphira.Discord.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Logging;
@@ -27,11 +28,11 @@ public class VerifyCommand(IMessageLogger logger) : BaseCommand
     {
         await DeferAsync();
 
-        var verifiedRole = Context.Guild.Roles.FirstOrDefault(r => r.Name == Guild.GuildRole.VerifiedRole);
+        var verifiedRole = Context.Guild.Roles.FirstOrDefault(r => r.Name == GuildRole.VerifiedRole);
 
         if (verifiedRole == null)
         {
-            var errorAlert = new ErrorAlertEmbedBuilder($"The {MessageTextFormat.Bold(Guild.GuildRole.VerifiedRole)} role does not exist on this server.");
+            var errorAlert = new ErrorAlertEmbedBuilder($"The {MessageTextFormat.Bold(GuildRole.VerifiedRole)} role does not exist on this server.");
             await FollowupAsync(embed: errorAlert.Build());
             return;
         }

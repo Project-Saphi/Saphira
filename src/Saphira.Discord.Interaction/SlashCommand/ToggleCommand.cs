@@ -1,8 +1,9 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Saphira.Discord.Guild;
+using Saphira.Discord.Entity.Guild.Role;
 using Saphira.Discord.Interaction.Autocompletion;
+using Saphira.Discord.Interaction.Autocompletion.ValueProvider;
 using Saphira.Discord.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
@@ -24,7 +25,7 @@ public class ToggleCommand(GuildRoleManager guildRoleManager) : BaseCommand
     [CommandContextType(InteractionContextType.Guild)]
     [SlashCommand("toggle", "Toggle one of your roles off or on")]
     public async Task HandleCommand(
-        [Autocomplete(typeof(ToggleableRoleAutocompleteHandler))] int role
+        [Autocomplete(typeof(GenericAutocompleteHandler<ToggleableRoleValueProvider>))] int role
         )
     {
         await DeferAsync();

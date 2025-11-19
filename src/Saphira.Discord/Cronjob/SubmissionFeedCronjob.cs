@@ -12,29 +12,29 @@ using Saphira.Discord.Logging;
 namespace Saphira.Discord.Cronjob;
 
 [AutoRegister]
-public class SubmissionFeedCronjob(DiscordSocketClient discordClient, CachedClient saphiClient, Configuration botConfiguration, IMessageLogger logger) : ICronjob
+public class SubmissionFeedCronjob(DiscordSocketClient discordClient, CachedClient saphiClient, Configuration configuration, IMessageLogger logger) : ICronjob
 {
     public async Task ExecuteAsync()
     {
-        var guild = discordClient.Guilds.Where(g => g.Id == botConfiguration.GuildId).FirstOrDefault();
+        var guild = discordClient.Guilds.Where(g => g.Id == configuration.GuildId).FirstOrDefault();
 
         if (guild == null)
         {
-            logger.Log(LogSeverity.Error, "Saphira", $"No guild with ID {botConfiguration.GuildId} found. Unable to post new submissions.");
+            logger.Log(LogSeverity.Error, "Saphira", $"No guild with ID {configuration.GuildId} found. Unable to post new submissions.");
             return;
         }
 
-        var channel = guild.Channels.Where(c => c.Name == botConfiguration.SubmissionFeedChannel).FirstOrDefault();
+        var channel = guild.Channels.Where(c => c.Name == configuration.SubmissionFeedChannel).FirstOrDefault();
 
         if (channel == null)
         {
-            logger.Log(LogSeverity.Error, "Saphira", $"No channel {botConfiguration.SubmissionFeedChannel} exists. Unable to post new submissions.");
+            logger.Log(LogSeverity.Error, "Saphira", $"No channel {configuration.SubmissionFeedChannel} exists. Unable to post new submissions.");
             return;
         }
 
         if (channel is not SocketTextChannel textChannel)
         {
-            logger.Log(LogSeverity.Error, "Saphira", $"The channel {botConfiguration.SubmissionFeedChannel} is not a text channel. Unable to post new submissions.");
+            logger.Log(LogSeverity.Error, "Saphira", $"The channel {configuration.SubmissionFeedChannel} is not a text channel. Unable to post new submissions.");
             return;
         }
 

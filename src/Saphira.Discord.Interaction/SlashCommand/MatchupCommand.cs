@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Saphira.Discord.Interaction.Autocompletion;
+using Saphira.Discord.Interaction.Autocompletion.ValueProvider;
 using Saphira.Discord.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
@@ -23,9 +24,9 @@ public class MatchupCommand(PlayerMatchupCalculator playerMatchupGenerator) : Ba
 
     [SlashCommand("matchup", "Show the matchup between 2 players for a category")]
     public async Task HandleCommand(
-        [Autocomplete(typeof(PlayerAutocompleteHandler))] string player1,
-        [Autocomplete(typeof(PlayerAutocompleteHandler))] string player2,
-        [Autocomplete(typeof(CategoryAutocompleteHandler))] string category
+        [Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] string player1,
+        [Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] string player2,
+        [Autocomplete(typeof(GenericAutocompleteHandler<CategoryValueProvider>))] string category
         )
     {
         var result = await playerMatchupGenerator.GeneratePlayerMatchup(player1, player2, category);

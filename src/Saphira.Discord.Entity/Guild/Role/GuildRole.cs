@@ -1,6 +1,6 @@
 using Discord;
 
-namespace Saphira.Discord.Guild;
+namespace Saphira.Discord.Entity.Guild.Role;
 
 public class GuildRole
 {

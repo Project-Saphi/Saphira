@@ -2,8 +2,8 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
-using Saphira.Discord.Guild;
 using Saphira.Core.Application;
+using Saphira.Discord.Entity.Guild.Member;
 
 namespace Saphira.Discord.Interaction.Precondition;
 

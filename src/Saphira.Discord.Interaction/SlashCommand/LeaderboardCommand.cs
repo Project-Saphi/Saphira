@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Saphira.Discord.Interaction.Autocompletion;
+using Saphira.Discord.Interaction.Autocompletion.ValueProvider;
 using Saphira.Discord.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
@@ -28,8 +29,8 @@ public class LeaderboardCommand(CachedClient client, PaginationComponentHandler 
 
     [SlashCommand("leaderboard", "Get the leaderboard for a single track and category")]
     public async Task HandleCommand(
-        [Autocomplete(typeof(CustomTrackAutocompleteHandler))] string track,
-        [Autocomplete(typeof(CategoryAutocompleteHandler))] string category
+        [Autocomplete(typeof(GenericAutocompleteHandler<CustomTrackValueProvider>))] string track,
+        [Autocomplete(typeof(GenericAutocompleteHandler<CategoryValueProvider>))] string category
         )
     {
         var result = await client.GetTrackLeaderboardAsync(track, category);

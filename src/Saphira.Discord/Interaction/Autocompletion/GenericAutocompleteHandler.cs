@@ -6,7 +6,7 @@ using Saphira.Discord.Interaction.Autocompletion.ValueProvider;
 
 namespace Saphira.Discord.Interaction.Autocompletion;
 
-public abstract class BasicAutocompleteHandler<TProvider> : AutocompleteHandler
+public class GenericAutocompleteHandler<TProvider> : AutocompleteHandler
     where TProvider : IValueProvider
 {
     public override async Task<AutocompletionResult> GenerateSuggestionsAsync(
@@ -18,14 +18,14 @@ public abstract class BasicAutocompleteHandler<TProvider> : AutocompleteHandler
     {
         try
         {
-            var botConfiguration = services.GetRequiredService<Configuration>();
+            var configuration = services.GetRequiredService<Configuration>();
             var provider = services.GetRequiredService<TProvider>();
             var values = await provider.GetValuesAsync();
 
             if (values != null && values.Count > 0)
             {
                 var userInput = autocompleteInteraction.Data.Current.Value?.ToString() ?? "";
-                var suggestionCount = GetMaxSuggestionCount(botConfiguration);
+                var suggestionCount = GetMaxSuggestionCount(configuration);
 
                 var suggestions = values
                     .Where(v => v.Name.Contains(userInput, StringComparison.OrdinalIgnoreCase) || v.Id.ToString().Contains(userInput))
@@ -58,9 +58,3 @@ public abstract class BasicAutocompleteHandler<TProvider> : AutocompleteHandler
         return suggestionsCount;
     }
 }
-
-public class CustomTrackAutocompleteHandler : BasicAutocompleteHandler<CustomTrackValueProvider> { }
-public class CategoryAutocompleteHandler : BasicAutocompleteHandler<CategoryValueProvider> { }
-public class CharacterAutocompleteHandler : BasicAutocompleteHandler<CharacterValueProvider> { }
-public class PlayerAutocompleteHandler : BasicAutocompleteHandler<PlayerValueProvider> { }
-public class ToggleableRoleAutocompleteHandler : BasicAutocompleteHandler<ToggleableRoleValueProvider> { }

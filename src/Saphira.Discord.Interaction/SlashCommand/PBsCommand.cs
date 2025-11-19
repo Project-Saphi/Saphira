@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Saphira.Discord.Interaction.Autocompletion;
+using Saphira.Discord.Interaction.Autocompletion.ValueProvider;
 using Saphira.Discord.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
@@ -22,7 +23,7 @@ public class PBsCommand(CachedClient client) : BaseCommand
 
     [SlashCommand("pbs", "Get personal best times of a player")]
     public async Task HandleCommand(
-        [Autocomplete(typeof(PlayerAutocompleteHandler))] string player
+        [Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] string player
         )
     {
         var result = await client.GetPlayerPBsAsync(player);
