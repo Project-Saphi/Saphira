@@ -499,4 +499,5 @@ var table = new AsciiTableBuilder()
     .SetColumnSeparator('│')                                            // Unicode box drawing character
     .SetHeaderSeparator('═')                                            // Unicode box drawing character
     .SetWrapInCodeBlock(false)                                          // Don't wrap in code block (rarely needed)
+    .Build();
 ```
