@@ -55,7 +55,7 @@ public class Pagination
             return 1;
         }
 
-        return Math.Ceiling((double)ItemCount / PageSize);
+        return Math.Ceiling((double) ItemCount / PageSize);
     }
 
     public int GetOffset()

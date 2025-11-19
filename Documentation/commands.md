@@ -97,7 +97,8 @@ Get the leaderboard for a specific track and category.
 - `category` - The racing category (autocomplete available)
 
 **Response:**
-- Top 20 times for the specified track and category
+- Top times for the specified track and category
+- Buttons to navigate between pages, 20 entries per page
 
 ### `/matchup`
 Get the matchup between 2 players for a particular category.

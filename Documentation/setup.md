@@ -40,7 +40,6 @@ A `config.json` file needs to be created with the following structure:
   "MaxAutocompleteSuggestions": 10,
   "SaphiApiKey": "",
   "SaphiApiBaseUrl": "https://api.example.com",
-  "MaxLeaderboardEntries": 0
 }
 ```
 
@@ -54,7 +53,6 @@ A `config.json` file needs to be created with the following structure:
 - `MaxAutocompleteSuggestions` is the number of suggestions that are shown during command parameter autocompletion (hard-limited by Discord to at most 25)
 - `SaphiApiKey` is an API key to access the leaderboard website API
 - `SaphiApiBaseUrl` is the URL to the leaderboard website API
-- `MaxLeaderboardEntries` is the number of entries that will be shown when using `/leaderboard`
 
 ## Roles
 

@@ -6,6 +6,7 @@
 
 - [Command Preconditions](#command-preconditions)
 - [Autocompletion and ValueProviders](#autocompletion-and-valueproviders)
+- [Pagination](#pagination)
 - [Event Subscribers](#event-subscribers)
 - [Cronjobs](#cronjobs)
 - [Logging](#logging)
@@ -45,7 +46,7 @@ public class Player
 The entity can come from anywhere - in this example it's a REST entity from an external API, so it also contains JSON decoding instructions. Next, you can implement the actual `ValueProvider`.
 
 ```csharp
-namespace Saphira.Commands.Autocompletion.ValueProvider;
+namespace Saphira.Discord.Interaction.SlashCommand.Autocompletion.ValueProvider;
 
 public class PlayerValueProvider(CachedClient client) : IValueProvider
 {
@@ -66,7 +67,7 @@ public class PlayerAutocompleteHandler : BasicAutocompleteHandler<PlayerValuePro
 You don't even need to implement anything because the `BasicAutocompleteHandler` already does all the logic for you! Now you can specify the `PlayerAutocompleteHandler` when creating a new command:
 
 ```csharp
-namespace Saphira.Commands;
+namespace Saphira.Discord.Interaction.SlashCommand;
 
 public class PBsCommand() : InteractionModuleBase<SocketInteractionContext>
 {
@@ -81,9 +82,7 @@ public class PBsCommand() : InteractionModuleBase<SocketInteractionContext>
 To be able to use a `ValueProvider` as a dependency, you can attach the `AutoRegister` attribute to it. That way, the `ValueProvider` is automatically added to the service collection when Saphira is started:
 
 ```csharp
-using Saphira.Extensions.DependencyInjection;
-
-namespace Saphira.Commands.Autocompletion.ValueProvider;
+namespace Saphira.Discord.Interaction.SlashCommand.Autocompletion.ValueProvider;
 
 [AutoRegister]
 public class PlayerValueProvider(CachedClient client) : IValueProvider
@@ -91,6 +90,164 @@ public class PlayerValueProvider(CachedClient client) : IValueProvider
     // Other code ...
 }
 ```
+
+## Pagination
+
+When a command returns a large dataset (such as a leaderboard, lists of tracks, or player statistics), pagination is a good way to reduce the amount of output that Saphira creates at once. The main idea behind pagination is to not run into Discord's message length limit.
+
+To implement pagination, you need to pass the `PaginationComponentHandler` to the command you are creating. The `PaginationComponentHandler` is a singleton service which is responsible for storing the current state of the pagination and handling page transitions.
+
+```csharp
+public class LeaderboardCommand(CachedClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+{
+    // Other code ...
+}
+```
+
+When responding to the command, you need to create the initial pagination state as well as create the pagination component itself:
+
+```csharp
+namespace Saphira.Discord.Interaction.SlashCommand;
+
+public class LeaderboardCommand(CachedClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+{
+    [SlashCommand("leaderboard", "Get the leaderboard for a single track and category")]
+    public async Task HandleCommand(
+        [Autocomplete(typeof(CustomTrackAutocompleteHandler))] string track,
+        [Autocomplete(typeof(CategoryAutocompleteHandler))] string category
+        )
+    {
+        // Other code ...
+        var leaderboardEntries = [...]; // Your data to paginate
+
+        var initialPagination = new Pagination(1, 10, leaderboardEntries.Count);
+        var paginationId = Guid.NewGuid();
+
+        var paginationComponentBuilder = new PaginationComponentBuilder(
+            paginationId,
+            disablePrevious: initialPagination.IsFirstPage(),
+            disableNext: initialPagination.IsLastPage()
+        );       
+    }
+}
+```
+
+The `Pagination` is a simple object consisting of 3 parameters:
+
+- `currentPage` - The current page number (1-indexed)
+- `pageSize` - Number of items per page
+- `itemCount` - Total number of items in the dataset
+
+Based off of this, the `Pagination` can calculate the limit and offset, number of pages, previous and next page and many other things. The pagination buttons use custom IDs in the format `pagination:action:id`:
+
+- `pagination:prev:{guid}` - Previous page button
+- `pagination:next:{guid}` - Next page button
+
+The `PaginationComponentBuilder` is a simple component builder which creates a "Previous Page" and a "Next Page" button which can be attached to the message you are sending. It requires a `Guid` to create the unique custom IDs for both buttons (this is important to identify each unique pagination).
+
+After creating the pagination you can build your initial response:
+
+```csharp
+namespace Saphira.Discord.Interaction.SlashCommand;
+
+public class LeaderboardCommand(CachedClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+{
+    [SlashCommand("leaderboard", "Get the leaderboard for a single track and category")]
+    public async Task HandleCommand(
+        [Autocomplete(typeof(CustomTrackAutocompleteHandler))] string track,
+        [Autocomplete(typeof(CategoryAutocompleteHandler))] string category
+        )
+    {
+        // Other code ...
+        var leaderboardEntries = [...]; // Your data to paginate
+
+        var initialPagination = new Pagination(1, 10, leaderboardEntries.Count);
+        var paginationId = Guid.NewGuid();
+
+        var paginationComponentBuilder = new PaginationComponentBuilder(
+            paginationId,
+            disablePrevious: initialPagination.IsFirstPage(),
+            disableNext: initialPagination.IsLastPage()
+        );
+        
+        var firstPageEntries = leaderboardEntries.Take(initialPagination.GetLimit()).ToList();
+        var firstPageEmbed = GetEmbedForPage(customTrack, firstPageEntries, initialPagination.CurrentPage);
+
+        await RespondAsync(embed: firstPageEmbed.Build(), components: paginationComponentBuilder.Build());
+    }
+}
+```
+
+After sending the response, you need to register the pagination inside the `PaginationComponentHandler`, along with a custom callback that handles page changes:
+
+```csharp
+namespace Saphira.Discord.Interaction.SlashCommand;
+
+public class LeaderboardCommand(CachedClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+{
+    [SlashCommand("leaderboard", "Get the leaderboard for a single track and category")]
+    public async Task HandleCommand(
+        [Autocomplete(typeof(CustomTrackAutocompleteHandler))] string track,
+        [Autocomplete(typeof(CategoryAutocompleteHandler))] string category
+        )
+    {
+        var leaderboardEntries = [...]; // Your data to paginate
+
+        var initialPagination = new Pagination(1, 10, leaderboardEntries.Count);
+        var paginationId = Guid.NewGuid();
+
+        var paginationComponentBuilder = new PaginationComponentBuilder(
+            paginationId,
+            disablePrevious: initialPagination.IsFirstPage(),
+            disableNext: initialPagination.IsLastPage()
+        );
+        
+        var firstPageEntries = leaderboardEntries.Take(initialPagination.GetLimit()).ToList();
+        var firstPageEmbed = GetEmbedForPage(customTrack, firstPageEntries, initialPagination.CurrentPage);
+
+        await RespondAsync(embed: firstPageEmbed.Build(), components: paginationComponentBuilder.Build());
+
+        RegisterPagination(paginationId, initialPagination, leaderboardEntries, track);
+    }
+
+    private void RegisterPagination(
+        Guid paginationId,
+        Pagination pagination,
+        List<TrackLeaderboardEntry> leaderboardEntries,
+        CustomTrack track)
+    {
+        var state = new PaginationState(pagination, async (component, newPagination) =>
+        {
+            // Get entries for the new page
+            var pageEntries = leaderboardEntries
+                .Skip(newPagination.GetOffset())
+                .Take(newPagination.GetLimit())
+                .ToList();
+
+            // Build the embed for the new page
+            var embed = GetEmbedForPage(track, pageEntries, newPagination.CurrentPage);
+
+            // Make sure you update the buttons as well to disable the previous / next page
+            var updatedComponents = new PaginationComponentBuilder(
+                paginationId,
+                newPagination.IsFirstPage(),
+                newPagination.IsLastPage()
+            );
+
+            // Update the message
+            await component.UpdateAsync(msg =>
+            {
+                msg.Embed = embed.Build();
+                msg.Components = updatedComponents.Build();
+            });
+        });
+
+        paginationComponentHandler.RegisterPagination(paginationId, state);
+    }
+}
+```
+
+Pagination states are automatically cleaned up after 5 minutes of inactivity to prevent memory accumulation. When a user tries to interact with an expired pagination, they'll see an "This pagination has expired" message.
 
 ## Event Subscribers
 

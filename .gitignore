@@ -39,4 +39,4 @@ project.fragment.lock.json
 artifacts/
 
 # Misc Stuff
-Commands/TestCommand.cs
+Discord/Interaction/SlashCommand/TestCommand.cs

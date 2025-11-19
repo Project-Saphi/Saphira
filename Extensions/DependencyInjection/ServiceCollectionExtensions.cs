@@ -1,8 +1,8 @@
 using Discord;
 using Microsoft.Extensions.DependencyInjection;
-using Saphira.Commands.Autocompletion.ValueProvider;
 using Saphira.Cronjobs;
 using Saphira.Discord.EventSubscriber;
+using Saphira.Discord.Interaction.SlashCommand.Autocompletion.ValueProvider;
 using Saphira.Util.Logging;
 using System.Reflection;
 

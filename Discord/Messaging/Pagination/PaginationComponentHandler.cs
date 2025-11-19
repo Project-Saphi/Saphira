@@ -4,98 +4,93 @@ namespace Saphira.Discord.Messaging.Pagination;
 
 public class PaginationComponentHandler
 {
-    private readonly Dictionary<Guid, Func<SocketMessageComponent, Pagination, Task>> _callbacks = [];
-    private readonly Dictionary<Guid, Pagination> _paginations = [];
+    private readonly Dictionary<Guid, PaginationState> _paginationStates = [];
     private readonly Dictionary<Guid, DateTime> _registrationTimes = [];
     private readonly Dictionary<Guid, CancellationTokenSource> _cleanupTokens = [];
     private readonly TimeSpan _timeout = TimeSpan.FromMinutes(5);
 
-    public void RegisterComponent(Guid componentId, Pagination pagination, Func<SocketMessageComponent, Pagination, Task> callback)
+    public void RegisterPagination(Guid paginationId, PaginationState state)
     {
-        if (_callbacks.ContainsKey(componentId))
+        if (_paginationStates.ContainsKey(paginationId))
         {
-            throw new ArgumentException($"The component {componentId} is already registered.");
+            throw new ArgumentException($"Pagination {paginationId} is already registered.");
         }
 
-        _callbacks[componentId] = callback;
-        _paginations[componentId] = pagination;
-        _registrationTimes[componentId] = DateTime.UtcNow;
+        _paginationStates[paginationId] = state;
+        _registrationTimes[paginationId] = DateTime.UtcNow;
 
         var cts = new CancellationTokenSource();
-        _cleanupTokens[componentId] = cts;
+        _cleanupTokens[paginationId] = cts;
         _ = Task.Delay(_timeout, cts.Token).ContinueWith(t =>
         {
             if (!t.IsCanceled)
             {
-                UnregisterComponent(componentId);
+                UnregisterPagination(paginationId);
             }
         }, TaskScheduler.Default);
     }
 
-    public void UpdatePagination(Guid componentId, Pagination pagination)
+    public void UnregisterPagination(Guid paginationId)
     {
-        if (!_paginations.ContainsKey(componentId))
-        {
-            throw new ArgumentException($"No pagination has been registered for component {componentId}.");
-        }
+        _paginationStates.Remove(paginationId);
+        _registrationTimes.Remove(paginationId);
 
-        _paginations[componentId] = pagination;
-    }
-
-    public void UnregisterComponent(Guid componentId)
-    {
-        _callbacks.Remove(componentId);
-        _paginations.Remove(componentId);
-        _registrationTimes.Remove(componentId);
-
-        if (_cleanupTokens.TryGetValue(componentId, out var cts))
+        if (_cleanupTokens.TryGetValue(paginationId, out var cts))
         {
             cts.Cancel();
             cts.Dispose();
-            _cleanupTokens.Remove(componentId);
+            _cleanupTokens.Remove(paginationId);
         }
     }
 
-    public void UnregisterComponentGroup(Guid previousButtonId, Guid nextButtonId)
+    public async Task HandlePreviousPage(Guid paginationId, SocketMessageComponent component)
     {
-        UnregisterComponent(previousButtonId);
-        UnregisterComponent(nextButtonId);
+        if (!await ValidatePagination(paginationId, component))
+        {
+            return;
+        }
+
+        var state = _paginationStates[paginationId];
+        var newPagination = new Pagination(state.Pagination.GetPreviousPage(), state.Pagination.PageSize, state.Pagination.ItemCount);
+
+        await state.UpdateCallback(component, newPagination);
+
+        _paginationStates[paginationId] = state with { Pagination = newPagination };
     }
 
-    public async Task HandleComponentInteraction(SocketMessageComponent component)
+    public async Task HandleNextPage(Guid paginationId, SocketMessageComponent component)
     {
-        if (component?.Data?.CustomId == null)
+        if (!await ValidatePagination(paginationId, component))
         {
             return;
         }
 
-        if (!Guid.TryParse(component.Data.CustomId, out var customId))
-        {
-            return;
-        }
+        var state = _paginationStates[paginationId];
+        var newPagination = new Pagination(state.Pagination.GetNextPage(), state.Pagination.PageSize, state.Pagination.ItemCount);
 
-        if (!_callbacks.TryGetValue(customId, out var callback))
+        await state.UpdateCallback(component, newPagination);
+
+        _paginationStates[paginationId] = state with { Pagination = newPagination };
+    }
+
+    private async Task<bool> ValidatePagination(Guid paginationId, SocketMessageComponent component)
+    {
+        if (!_paginationStates.ContainsKey(paginationId))
         {
             await component.RespondAsync("This pagination has expired.", ephemeral: true);
-            return;
+            return false;
         }
 
-        if (!_paginations.TryGetValue(customId, out var pagination))
-        {
-            await component.RespondAsync("This pagination has expired.", ephemeral: true);
-            return;
-        }
-
-        if (_registrationTimes.TryGetValue(customId, out var registrationTime))
+        if (_registrationTimes.TryGetValue(paginationId, out var registrationTime))
         {
             if (DateTime.UtcNow - registrationTime > _timeout)
             {
-                UnregisterComponent(customId);
+                UnregisterPagination(paginationId);
                 await component.RespondAsync("This pagination has expired.", ephemeral: true);
-                return;
+                return false;
             }
         }
 
-        await callback(component, pagination);
+        return true;
     }
 }
