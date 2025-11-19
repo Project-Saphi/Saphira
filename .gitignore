@@ -1,6 +1,3 @@
-# Bot Configuration (contains sensitive tokens)
-config.json
-
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
@@ -39,4 +36,6 @@ project.fragment.lock.json
 artifacts/
 
 # Misc Stuff
-Discord/Interaction/SlashCommand/TestCommand.cs
+.claude
+src/Saphira/config.json
+src/Saphira.Discord.Interaction/SlashCommand/TestCommand.cs

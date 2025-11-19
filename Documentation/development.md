@@ -46,7 +46,7 @@ public class Player
 The entity can come from anywhere - in this example it's a REST entity from an external API, so it also contains JSON decoding instructions. Next, you can implement the actual `ValueProvider`.
 
 ```csharp
-namespace Saphira.Discord.Interaction.SlashCommand.Autocompletion.ValueProvider;
+namespace Saphira.Discord.Interaction.Autocompletion.ValueProvider;
 
 public class PlayerValueProvider(CachedClient client) : IValueProvider
 {
@@ -82,7 +82,7 @@ public class PBsCommand() : InteractionModuleBase<SocketInteractionContext>
 To be able to use a `ValueProvider` as a dependency, you can attach the `AutoRegister` attribute to it. That way, the `ValueProvider` is automatically added to the service collection when Saphira is started:
 
 ```csharp
-namespace Saphira.Discord.Interaction.SlashCommand.Autocompletion.ValueProvider;
+namespace Saphira.Discord.Interaction.Autocompletion.ValueProvider;
 
 [AutoRegister]
 public class PlayerValueProvider(CachedClient client) : IValueProvider
@@ -310,7 +310,7 @@ I am going to preface this section by saying: What I implemented aren't cronjobs
 Creating a new cronjob is super easy:
 
 ```csharp
-namespace Saphira.Cronjobs;
+namespace Saphira.Discord.Cronjob;
 
 [AutoRegister]
 public class TestCronjob : ICronjob
