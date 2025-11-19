@@ -1,7 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Saphira.Discord.Entity.Guild.Role;
+using Saphira.Discord.Guild.Role;
 
 namespace Saphira.Discord.Interaction.Precondition;
 

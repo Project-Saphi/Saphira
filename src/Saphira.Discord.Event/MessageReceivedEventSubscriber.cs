@@ -1,9 +1,9 @@
 using Discord.WebSocket;
+using Saphira.Core.Extensions.DependencyInjection;
+using Saphira.Discord.Guild.Member;
 using Saphira.Discord.Messaging;
-using Saphira.Discord.Extensions.DependencyInjection;
-using Saphira.Discord.Entity.Guild.Member;
 
-namespace Saphira.Discord.EventSubscriber;
+namespace Saphira.Discord.Event;
 
 [AutoRegister]
 public class MessageReceivedEventSubscriber(DiscordSocketClient client, InviteLinkDetector inviteLinkDetector, RestrictedContentDetector restrictedContentDetector) : IDiscordSocketClientEventSubscriber

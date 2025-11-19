@@ -1,6 +1,6 @@
 using Discord;
 
-namespace Saphira.Discord.Entity.Status;
+namespace Saphira.Discord.Presence;
 
 public class Activity
 {

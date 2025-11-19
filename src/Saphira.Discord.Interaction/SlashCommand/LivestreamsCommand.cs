@@ -1,6 +1,6 @@
 using Discord;
 using Discord.Interactions;
-using Saphira.Discord.Entity.Guild;
+using Saphira.Discord.Guild;
 using Saphira.Discord.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;

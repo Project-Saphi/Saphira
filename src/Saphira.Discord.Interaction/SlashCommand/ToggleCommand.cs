@@ -1,7 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Saphira.Discord.Entity.Guild.Role;
+using Saphira.Discord.Guild.Role;
 using Saphira.Discord.Interaction.Autocompletion;
 using Saphira.Discord.Interaction.Autocompletion.ValueProvider;
 using Saphira.Discord.Interaction.Precondition;

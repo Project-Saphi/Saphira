@@ -1,4 +1,4 @@
-namespace Saphira.Discord.Entity.Guild.Role;
+namespace Saphira.Discord.Guild.Role;
 
 public class GuildRoleManager
 {

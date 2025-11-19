@@ -1,8 +1,8 @@
 using Discord.WebSocket;
 using Saphira.Core.Application;
-using Saphira.Discord.Extensions.DependencyInjection;
+using Saphira.Core.Extensions.DependencyInjection;
 
-namespace Saphira.Discord.EventSubscriber;
+namespace Saphira.Discord.Event;
 
 [AutoRegister]
 public class JoinedGuildEventSubscriber(DiscordSocketClient client, Configuration configuration) : IDiscordSocketClientEventSubscriber

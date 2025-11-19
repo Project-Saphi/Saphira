@@ -1,4 +1,4 @@
-﻿namespace Saphira.Discord.EventSubscriber;
+﻿namespace Saphira.Discord.Event;
 
 public interface IDiscordSocketClientEventSubscriber
 {

@@ -1,5 +1,5 @@
 using Discord;
-using Saphira.Discord.Extensions.DependencyInjection;
+using Saphira.Core.Extensions.DependencyInjection;
 using Saphira.Discord.Logging;
 using Saphira.Saphi.Api;
 

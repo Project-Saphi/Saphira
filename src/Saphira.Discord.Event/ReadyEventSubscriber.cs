@@ -1,10 +1,10 @@
 using Discord;
 using Discord.WebSocket;
-using Saphira.Discord.Extensions.DependencyInjection;
 using Saphira.Core.Application;
+using Saphira.Core.Extensions.DependencyInjection;
 using Saphira.Discord.Logging;
 
-namespace Saphira.Discord.EventSubscriber;
+namespace Saphira.Discord.Event;
 
 [AutoRegister]
 public class ReadyEventSubscriber(DiscordSocketClient client, IMessageLogger logger) : IDiscordSocketClientEventSubscriber

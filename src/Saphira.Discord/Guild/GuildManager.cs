@@ -1,8 +1,8 @@
 using Discord;
 using Discord.WebSocket;
-using Saphira.Discord.Entity.Status;
+using Saphira.Discord.Presence;
 
-namespace Saphira.Discord.Entity.Guild;
+namespace Saphira.Discord.Guild;
 
 public class GuildManager
 {
