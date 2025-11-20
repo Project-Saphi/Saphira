@@ -51,7 +51,7 @@ public class PaginationComponentHandler
         }
 
         var state = _paginationStates[paginationId];
-        var newPagination = new Pagination(state.Pagination.GetPreviousPage(), state.Pagination.PageSize, state.Pagination.ItemCount);
+        var newPagination = new Pagination(paginationId, state.Pagination.GetPreviousPage(), state.Pagination.PageSize, state.Pagination.ItemCount);
 
         await state.UpdateCallback(component, newPagination);
 
@@ -66,7 +66,7 @@ public class PaginationComponentHandler
         }
 
         var state = _paginationStates[paginationId];
-        var newPagination = new Pagination(state.Pagination.GetNextPage(), state.Pagination.PageSize, state.Pagination.ItemCount);
+        var newPagination = new Pagination(paginationId, state.Pagination.GetNextPage(), state.Pagination.PageSize, state.Pagination.ItemCount);
 
         await state.UpdateCallback(component, newPagination);
 

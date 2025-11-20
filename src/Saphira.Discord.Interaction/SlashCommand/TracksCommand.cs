@@ -3,6 +3,7 @@ using Discord.Interactions;
 using Saphira.Discord.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
+using Saphira.Discord.Messaging.Pagination;
 using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
 
@@ -10,11 +11,16 @@ namespace Saphira.Discord.Interaction.SlashCommand;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class TracksCommand(CachedClient client) : BaseCommand
+public class TracksCommand(CachedClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
+    private readonly int EntriesPerPage = 20;
+
     public override SlashCommandMetadata GetMetadata()
     {
-        return new SlashCommandMetadata("/tracks");
+        return new SlashCommandMetadata(
+            "/tracks", 
+            $"{EntriesPerPage} entries are shown per page"
+        );
     }
 
     [SlashCommand("tracks", "Get the list of supported custom tracks")]
@@ -36,14 +42,29 @@ public class TracksCommand(CachedClient client) : BaseCommand
             return;
         }
 
+        var customTracks = result.Response.Data;
+
+        var paginationBuilder = new PaginationBuilder<CustomTrack>(paginationComponentHandler)
+            .WithItems(customTracks)
+            .WithPageSize(EntriesPerPage)
+            .WithRenderPageCallback((pageTracks, pageNumber) => GetEmbedForPage(pageTracks, pageNumber))
+            .WithCustomId(Guid.NewGuid());
+
+        var (embed, components) = paginationBuilder.Build();
+
+        await RespondAsync(embed: embed, components: components);
+    }
+
+    private EmbedBuilder GetEmbedForPage(List<CustomTrack> pageTracks, int pageNumber)
+    {
         var embed = new EmbedBuilder()
-            .WithAuthor("Custom Track List");
+            .WithAuthor($"[Page {pageNumber}] Custom Track List");
 
-        AddEmbedField(embed, ":identification_card:", "ID", GetIds(result.Response.Data));
-        AddEmbedField(embed, ":motorway:", "Name", GetCustomTrackNames(result.Response.Data));
-        AddEmbedField(embed, ":art:", "Designer", GetAuthors(result.Response.Data));
+        AddEmbedField(embed, ":identification_card:", "ID", GetIds(pageTracks));
+        AddEmbedField(embed, ":motorway:", "Name", GetCustomTrackNames(pageTracks));
+        AddEmbedField(embed, ":art:", "Designer", GetAuthors(pageTracks));
 
-        await RespondAsync(embed: embed.Build());
+        return embed;
     }
 
     private void AddEmbedField(EmbedBuilder embed, string emote, string title, List<string> content)

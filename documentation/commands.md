@@ -132,7 +132,8 @@ Get personal best times for a player across all tracks.
 - `player` - The player's username
 
 **Response:**
-- Numbered list of personal bests with track names, times, and ranks
+- List of personal bests with track names, times, and ranks
+- Buttons to navigate between pages, 20 entries per page
 
 ### `/tracks`
 Get the list of all supported custom tracks.
@@ -144,6 +145,7 @@ Get the list of all supported custom tracks.
 
 **Response:**
 - Complete list of custom tracks with their IDs
+- Buttons to navigate between pages, 20 entries per page
 
 ## 👤 Profile Commands
 

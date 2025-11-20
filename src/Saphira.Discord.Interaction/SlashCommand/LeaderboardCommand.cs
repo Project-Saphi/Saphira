@@ -53,34 +53,15 @@ public class LeaderboardCommand(CachedClient client, PaginationComponentHandler 
 
         var leaderboardEntries = result.Response.Data;
 
-        var initialPagination = new Pagination(1, EntriesPerPage, leaderboardEntries.Count);
-        var paginationId = Guid.NewGuid();
-        var paginationComponentBuilder = new PaginationComponentBuilder(paginationId, disablePrevious: initialPagination.IsFirstPage(), disableNext: initialPagination.IsLastPage());
+        var paginationBuilder = new PaginationBuilder<TrackLeaderboardEntry>(paginationComponentHandler)
+            .WithItems(leaderboardEntries)
+            .WithPageSize(EntriesPerPage)
+            .WithRenderPageCallback((pageEntries, pageNumber) => GetEmbedForPage(customTrack, pageEntries, pageNumber))
+            .WithCustomId(Guid.NewGuid());
 
-        var firstPageEntries = leaderboardEntries.Take(initialPagination.GetLimit()).ToList();
-        var firstPageEmbed = GetEmbedForPage(customTrack, firstPageEntries, initialPagination.CurrentPage);
+        var (embed, components) = paginationBuilder.Build();
 
-        RegisterPagination(paginationId, initialPagination, leaderboardEntries, customTrack);
-
-        await RespondAsync(embed: firstPageEmbed.Build(), components: paginationComponentBuilder.Build());
-    }
-
-    private void RegisterPagination(Guid paginationId, Pagination pagination, List<TrackLeaderboardEntry> leaderboardEntries, CustomTrack track)
-    {
-        var state = new PaginationState(pagination, async (component, newPagination) =>
-        {
-            var pageEntries = leaderboardEntries.Skip(newPagination.GetOffset()).Take(newPagination.GetLimit()).ToList();
-            var embed = GetEmbedForPage(track, pageEntries, newPagination.CurrentPage);
-            var updatedComponents = new PaginationComponentBuilder(paginationId, newPagination.IsFirstPage(), newPagination.IsLastPage());
-
-            await component.UpdateAsync(msg =>
-            {
-                msg.Embed = embed.Build();
-                msg.Components = updatedComponents.Build();
-            });
-        });
-
-        paginationComponentHandler.RegisterPagination(paginationId, state);
+        await RespondAsync(embed: embed, components: components);
     }
 
     private EmbedBuilder GetEmbedForPage(CustomTrack track, List<TrackLeaderboardEntry> leaderboardEntries, int currentPage)

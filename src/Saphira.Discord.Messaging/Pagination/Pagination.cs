@@ -2,12 +2,14 @@
 
 public class Pagination
 {
+    public readonly Guid ID;
     public readonly int CurrentPage;
     public readonly int PageSize;
     public readonly int ItemCount;
 
-    public Pagination(int currentPage, int pageSize, int itemCount)
+    public Pagination(Guid id, int currentPage, int pageSize, int itemCount)
     {
+        ID = id;
         CurrentPage = currentPage;
         PageSize = pageSize;
         ItemCount = itemCount;

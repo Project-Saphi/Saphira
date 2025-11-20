@@ -5,6 +5,7 @@ using Saphira.Discord.Interaction.Autocompletion.ValueProvider;
 using Saphira.Discord.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
+using Saphira.Discord.Messaging.Pagination;
 using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
 using Saphira.Util.EmoteMapper;
@@ -14,11 +15,16 @@ namespace Saphira.Discord.Interaction.SlashCommand;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class PBsCommand(CachedClient client) : BaseCommand
+public class PBsCommand(CachedClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
+    private readonly int EntriesPerPage = 20;
+
     public override SlashCommandMetadata GetMetadata()
     {
-        return new SlashCommandMetadata("/pbs TheKoji");
+        return new SlashCommandMetadata(
+            "/pbs TheKoji", 
+            $"{EntriesPerPage} entries are shown per page"
+        );
     }
 
     [SlashCommand("pbs", "Get personal best times of a player")]
@@ -42,16 +48,30 @@ public class PBsCommand(CachedClient client) : BaseCommand
             return;
         }
 
-        var playerName = result.Response.Data.First().Holder;
+        var playerPBs = result.Response.Data;
+        var playerName = playerPBs.First().Holder;
 
+        var paginationBuilder = new PaginationBuilder<PlayerPB>(paginationComponentHandler)
+            .WithItems(playerPBs)
+            .WithPageSize(EntriesPerPage)
+            .WithRenderPageCallback((pagePBs, pageNumber) => GetEmbedForPage(playerName, pagePBs, pageNumber))
+            .WithCustomId(Guid.NewGuid());
+
+        var (embed, components) = paginationBuilder.Build();
+
+        await RespondAsync(embed: embed, components: components);
+    }
+
+    private EmbedBuilder GetEmbedForPage(string playerName, List<PlayerPB> pagePBs, int pageNumber)
+    {
         var embed = new EmbedBuilder()
-            .WithAuthor($"Personal best times of {playerName}");
+            .WithAuthor($"[Page {pageNumber}] {playerName}'s personal best times");
 
-        AddEmbedField(embed, ":motorway:", "Track", GetCustomTracks(result.Response.Data));
-        AddEmbedField(embed, ":stadium:", "Category", GetCategories(result.Response.Data));
-        AddEmbedField(embed, ":stopwatch:", "Time", GetTimes(result.Response.Data));
+        AddEmbedField(embed, ":motorway:", "Track", GetCustomTracks(pagePBs));
+        AddEmbedField(embed, ":stadium:", "Category", GetCategories(pagePBs));
+        AddEmbedField(embed, ":stopwatch:", "Time", GetTimes(pagePBs));
 
-        await RespondAsync(embed: embed.Build());
+        return embed;
     }
 
     private void AddEmbedField(EmbedBuilder embed, string emote, string title, List<string> content)
