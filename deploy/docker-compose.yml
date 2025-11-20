@@ -1,0 +1,15 @@
+services:
+  saphira:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: saphira-bot
+    restart: unless-stopped
+    volumes:
+      - ../src/Saphira/config.json:/app/config.json
+    networks:
+      - saphira-network
+
+networks:
+  saphira-network:
+    driver: bridge
