@@ -56,8 +56,7 @@ public class LeaderboardCommand(CachedClient client, PaginationComponentHandler 
         var paginationBuilder = new PaginationBuilder<TrackLeaderboardEntry>(paginationComponentHandler)
             .WithItems(leaderboardEntries)
             .WithPageSize(EntriesPerPage)
-            .WithRenderPageCallback((pageEntries, pageNumber) => GetEmbedForPage(customTrack, pageEntries, pageNumber))
-            .WithCustomId(Guid.NewGuid());
+            .WithRenderPageCallback((pageEntries, pageNumber) => GetEmbedForPage(customTrack, pageEntries, pageNumber));
 
         var (embed, components) = paginationBuilder.Build();
 

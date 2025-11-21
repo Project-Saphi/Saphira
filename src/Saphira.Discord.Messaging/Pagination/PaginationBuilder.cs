@@ -7,7 +7,7 @@ public class PaginationBuilder<T>(PaginationComponentHandler paginationComponent
     private List<T> _items = [];
     private int _pageSize = 1;
     private Func<List<T>, int, EmbedBuilder>? _renderPageCallback;
-    private Guid _customId = Guid.Empty;
+    private Guid _customId = Guid.NewGuid();
 
     public PaginationBuilder<T> WithItems(List<T> items)
     {

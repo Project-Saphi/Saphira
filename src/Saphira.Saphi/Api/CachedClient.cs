@@ -232,7 +232,7 @@ public class CachedClient : ISaphiApiClient
             // so we set the cache duration to 0 to avoid cache poisoning
             if (!result.Success)
             {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.Zero;
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMicroseconds(1);
             }
 
             return result;

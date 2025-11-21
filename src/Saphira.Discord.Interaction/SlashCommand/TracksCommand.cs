@@ -47,8 +47,7 @@ public class TracksCommand(CachedClient client, PaginationComponentHandler pagin
         var paginationBuilder = new PaginationBuilder<CustomTrack>(paginationComponentHandler)
             .WithItems(customTracks)
             .WithPageSize(EntriesPerPage)
-            .WithRenderPageCallback((pageTracks, pageNumber) => GetEmbedForPage(pageTracks, pageNumber))
-            .WithCustomId(Guid.NewGuid());
+            .WithRenderPageCallback((pageTracks, pageNumber) => GetEmbedForPage(pageTracks, pageNumber));
 
         var (embed, components) = paginationBuilder.Build();
 

@@ -54,8 +54,7 @@ public class PBsCommand(CachedClient client, PaginationComponentHandler paginati
         var paginationBuilder = new PaginationBuilder<PlayerPB>(paginationComponentHandler)
             .WithItems(playerPBs)
             .WithPageSize(EntriesPerPage)
-            .WithRenderPageCallback((pagePBs, pageNumber) => GetEmbedForPage(playerName, pagePBs, pageNumber))
-            .WithCustomId(Guid.NewGuid());
+            .WithRenderPageCallback((pagePBs, pageNumber) => GetEmbedForPage(playerName, pagePBs, pageNumber));
 
         var (embed, components) = paginationBuilder.Build();
 
