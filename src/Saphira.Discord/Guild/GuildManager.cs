@@ -6,7 +6,7 @@ namespace Saphira.Discord.Guild;
 
 public class GuildManager
 {
-    public static List<(SocketGuildUser User, IActivity Activity)> GetCTRStreamers(SocketGuild guild)
+    public static List<(SocketGuildUser User, IActivity Activity)> FindCTRStreamActivities(SocketGuild guild)
     {
         var streamers = new List<(SocketGuildUser, IActivity)>();
 
