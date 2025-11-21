@@ -93,7 +93,7 @@ public class Program
         var clientConfig = new DiscordSocketConfig
         {
             AuditLogCacheSize = 0,
-            GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMembers | GatewayIntents.GuildMessages | GatewayIntents.MessageContent,
+            GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMembers | GatewayIntents.GuildMessages | GatewayIntents.MessageContent | GatewayIntents.GuildPresences,
             MessageCacheSize = 100
         };
 

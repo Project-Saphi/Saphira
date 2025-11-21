@@ -6,13 +6,6 @@ namespace Saphira.Discord.Guild;
 
 public class GuildManager
 {
-    public static List<IActivity> GetCTRStreamActivites(SocketGuild guild)
-    {
-        return [.. guild.Users
-            .SelectMany(u => u.Activities)
-            .Where(a => a.Type == ActivityType.Streaming && Activity.IsCTRStream(a))];
-    }
-
     public static List<(SocketGuildUser User, IActivity Activity)> GetCTRStreamers(SocketGuild guild)
     {
         var streamers = new List<(SocketGuildUser, IActivity)>();
@@ -30,12 +23,6 @@ public class GuildManager
             {
                 streamers.Add((user, streamingActivity));
                 continue;
-            }
-
-            var hasCtrgame = user.Activities.Any(a => Activity.IsCTRGame(a));
-            if (hasCtrgame)
-            {
-                streamers.Add((user, streamingActivity));
             }
         }
 

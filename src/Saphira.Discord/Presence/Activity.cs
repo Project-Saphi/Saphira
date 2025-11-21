@@ -10,7 +10,8 @@ public class Activity
         "ctr",
         "crash racing",
         "crash bandicoot racing",
-        "cbr"
+        "cbr",
+        "project saphi"
     ];
 
     public static bool IsCTRStream(IActivity activity)

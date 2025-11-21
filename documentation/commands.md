@@ -35,9 +35,11 @@ List all CTR livestreams from server members.
 
 **Response:**
 - List of currently streaming members with their stream links
+- Buttons to navigate between pages, 10 entries per page
 
 **Requirements:**
 - Bot needs "Server Members Intent" and "Presence Intent" enabled
+- Only streams from users are detected whose Discord status is set to "Streaming"
 
 ### `/ping`
 Check the bot's latency and uptime.
