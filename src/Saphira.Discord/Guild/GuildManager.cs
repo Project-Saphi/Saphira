@@ -12,7 +12,7 @@ public class GuildManager
 
         foreach (var user in guild.Users)
         {
-            var streamingActivity = user.Activities.FirstOrDefault(a => a.Type == ActivityType.Streaming);
+            var streamingActivity = user.Activities?.FirstOrDefault(a => a.Type == ActivityType.Streaming);
 
             if (streamingActivity == null)
             {

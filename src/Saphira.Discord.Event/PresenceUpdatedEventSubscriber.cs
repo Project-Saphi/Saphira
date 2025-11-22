@@ -58,8 +58,8 @@ public class PresenceUpdatedEventSubscriber(DiscordSocketClient client, Configur
             return;
         }
 
-        var isNewStream = !oldPresence.Activities.Where(a => Activity.IsCTRStream(a)).Any();
-        var streamActivity = newPresence.Activities.Where(a => Activity.IsCTRStream(a)).FirstOrDefault();
+        var isNewStream = !(oldPresence.Activities?.Where(a => Activity.IsCTRStream(a)).Any() ?? false);
+        var streamActivity = newPresence.Activities?.Where(a => Activity.IsCTRStream(a)).FirstOrDefault();
 
         if (!isNewStream || streamActivity == null || streamActivity is not StreamingGame game)
         {
@@ -129,7 +129,7 @@ public class PresenceUpdatedEventSubscriber(DiscordSocketClient client, Configur
             return;
         }
 
-        var isStreaming = presence.Activities.Where(a => Activity.IsCTRStream(a)).Any();
+        var isStreaming = presence.Activities?.Where(a => Activity.IsCTRStream(a)).Any() ?? false;
         var hasStreamingRole = guildUser.Roles.Contains(streamingRole);
 
         if (isStreaming && !hasStreamingRole)
