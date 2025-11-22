@@ -38,7 +38,6 @@ public class UserJoinedEventSubscriber(DiscordSocketClient client, Configuration
             }
 
             await textChannel.SendMessageAsync($"We just reached {guild.Users.Count} members. ??");
-            return;
         }
     }
 }

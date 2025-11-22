@@ -35,6 +35,5 @@ public class JoinedGuildEventSubscriber(DiscordSocketClient client, Configuratio
         }
 
         await textChannel.SendMessageAsync("I am here. :slight_smile:");
-        return;
     }
 }

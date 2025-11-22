@@ -11,7 +11,9 @@ public class CronjobScheduler(IMessageLogger logger)
     public void RegisterCronjob(ICronjob cronjob)
     {
         if (!_cronjobs.Contains(cronjob))
+        {
             _cronjobs.Add(cronjob);
+        }
     }
 
     public void UnregisterCronjob(ICronjob cronjob) => _cronjobs.Remove(cronjob);
@@ -27,6 +29,7 @@ public class CronjobScheduler(IMessageLogger logger)
                 cronjob.GetInterval());
 
             _timers.Add(timer);
+            logger.Log(LogSeverity.Verbose, "Saphira", $"Added timer for cronjob {cronjob}");
         }
     }
 
@@ -36,11 +39,12 @@ public class CronjobScheduler(IMessageLogger logger)
         {
             try
             {
+                logger.Log(LogSeverity.Verbose, "Saphira", $"Executing cronjob {cronjob} ...");
                 await cronjob.ExecuteAsync();
             }
             catch (Exception ex)
             {
-                logger.Log(LogSeverity.Error, "Saphira", $"Cronjob {cronjob.ToString()} failed: {ex.Message}");
+                logger.Log(LogSeverity.Error, "Saphira", $"Cronjob {cronjob} failed: {ex.Message}");
             }
         });
     }

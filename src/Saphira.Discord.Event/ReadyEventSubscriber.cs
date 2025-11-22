@@ -27,13 +27,11 @@ public class ReadyEventSubscriber(DiscordSocketClient client, IMessageLogger log
         _isRegistered = false;
     }
 
-    private Task HandleReadyAsync()
+    private async Task HandleReadyAsync()
     {
         Application.StartTime = DateTime.UtcNow;
 
-        logger.Log(LogSeverity.Info, "Saphira", "Connection to Discord established.");
-        logger.Log(LogSeverity.Info, "Saphira", "Saphira started successfully.");
-
-        return Task.CompletedTask;
+        logger.Log(LogSeverity.Info, "Saphira", "Connection to Discord established");
+        logger.Log(LogSeverity.Info, "Saphira", "Saphira started successfully");
     }
 }

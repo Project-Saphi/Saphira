@@ -26,9 +26,8 @@ public class LogEventSubscriber(DiscordSocketClient client, IMessageLogger logge
         _isRegistered = false;
     }
 
-    private Task HandleLogAsync(LogMessage message)
+    private async Task HandleLogAsync(LogMessage message)
     {
         logger.Log(message);
-        return Task.CompletedTask;
     }
 }

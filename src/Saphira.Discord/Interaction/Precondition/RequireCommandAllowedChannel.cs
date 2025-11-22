@@ -7,6 +7,7 @@ using Saphira.Discord.Guild.Member;
 
 namespace Saphira.Discord.Interaction.Precondition;
 
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
 public class RequireCommandAllowedChannel : PreconditionAttribute
 {
     public override Task<PreconditionResult> CheckRequirementsAsync(
