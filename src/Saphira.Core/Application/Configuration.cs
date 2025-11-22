@@ -14,6 +14,8 @@ public class Configuration
 
     public string SubmissionFeedChannel { get; set; } = "";
 
+    public string LivestreamsChannel { get; set; } = "";
+
     public List<string> CommandsAllowedChannels { get; set; } = new();
 
     public int MaxAutocompleteSuggestions { get; set; }

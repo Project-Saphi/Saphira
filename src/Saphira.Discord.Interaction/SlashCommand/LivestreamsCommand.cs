@@ -89,7 +89,7 @@ public class LivestreamsCommand(PaginationComponentHandler paginationComponentHa
             if (activity is StreamingGame stream)
             {
                 dict["streamers"].Add($"{user.Mention}");
-                dict["platforms"].Add($"{StreamingPlatformEmoteMapper.MapStreamingPlatformToEmote(activity.Name)} [{activity.Name}]({stream.Url})");
+                dict["platforms"].Add($"{StreamingPlatformEmoteMapper.MapStreamingPlatformToEmote(activity.Name)} {MessageTextFormat.MaskedLink(activity.Name, stream.Url)}");
                 dict["titles"].Add($"```{stream.Details}```");
             }
         }

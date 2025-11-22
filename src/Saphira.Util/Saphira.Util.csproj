@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Saphira.Discord.Logging\Saphira.Discord.Logging.csproj" />
     <ProjectReference Include="..\Saphira.Saphi\Saphira.Saphi.csproj" />
   </ItemGroup>
 

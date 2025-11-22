@@ -1,4 +1,6 @@
+using Discord;
 using Discord.WebSocket;
+using Saphira.Core.Application;
 using Saphira.Core.Extensions.DependencyInjection;
 using Saphira.Discord.Guild.Member;
 using Saphira.Discord.Messaging;
@@ -6,7 +8,7 @@ using Saphira.Discord.Messaging;
 namespace Saphira.Discord.Event;
 
 [AutoRegister]
-public class MessageReceivedEventSubscriber(DiscordSocketClient client, InviteLinkDetector inviteLinkDetector, RestrictedContentDetector restrictedContentDetector) : IDiscordSocketClientEventSubscriber
+public class MessageReceivedEventSubscriber(DiscordSocketClient client, Configuration configuration, InviteLinkDetector inviteLinkDetector, RestrictedContentDetector restrictedContentDetector) : IDiscordSocketClientEventSubscriber
 {
     private bool _isRegistered = false;
 
@@ -28,12 +30,23 @@ public class MessageReceivedEventSubscriber(DiscordSocketClient client, InviteLi
 
     private async Task HandleMessageReceivedAsync(SocketMessage message)
     {
-        if (message.Author.IsBot || GuildMember.IsTeamMember(message.Author))
-            return;
+        await SuppressLivestreamEmbeds(message);
 
-        if (message.Channel is not SocketTextChannel textChannel ||
-            message.Author is not SocketGuildUser guildUser)
+        if (message.Author.IsBot || GuildMember.IsTeamMember(message.Author))
+        {
             return;
+        }
+
+        await RemoveDiscordInviteLinks(message);
+        await RemoveRestrictedContent(message);
+    }
+
+    private async Task RemoveDiscordInviteLinks(SocketMessage message)
+    {
+        if (message.Channel is not SocketTextChannel textChannel)
+        {
+            return;
+        }
 
         if (inviteLinkDetector.MessageContainsInviteLink(message.Content))
         {
@@ -41,6 +54,13 @@ public class MessageReceivedEventSubscriber(DiscordSocketClient client, InviteLi
 
             var warningAlert = new WarningAlertEmbedBuilder($"{message.Author.Mention}, posting discord invite links is not allowed.");
             await textChannel.SendMessageAsync(embed: warningAlert.Build());
+        }
+    }
+
+    private async Task RemoveRestrictedContent(SocketMessage message)
+    {
+        if (message.Channel is not SocketTextChannel textChannel || message.Author is not SocketGuildUser guildUser)
+        {
             return;
         }
 
@@ -48,11 +68,24 @@ public class MessageReceivedEventSubscriber(DiscordSocketClient client, InviteLi
         {
             await message.DeleteAsync();
 
-            var warningAlert = new WarningAlertEmbedBuilder(
-                $"{message.Author.Mention}, new members cannot post images, links, attachments, or videos until they have been on the server for at least 12 hours."
-            );
+            var warningAlert = new WarningAlertEmbedBuilder($"{message.Author.Mention}, new members cannot post images, links, attachments, or videos until they have been on the server for at least 12 hours.");
             await textChannel.SendMessageAsync(embed: warningAlert.Build());
+        }
+    }
+
+    private async Task SuppressLivestreamEmbeds(SocketMessage message)
+    {
+        if (message.Channel is not SocketTextChannel textChannel)
+        {
             return;
+        }
+
+        if (textChannel.Name == configuration.LivestreamsChannel && message is IUserMessage userMessage)
+        {
+            await userMessage.ModifyAsync(m =>
+            {
+                m.Flags = MessageFlags.SuppressEmbeds;
+            });
         }
     }
 }

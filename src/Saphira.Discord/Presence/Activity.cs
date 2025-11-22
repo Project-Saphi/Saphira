@@ -4,6 +4,12 @@ namespace Saphira.Discord.Presence;
 
 public class Activity
 {
+    public enum StreamingPlatform
+    {
+        Twitch = 7689143,
+        Youtube = 10893626
+    }
+
     private static readonly string[] CtrAliases =
     [
         "crash team racing",
@@ -36,13 +42,19 @@ public class Activity
         return false;
     }
 
-    public static bool IsCTRGame(IActivity activity)
+    public static StreamingPlatform? GetStreamingPlatform(string activityName)
     {
-        if (activity.Type != ActivityType.Playing)
+        var streamingPlatforms = new Dictionary<string, StreamingPlatform>()
         {
-            return false;
+            { "Twitch", StreamingPlatform.Twitch },
+            { "YouTube", StreamingPlatform.Youtube }
+        };
+
+        if (!streamingPlatforms.TryGetValue(activityName, out var streamingPlatform))
+        {
+            return null;
         }
 
-        return !string.IsNullOrEmpty(activity.Name) && CtrAliases.Any(alias => activity.Name.Contains(alias, StringComparison.CurrentCultureIgnoreCase));
+        return streamingPlatform;
     }
 }

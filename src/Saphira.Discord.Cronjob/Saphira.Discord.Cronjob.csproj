@@ -10,6 +10,7 @@
     <ProjectReference Include="..\Saphira.Core.Extensions\Saphira.Core.Extensions.csproj" />
     <ProjectReference Include="..\Saphira.Discord.Logging\Saphira.Discord.Logging.csproj" />
     <ProjectReference Include="..\Saphira.Discord.Messaging\Saphira.Discord.Messaging.csproj" />
+    <ProjectReference Include="..\Saphira.Saphi.Entity\Saphira.Saphi.Entity.csproj" />
     <ProjectReference Include="..\Saphira.Util\Saphira.Util.csproj" />
   </ItemGroup>
 

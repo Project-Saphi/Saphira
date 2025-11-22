@@ -18,6 +18,7 @@ using Saphira.Discord.Messaging.Pagination;
 using Saphira.Saphi.Api;
 using Saphira.Util.Game;
 using Saphira.Util.Game.Matchup;
+using Saphira.Util.Twitch;
 
 namespace Saphira;
 
@@ -121,6 +122,7 @@ public class Program
             .AddTransient<InviteLinkDetector>()
             .AddTransient<RestrictedContentDetector>()
             .AddTransient<PlayerMatchupCalculator>()
+            .AddTransient<TwitchClient>()
             .AddHttpClient()
             .AddMemoryCache()
             .AddCronjobs()

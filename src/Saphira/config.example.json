@@ -5,6 +5,7 @@
   "GuildId": 0,
   "MainChannel": "general",
   "SubmissionFeedChannel": "submissions",
+  "LivestreamsChannel": "livestreams",
   "CommandsAllowedChannels": [
     "time-trials",
     "bot-spam"

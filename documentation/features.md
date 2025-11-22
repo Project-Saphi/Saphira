@@ -7,13 +7,22 @@ Saphira has a bunch of built-in features that cannot be directly controlled via 
 ## Table of Contents
 
 - [Submission Feed](#submission-feed)
+- [Livestreams](#livestreams)
 - [Invite Link Blocker](#invite-link-blocker)
 - [Restricted Content for new Members](#restricted-content-for-new-members)
 - [Member Count Celebration](#member-count-celebration)
 
 ## Submission Feed
 
-Every 10 minutes, Saphira will automatically post the newest submissions to a dedicated channel. In cases of new world records, Saphira will ping the `WR Feed` role.
+Every minute, Saphira will automatically post the newest submissions to a dedicated channel. In cases of new world records, Saphira will ping the `WR Feed` role.
+
+## Livestreams
+
+Saphira can detect players on the server who are streaming Crash Team Racing. Every time someone's Discord status changes to `Streaming` and they are playing CTR, Saphira will post the livestream information in a configurable channel (by default: `#livestreams`).
+
+Players who are streaming CTR are also assigned the `Streaming` role. If they are no longer streaming CTR, the `Streaming` role is removed again.
+
+**Note**: Only Twitch and YouTube are currently supported as streaming platforms.
 
 ## Invite Link Blocker
 
@@ -25,4 +34,4 @@ New members, who have been on the server for less than 12 hours, cannot send any
 
 ## Member Count Celebration
 
-Every 100 members Saphira will post a message in the main channel to celebrate the current member count.
+Every 100 members Saphira will post a message in the main channel to celebrate the current member count. The main channel can be configured in the [bot configuration](./setup.md).

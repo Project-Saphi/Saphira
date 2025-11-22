@@ -1,6 +1,6 @@
 ﻿[<- Back](../README.md)
 
-# Requirements
+# Setup
 
 ## Table of Contents
 
@@ -22,7 +22,7 @@ The bot application should be configured to have:
 - The `Server Members` Intent
 - The `Message Content` Intent
 
-These settings have to be configured in the Discord [developer portal](https://discord.com/developers/).
+These settings have to be configured in the Discord [Developer Portal](https://discord.com/developers/).
 
 ## Configuration
 
@@ -36,10 +36,11 @@ A `config.json` file needs to be created with the following structure:
   "GuildId": 0,
   "MainChannel": "",
   "SubmissionFeedChannel": "",
+  "LivestreamsChannel": "",
   "CommandsAllowedChannels": [],
   "MaxAutocompleteSuggestions": 10,
   "SaphiApiKey": "",
-  "SaphiApiBaseUrl": "https://api.example.com",
+  "SaphiApiBaseUrl": ""
 }
 ```
 
@@ -49,6 +50,7 @@ A `config.json` file needs to be created with the following structure:
 - `GuildId` is the internal ID of the server you want to run Saphira on
 - `MainChannel` is the name of the main channel where Saphira will post some messages to (like the member count celebration)
 - `SubmissionFeedChannel` is the name of the channel where Saphira will post the newest submissions to
+- `LivestreamsChannel` is the name of the channel where Saphira will post livestreams and suppress embeds for all messages
 - `CommandsAllowedChannels` is a list of channels where users are allowed to use slash commands (unless they have the `Saphi Team` role)
 - `MaxAutocompleteSuggestions` is the number of suggestions that are shown during command parameter autocompletion (hard-limited by Discord to at most 25)
 - `SaphiApiKey` is an API key to access the leaderboard website API
@@ -61,6 +63,7 @@ Saphira needs a number of different roles to work properly:
 - `Saphi Team` - This role needs to exist on the server and be given to team members or else access to moderator commands is unavailable
 - `Server Updates` - This role can be toggled on by users to receive pings regarding server updates
 - `Saphi Updates` - This role can be toggled on by users to receive pings regarding Saphi updates
+- `Streaming` - This role is assigned to players who are streaming Crash Team Racing and have their Discord presence set to `Streaming`
 - `Verified` - This role is for verified users so that channel visibility can be restricted to users with that role
 - `WR Feed` - This role can be toggled on by users to receive pings when new world records are posted in the submission feed
 

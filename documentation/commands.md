@@ -1,6 +1,6 @@
 ﻿[<- Back](../README.md)
 
-# Saphira Commands
+# Commands
 
 ## Table of Contents
 
