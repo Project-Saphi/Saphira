@@ -6,6 +6,7 @@ using Saphira.Discord.Interaction.TypeConverter;
 using System.Reflection;
 using Saphira.Core.Application;
 using Saphira.Discord.Logging;
+using Saphira.Core.Security.Cooldown;
 
 namespace Saphira.Discord.Interaction;
 
@@ -13,6 +14,7 @@ public class InteractionHandler(DiscordSocketClient client, InteractionService i
 {
     private readonly Configuration _botConfiguration = serviceProvider.GetRequiredService<Configuration>();
     private readonly IMessageLogger _logger = serviceProvider.GetRequiredService<IMessageLogger>();
+    private readonly CooldownService _cooldownService = serviceProvider.GetRequiredService<CooldownService>();
 
     public async Task InitializeAsync()
     {
@@ -31,6 +33,7 @@ public class InteractionHandler(DiscordSocketClient client, InteractionService i
 
         interactionService.Log += LogAsync;
         interactionService.InteractionExecuted += HandleInteractionExecuted;
+        interactionService.SlashCommandExecuted += HandleSlashCommandExecuted;
     }
 
     private async Task RegisterCommandsAsync()
@@ -83,17 +86,36 @@ public class InteractionHandler(DiscordSocketClient client, InteractionService i
                 _ => "An unknown error occurred."
             };
 
+            // If a Precondition is not met we show the error to the user
+            var userErrorMessage = "An error occurred while handling this interaction. See console log for more information.";
+
+            if (result.Error == InteractionCommandError.UnmetPrecondition)
+            {
+                userErrorMessage = result.ErrorReason;
+            }
+
             _logger.Log(LogSeverity.Warning, "Saphira", $"Command '{commandInfo.Name}' failed: {errorMessage}");
 
             try
             {
-                await RespondToInteractionAsync(context.Interaction, "An error occurred while handling this interaction. See console log for more information.");
+                await RespondToInteractionAsync(context.Interaction, userErrorMessage);
             }
             catch (Exception ex)
             {
                 _logger.Log(LogSeverity.Error, "Saphira", $"Failed to send error response: {ex.Message}");
             }
         }
+    }
+
+    private async Task HandleSlashCommandExecuted(SlashCommandInfo commandInfo, IInteractionContext interactionContext, IResult result)
+    {
+        if (!result.IsSuccess || interactionContext.User is not SocketGuildUser guildUser)
+        {
+            return;
+        }
+
+        var registryName = _cooldownService.CreateCooldownRegistryName(commandInfo.Name);
+        _cooldownService.AddActionCooldown(registryName, guildUser, "usage", true);
     }
 
     private Task LogAsync(LogMessage log)

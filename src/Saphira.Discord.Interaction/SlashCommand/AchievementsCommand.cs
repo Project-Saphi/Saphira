@@ -10,6 +10,7 @@ using Saphira.Util.EmoteMapper;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
 
+[RequireCooldownExpired(15)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 public class AchievementsCommand(CachedClient client) : BaseCommand

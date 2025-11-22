@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Saphira.Core.Application;
 using Saphira.Core.Extensions.Caching;
+using Saphira.Core.Security.Cooldown;
 using Saphira.Discord.Cronjob;
 using Saphira.Discord.Cronjob.Extensions.DependencyInjection;
 using Saphira.Discord.Event.Extensions.DependencyInjection;
@@ -117,6 +118,7 @@ public class Program
             .AddSingleton<IMessageLogger, ConsoleMessageLogger>()
             .AddSingleton<CronjobScheduler>()
             .AddSingleton<PaginationComponentHandler>()
+            .AddSingleton<CooldownService>()
             .AddTransient<GuildManager>()
             .AddTransient<ScoreFormatter>()
             .AddTransient<InviteLinkDetector>()

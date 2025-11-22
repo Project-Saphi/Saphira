@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.0.11217.181 d18.0
+VisualStudioVersion = 18.0.11217.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
@@ -28,6 +28,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saphira.Discord.Event", "src\Saphira.Discord.Event\Saphira.Discord.Event.csproj", "{B1A49D59-CC5E-45EB-8CD1-1182C6D11F7D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saphira.Saphi.Entity", "src\Saphira.Saphi.Entity\Saphira.Saphi.Entity.csproj", "{9CFD5511-6C35-778C-375B-D8065EB2D251}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saphira.Core.Security", "src\Saphira.Core.Security\Saphira.Core.Security.csproj", "{D4B17445-D01A-49AA-B158-102F0430F3C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -183,6 +185,18 @@ Global
 		{9CFD5511-6C35-778C-375B-D8065EB2D251}.Release|x64.Build.0 = Release|Any CPU
 		{9CFD5511-6C35-778C-375B-D8065EB2D251}.Release|x86.ActiveCfg = Release|Any CPU
 		{9CFD5511-6C35-778C-375B-D8065EB2D251}.Release|x86.Build.0 = Release|Any CPU
+		{D4B17445-D01A-49AA-B158-102F0430F3C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4B17445-D01A-49AA-B158-102F0430F3C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4B17445-D01A-49AA-B158-102F0430F3C5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D4B17445-D01A-49AA-B158-102F0430F3C5}.Debug|x64.Build.0 = Debug|Any CPU
+		{D4B17445-D01A-49AA-B158-102F0430F3C5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D4B17445-D01A-49AA-B158-102F0430F3C5}.Debug|x86.Build.0 = Debug|Any CPU
+		{D4B17445-D01A-49AA-B158-102F0430F3C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4B17445-D01A-49AA-B158-102F0430F3C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4B17445-D01A-49AA-B158-102F0430F3C5}.Release|x64.ActiveCfg = Release|Any CPU
+		{D4B17445-D01A-49AA-B158-102F0430F3C5}.Release|x64.Build.0 = Release|Any CPU
+		{D4B17445-D01A-49AA-B158-102F0430F3C5}.Release|x86.ActiveCfg = Release|Any CPU
+		{D4B17445-D01A-49AA-B158-102F0430F3C5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -200,6 +214,7 @@ Global
 		{05EC8B28-69CD-4B74-B0DE-0CEBB7179B53} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{B1A49D59-CC5E-45EB-8CD1-1182C6D11F7D} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{9CFD5511-6C35-778C-375B-D8065EB2D251} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{D4B17445-D01A-49AA-B158-102F0430F3C5} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F2BC7EFE-7EB2-4D0C-A4FE-ADACAC517145}

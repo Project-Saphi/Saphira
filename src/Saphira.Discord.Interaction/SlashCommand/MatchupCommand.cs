@@ -10,6 +10,7 @@ using Saphira.Util.Game.Matchup;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
 
+[RequireCooldownExpired(15)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 public class MatchupCommand(PlayerMatchupCalculator playerMatchupGenerator) : BaseCommand

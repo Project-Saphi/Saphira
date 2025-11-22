@@ -9,6 +9,7 @@ using Saphira.Saphi.Entity;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
 
+[RequireCooldownExpired(30)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 public class TracksCommand(CachedClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand

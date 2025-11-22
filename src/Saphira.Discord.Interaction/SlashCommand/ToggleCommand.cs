@@ -10,6 +10,7 @@ using Saphira.Discord.Messaging;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
 
+[RequireCooldownExpired(15)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 public class ToggleCommand(GuildRoleManager guildRoleManager) : BaseCommand

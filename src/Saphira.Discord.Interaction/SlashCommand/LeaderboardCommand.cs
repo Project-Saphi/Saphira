@@ -13,6 +13,7 @@ using Saphira.Util.Game;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
 
+[RequireCooldownExpired(15)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
 public class LeaderboardCommand(CachedClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand

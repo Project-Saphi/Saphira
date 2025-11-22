@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Saphira.Core.Extensions\Saphira.Core.Extensions.csproj" />
+    <ProjectReference Include="..\Saphira.Core.Security\Saphira.Core.Security.csproj" />
     <ProjectReference Include="..\Saphira.Core\Saphira.Core.csproj" />
     <ProjectReference Include="..\Saphira.Discord.Cronjob\Saphira.Discord.Cronjob.csproj" />
     <ProjectReference Include="..\Saphira.Discord.Event\Saphira.Discord.Event.csproj" />
