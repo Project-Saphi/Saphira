@@ -10,3 +10,4 @@ Saphira is written in C# and built on top of [Discord.NET](https://docs.discordn
 - [Commands](./documentation/commands.md)
 - [Features](./documentation/features.md)
 - [Development](./documentation/development.md)
+- [Deployment](./documentation/deployment.md)

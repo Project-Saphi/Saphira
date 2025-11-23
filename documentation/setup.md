@@ -26,7 +26,7 @@ These settings have to be configured in the Discord [Developer Portal](https://d
 
 ## Configuration
 
-A `config.json` file needs to be created with the following structure:
+A `config.json` file needs to be created under `src/Saphira` with the following structure:
 
 ```json
 {
