@@ -75,7 +75,7 @@ public class PaginationComponentHandler
 
     private async Task<bool> ValidatePagination(Guid paginationId, SocketMessageComponent component)
     {
-        if (!_paginationStates.ContainsKey(paginationId))
+        if (!_paginationStates.TryGetValue(paginationId, out PaginationState? paginationState))
         {
             await component.RespondAsync("This pagination has expired.", ephemeral: true);
             return false;
@@ -87,6 +87,16 @@ public class PaginationComponentHandler
             {
                 UnregisterPagination(paginationId);
                 await component.RespondAsync("This pagination has expired.", ephemeral: true);
+                return false;
+            }
+        }
+
+        if (paginationState.Filter != null)
+        {
+            var result = await paginationState.Filter(component);
+            if (!result.Success)
+            {
+                await component.RespondAsync(result.CustomErrorMessage ?? "You cannot use this pagination.", ephemeral: true);
                 return false;
             }
         }

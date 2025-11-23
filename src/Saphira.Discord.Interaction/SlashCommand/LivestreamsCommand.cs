@@ -40,7 +40,8 @@ public class LivestreamsCommand(PaginationComponentHandler paginationComponentHa
         var paginationBuilder = new PaginationBuilder<(SocketGuildUser User, IActivity Activity)>(paginationComponentHandler)
             .WithItems(activities)
             .WithPageSize(EntriesPerPage)
-            .WithRenderPageCallback((pageEntries, pageNumber) => GetEmbedForPage(pageEntries, pageNumber));
+            .WithRenderPageCallback((pageEntries, pageNumber) => GetEmbedForPage(pageEntries, pageNumber))
+            .WithFilter((component) => Task.FromResult(new PaginationFilterResult(component.User.Id == Context.User.Id)));
 
         var (embed, components) = paginationBuilder.Build();
 
@@ -73,15 +74,9 @@ public class LivestreamsCommand(PaginationComponentHandler paginationComponentHa
     {
         var dict = new Dictionary<string, List<string>>()
         {
-            {
-                "streamers", []
-            },
-            {
-                "platforms", []
-            },
-            {
-                "titles", []
-            }
+            { "streamers", [] },
+            { "platforms", [] },
+            { "titles", [] }
         };
 
         foreach (var (user, activity) in activities)

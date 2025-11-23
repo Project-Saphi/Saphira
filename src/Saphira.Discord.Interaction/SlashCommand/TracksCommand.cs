@@ -48,7 +48,8 @@ public class TracksCommand(ApiClient client, PaginationComponentHandler paginati
         var paginationBuilder = new PaginationBuilder<CustomTrack>(paginationComponentHandler)
             .WithItems(customTracks)
             .WithPageSize(EntriesPerPage)
-            .WithRenderPageCallback((pageTracks, pageNumber) => GetEmbedForPage(pageTracks, pageNumber));
+            .WithRenderPageCallback((pageTracks, pageNumber) => GetEmbedForPage(pageTracks, pageNumber))
+            .WithFilter((component) => Task.FromResult(new PaginationFilterResult(component.User.Id == Context.User.Id)));
 
         var (embed, components) = paginationBuilder.Build();
 

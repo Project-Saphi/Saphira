@@ -340,7 +340,8 @@ public class PBsCommand(ApiClient client, PaginationComponentHandler paginationC
             .WithItems(playerPBs)
             .WithPageSize(EntriesPerPage)
             .WithRenderPageCallback((pagePBs, pageNumber) => GetEmbedForPage(playerName, pagePBs, pageNumber))
-            .WithCustomId(Guid.NewGuid());
+            .WithCustomId(Guid.NewGuid())
+            .WithFilter((component) => Task.FromResult(new PaginationFilterResult(component.User.Id == Context.User.Id)));
 
         var (embed, components) = paginationBuilder.Build();
 
@@ -364,6 +365,7 @@ The `PaginationBuilder` provides a fluent API to implement a pagination. It come
 - `WithPageSize` - Allows you to specify how many items per page you want to show
 - `WithRenderPageCallback` - Allows you to provide a callback function that is triggered every time the page changes
 - `WithCustomId` - Allows you to provide a custom ID for your pagination
+- `WithFilter` - Allows you to provide a custom filter to control who can interact with the pagination
 
 The callback function needs to return an `EmbedBuilder` - this is currently a design limitation since I mostly use embeds for data display and it's my primary use case.
 

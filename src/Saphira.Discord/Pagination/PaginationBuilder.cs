@@ -1,4 +1,5 @@
 using Discord;
+using Discord.WebSocket;
 
 namespace Saphira.Discord.Pagination;
 
@@ -8,6 +9,7 @@ public class PaginationBuilder<T>(PaginationComponentHandler paginationComponent
     private int _pageSize = 1;
     private Func<List<T>, int, EmbedBuilder>? _renderPageCallback;
     private Guid _customId = Guid.NewGuid();
+    private Func<SocketMessageComponent, Task<PaginationFilterResult>>? _filter;
 
     public PaginationBuilder<T> WithItems(List<T> items)
     {
@@ -33,19 +35,29 @@ public class PaginationBuilder<T>(PaginationComponentHandler paginationComponent
         return this;
     }
 
+    public PaginationBuilder<T> WithFilter(Func<SocketMessageComponent, Task<PaginationFilterResult>> filter)
+    {
+        _filter = filter;
+        return this;
+    }
+
     public (Embed embed, MessageComponent components) Build()
     {
         var initialPagination = new Pagination(_customId, 1, _pageSize, _items.Count);
-        var state = new PaginationState(initialPagination, async (component, newPagination) =>
-        {
-            var (embed, components) = GetPage(newPagination);
-
-            await component.UpdateAsync(message =>
+        var state = new PaginationState(
+            initialPagination,
+            async (component, newPagination) =>
             {
-                message.Embed = embed;
-                message.Components = components;
-            });
-        });
+                var (embed, components) = GetPage(newPagination);
+
+                await component.UpdateAsync(message =>
+                {
+                    message.Embed = embed;
+                    message.Components = components;
+                });
+            },
+            _filter
+        );
 
         paginationComponentHandler.RegisterPagination(initialPagination.ID, state);
         return GetPage(initialPagination);

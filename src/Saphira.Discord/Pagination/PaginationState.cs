@@ -4,5 +4,6 @@ namespace Saphira.Discord.Pagination;
 
 public record PaginationState(
     Pagination Pagination,
-    Func<SocketMessageComponent, Pagination, Task> UpdateCallback
+    Func<SocketMessageComponent, Pagination, Task> UpdateCallback,
+    Func<SocketMessageComponent, Task<PaginationFilterResult>>? Filter = null
 );

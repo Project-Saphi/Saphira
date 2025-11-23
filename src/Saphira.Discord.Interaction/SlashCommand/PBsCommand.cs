@@ -55,7 +55,8 @@ public class PBsCommand(ApiClient client, PaginationComponentHandler paginationC
         var paginationBuilder = new PaginationBuilder<PlayerPB>(paginationComponentHandler)
             .WithItems(playerPBs)
             .WithPageSize(EntriesPerPage)
-            .WithRenderPageCallback((pagePBs, pageNumber) => GetEmbedForPage(playerName, pagePBs, pageNumber));
+            .WithRenderPageCallback((pagePBs, pageNumber) => GetEmbedForPage(playerName, pagePBs, pageNumber))
+            .WithFilter((component) => Task.FromResult(new PaginationFilterResult(component.User.Id == Context.User.Id)));
 
         var (embed, components) = paginationBuilder.Build();
 

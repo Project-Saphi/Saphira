@@ -57,7 +57,8 @@ public class LeaderboardCommand(ApiClient client, PaginationComponentHandler pag
         var paginationBuilder = new PaginationBuilder<TrackLeaderboardEntry>(paginationComponentHandler)
             .WithItems(leaderboardEntries)
             .WithPageSize(EntriesPerPage)
-            .WithRenderPageCallback((pageEntries, pageNumber) => GetEmbedForPage(customTrack, pageEntries, pageNumber));
+            .WithRenderPageCallback((pageEntries, pageNumber) => GetEmbedForPage(customTrack, pageEntries, pageNumber))
+            .WithFilter((component) => Task.FromResult(new PaginationFilterResult(component.User.Id == Context.User.Id)));
 
         var (embed, components) = paginationBuilder.Build();
 
@@ -91,15 +92,9 @@ public class LeaderboardCommand(ApiClient client, PaginationComponentHandler pag
     {
         var dict = new Dictionary<string, List<string>>()
         {
-            {
-                "placements", []
-            },
-            {
-                "players", []
-            },
-            {
-                "times", []
-            }
+            { "placements", [] },
+            { "players", [] },
+            { "times", [] }
         };
 
         foreach (var entry in entries)
