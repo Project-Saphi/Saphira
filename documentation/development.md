@@ -20,24 +20,12 @@ Saphira is organized into multiple assemblies, each responsible for a specific d
 | Assembly | Description |
 |----------|-------------|
 | Saphira | Main entry point and application startup |
-| Saphira.Core | Core application logic and configuration |
-| Saphira.Core.Extensions | Extension methods for core functionality |
-| Saphira.Discord | Discord client integration and base Discord functionality |
-| Saphira.Discord.Cronjob | Scheduled task execution |
-| Saphira.Discord.Event | Discord event subscribers |
-| Saphira.Discord.Interaction | Interaction handlers for slash commands, user commands, components, etc. |
-| Saphira.Discord.Logging | Logging utilities |
-| Saphira.Discord.Messaging | Message formatting, embeds, and pagination |
-| Saphira.Saphi | Integration with the Saphi API |
-| Saphira.Saphi.Entity | Saphi-specific entity models |
-| Saphira.Util | General utility classes |
+| Saphira.Core | Core application logic such as configuration, cronjobs, event system, logging, and security |
+| Saphira.Discord | Discord client integration, event subscribers, messaging utilities, pagination, and other Discord-specific utilities |
+| Saphira.Discord.Interaction | Interaction handlers for slash commands, user commands, and components |
+| Saphira.Saphi | Integration with the Saphi API, entity models, and game-specific logic |
 
-When creating new code, place it in the appropriate assembly based on its purpose. For example:
-
-- Discord slash commands go in `Saphira.Discord.Interaction`
-- Event handlers go in `Saphira.Discord.Event`
-- API models go in `Saphira.Saphi.Entity`
-- General utilities go in `Saphira.Util`
+When creating new code, make sure you place it in the appropriate assembly based on its purpose.
 
 ## Event Subscribers
 
@@ -46,14 +34,15 @@ Since [Discord.NET](https://docs.discordnet.dev/index.html)'s way of subscribing
 First, create your event subscriber:
 
 ```csharp
+using Discord;
 using Discord.WebSocket;
-using Saphira.Core.Application;
+using Saphira.Core.Event;
+using Saphira.Core.Logging;
 
 namespace Saphira.Discord.Event;
 
-public class CustomReadyEventSubscriber(DiscordSocketClient client) : IDiscordSocketClientEventSubscriber
+public class CustomReadyEventSubscriber(DiscordSocketClient client, IMessageLogger logger) : IEventSubscriber
 {
-
     private bool _isRegistered = false;
 
     public void Register()
@@ -74,24 +63,27 @@ public class CustomReadyEventSubscriber(DiscordSocketClient client) : IDiscordSo
 
     private Task HandleReadyAsync()
     {
-        Console.WriteLine("Bot is ready");
+        logger.Log(LogSeverity.Info, "Saphira", "Bot is ready");
         return Task.CompletedTask;
     }
 }
 ```
 
-Event subscribers need to implement the `IDiscordSocketClientEventSubscriber` interface. This interface requires 2 methods `Register()` and `Unregister()`, although `Unregister()` is currently not used. From there, you can just subscribe to any event from the client that you want and extend with a custom method - in this example the `HandleReadyAsync()` method.
+Event subscribers need to implement the `IEventSubscriber` interface. This interface requires 2 methods `Register()` and `Unregister()`, although `Unregister()` is currently not used. From there, you can just subscribe to any event from the client that you want and extend with a custom method - in this example the `HandleReadyAsync()` method.
 
 After creating your event subscriber, you can attach the custom `AutoRegister` attribute to it:
 
 ```csharp
+using Discord;
 using Discord.WebSocket;
-using Saphira.Core.Application;
+using Saphira.Core.Event;
+using Saphira.Core.Extensions.DependencyInjection;
+using Saphira.Core.Logging;
 
 namespace Saphira.Discord.Event;
 
 [AutoRegister]
-public class CustomReadyEventSubscriber : IDiscordSocketClientEventSubscriber
+public class CustomReadyEventSubscriber(DiscordSocketClient client, IMessageLogger logger) : IEventSubscriber
 {
     // Other code ...
 }
@@ -106,16 +98,18 @@ I am going to preface this section by saying: What I implemented aren't cronjobs
 Creating a new cronjob is super easy:
 
 ```csharp
-using Saphira.Core.Application;
+using Saphira.Core.Cronjob;
+using Saphira.Core.Extensions.DependencyInjection;
+using Saphira.Core.Logging;
 
-namespace Saphira.Discord.Cronjob;
+namespace Saphira.Core.Security.Cooldown;
 
 [AutoRegister]
-public class TestCronjob : ICronjob
+public class TestCronjob(IMessageLogger logger) : ICronjob
 {
     public Task ExecuteAsync()
     {
-        Console.WriteLine("Running test cronjob!")
+        logger.Log(LogSeverity.Info, "Saphira", "Running test cronjob!");
         return Task.CompletedTask;
     }
 
@@ -141,15 +135,18 @@ When creating a cronjob, you can attach the `AutoRegister` attribute to it, so t
 
 ## Preconditions
 
-There are 3 command preconditions that I find useful when developing new commands:
+There are 4 command preconditions that I find useful when developing new commands:
 
 - `RequireTeamMemberRole`
 - `RequireTextChannel`
 - `RequireCommandAllowedChannel`
+- `RequireCooldownExpired`
 
 Instead of binding commands to permissions, I often bind commands to roles. Saphira, for example, has a bunch of moderation commands that are generally available for all team members. That's what the `RequireTeamMemberRole` precondition does - it checks for the `Saphi Team` role and restricts commands to users with that role.
 
 Most commands I develop are text-based and don't make any sense for non-text channels, such as voice channels or event channels. That's why I added the `RequireTextChannel` precondition, as this allows you to restrict a command to text channels. And since you usually want to restrict commands to certain text channels, there is also the `RequireCommandAllowedChannel` precondition.
+
+The `RequireCooldownExpired` precondition allows you to add a cooldown to commands. It takes a cooldown duration in seconds as a parameter. If the attribute is not present, the cooldown of the command is assumed to be 0. Users with the `Saphi Team` role are exempt from cooldowns.
 
 ## Autocompletion and ValueProviders
 
@@ -175,11 +172,12 @@ public class Player
 The entity can come from anywhere - in this example it's a REST entity from an external API, so it also contains JSON decoding instructions. Next, you can implement the actual `ValueProvider`.
 
 ```csharp
+using Saphira.Discord.Interaction.Foundation.Autocompletion.ValueProvider;
 using Saphira.Saphi.Api;
 
-namespace Saphira.Discord.Interaction.Autocompletion.ValueProvider;
+namespace Saphira.Saphi.Interaction;
 
-public class PlayerValueProvider(CachedClient client) : IValueProvider
+public class PlayerValueProvider(ApiClient client) : IValueProvider
 {
     public async Task<List<Value>> GetValuesAsync()
     {
@@ -193,12 +191,12 @@ The `GenericAutocompleteHandler` already does all the logic for you, so creating
 
 ```csharp
 using Discord.Interactions;
-using Saphira.Discord.Interaction.Autocompletion;
-using Saphira.Discord.Interaction.Autocompletion.ValueProvider;
+using Saphira.Discord.Interaction.Foundation.Autocompletion;
+using Saphira.Saphi.Interaction;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
 
-public class PBsCommand : InteractionModuleBase<SocketInteractionContext>
+public class PBsCommand : BaseCommand
 {
     [SlashCommand("pbs", "Get personal best times of a player")]
     public async Task HandleCommand([Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] string player)
@@ -211,13 +209,14 @@ public class PBsCommand : InteractionModuleBase<SocketInteractionContext>
 To be able to use a `ValueProvider` as a dependency, you can attach the `AutoRegister` attribute to it. That way, the `ValueProvider` is automatically added to the service collection when Saphira is started:
 
 ```csharp
-using Saphira.Core.Application;
+using Saphira.Core.Extensions.DependencyInjection;
+using Saphira.Discord.Interaction.Foundation.Autocompletion.ValueProvider;
 using Saphira.Saphi.Api;
 
-namespace Saphira.Discord.Interaction.Autocompletion.ValueProvider;
+namespace Saphira.Saphi.Interaction;
 
 [AutoRegister]
-public class PlayerValueProvider(CachedClient client) : IValueProvider
+public class PlayerValueProvider(ApiClient client) : IValueProvider
 {
     // Other code ...
 }
@@ -229,18 +228,36 @@ There is a `ConsoleMessageLogger` utility, which allows logging messages at diff
 
 ```csharp
 using Discord;
-using Saphira.Discord.Logging;
+using Discord.WebSocket;
+using Saphira.Core.Event;
+using Saphira.Core.Logging;
 
 namespace Saphira.Discord.Event;
 
-public class ReadyEventSubscriber(IMessageLogger logger) : IDiscordSocketClientEventSubscriber
+public class ReadyEventSubscriber(DiscordSocketClient client, IMessageLogger logger) : IEventSubscriber
 {
     private bool _isRegistered = false;
 
+    public void Register()
+    {
+        if (_isRegistered) return;
+
+        client.Ready += HandleReadyAsync;
+        _isRegistered = true;
+    }
+
+    public void Unregister()
+    {
+        if (!_isRegistered) return;
+
+        client.Ready -= HandleReadyAsync;
+        _isRegistered = false;
+    }
+
     private Task HandleReadyAsync()
     {
-        logger.Log(LogSeverity.Info, "Saphira", "Connection to Discord established.");
-        logger.Log(LogSeverity.Info, "Saphira", "Saphira started successfully.");
+        logger.Log(LogSeverity.Info, "Saphira", "Connection to Discord established");
+        logger.Log(LogSeverity.Info, "Saphira", "Saphira started successfully");
 
         return Task.CompletedTask;
     }
@@ -287,10 +304,10 @@ To be able to use the `PaginationBuilder`, inject the `PaginationComponentHandle
 ```csharp
 using Discord.Interactions;
 using Saphira.Discord.Interaction.SlashCommand;
-using Saphira.Discord.Messaging.Pagination;
+using Saphira.Discord.Pagination;
 using Saphira.Saphi.Api;
 
-public class PBsCommand(CachedClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+public class PBsCommand(ApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
     // Other code ...
 }
@@ -301,14 +318,15 @@ The `PaginationComponentHandler` is a singleton service that keeps track of all 
 ```csharp
 using Discord;
 using Discord.Interactions;
+using Saphira.Discord.Interaction.Foundation.Precondition;
 using Saphira.Discord.Interaction.SlashCommand;
 using Saphira.Discord.Messaging;
-using Saphira.Discord.Messaging.Pagination;
+using Saphira.Discord.Pagination;
 using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
 
 [RequireTextChannel]
-public class PBsCommand(CachedClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+public class PBsCommand(ApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
     private readonly int EntriesPerPage = 20;
 

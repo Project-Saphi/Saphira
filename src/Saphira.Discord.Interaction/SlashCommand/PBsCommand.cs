@@ -1,22 +1,22 @@
 using Discord;
 using Discord.Interactions;
-using Saphira.Discord.Interaction.Autocompletion;
-using Saphira.Discord.Interaction.Autocompletion.ValueProvider;
-using Saphira.Discord.Interaction.Precondition;
+using Saphira.Discord.Interaction.Foundation.Autocompletion;
+using Saphira.Discord.Interaction.Foundation.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
-using Saphira.Discord.Messaging.Pagination;
+using Saphira.Discord.Messaging.EmoteMapper;
+using Saphira.Discord.Pagination;
 using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
-using Saphira.Util.EmoteMapper;
-using Saphira.Util.Game;
+using Saphira.Saphi.Game;
+using Saphira.Saphi.Interaction;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
 
 [RequireCooldownExpired(15)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class PBsCommand(CachedClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+public class PBsCommand(ApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
     private readonly int EntriesPerPage = 20;
 

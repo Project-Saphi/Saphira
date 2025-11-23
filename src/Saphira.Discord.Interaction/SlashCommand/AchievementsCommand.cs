@@ -1,19 +1,19 @@
 using Discord;
 using Discord.Interactions;
-using Saphira.Discord.Interaction.Autocompletion;
-using Saphira.Discord.Interaction.Autocompletion.ValueProvider;
-using Saphira.Discord.Interaction.Precondition;
+using Saphira.Discord.Interaction.Foundation.Autocompletion;
+using Saphira.Discord.Interaction.Foundation.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
+using Saphira.Discord.Messaging.EmoteMapper;
 using Saphira.Saphi.Api;
-using Saphira.Util.EmoteMapper;
+using Saphira.Saphi.Interaction;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
 
 [RequireCooldownExpired(15)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class AchievementsCommand(CachedClient client) : BaseCommand
+public class AchievementsCommand(ApiClient client) : BaseCommand
 {
     public override SlashCommandMetadata GetMetadata()
     {

@@ -3,32 +3,27 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Saphira.Core.Application;
+using Saphira.Core;
+using Saphira.Core.Cronjob;
 using Saphira.Core.Extensions.Caching;
+using Saphira.Core.Extensions.DependencyInjection;
+using Saphira.Core.Logging;
 using Saphira.Core.Security.Cooldown;
-using Saphira.Discord.Cronjob;
-using Saphira.Discord.Cronjob.Extensions.DependencyInjection;
-using Saphira.Discord.Event.Extensions.DependencyInjection;
+using Saphira.Core.Twitch;
+using Saphira.Discord.Entity.Guild;
+using Saphira.Discord.Entity.Guild.Role;
 using Saphira.Discord.Extensions.DependencyInjection;
-using Saphira.Discord.Guild;
-using Saphira.Discord.Guild.Role;
 using Saphira.Discord.Interaction;
-using Saphira.Discord.Logging;
 using Saphira.Discord.Messaging;
-using Saphira.Discord.Messaging.Pagination;
+using Saphira.Discord.Pagination;
 using Saphira.Saphi.Api;
-using Saphira.Util.Game;
-using Saphira.Util.Game.Matchup;
-using Saphira.Util.Twitch;
+using Saphira.Saphi.Game;
+using Saphira.Saphi.Game.Matchup;
 
 namespace Saphira;
 
 public class Program
 {
-    private static DiscordSocketClient _discordSocketClient = null!;
-    private static InteractionService _interactionService = null!;
-    private static IServiceProvider _serviceProvider = null!;
-
     public static async Task Main()
     {
         var configuration = BuildConfiguration();
@@ -38,20 +33,20 @@ public class Program
             return;
         }
 
-        _discordSocketClient = CreateClient();
-        _interactionService = new InteractionService(_discordSocketClient.Rest);
-        _serviceProvider = BuildServiceProvider(_discordSocketClient, _interactionService, configuration);
+        var client = CreateClient();
+        var interactionService = new InteractionService(client.Rest);
+        var serviceProvider= BuildServiceProvider(client, interactionService, configuration);
 
-        var interactionHandler = new InteractionHandler(_discordSocketClient, _interactionService, _serviceProvider);
+        var interactionHandler = new InteractionHandler(serviceProvider);
         await interactionHandler.InitializeAsync();
 
-        await _discordSocketClient.LoginAsync(TokenType.Bot, configuration.BotToken);
-        await _discordSocketClient.StartAsync();
+        await client.LoginAsync(TokenType.Bot, configuration.BotToken);
+        await client.StartAsync();
 
-        _serviceProvider.RegisterCronjobs();
-        _serviceProvider.RegisterEventSubscribers();
+        serviceProvider.RegisterCronjobs();
+        serviceProvider.RegisterEventSubscribers();
 
-        var cronjobScheduler = _serviceProvider.GetRequiredService<CronjobScheduler>();
+        var cronjobScheduler = serviceProvider.GetRequiredService<CronjobScheduler>();
         cronjobScheduler.ScheduleCronjobs();
 
         await Task.Delay(-1);
@@ -114,7 +109,7 @@ public class Program
             .AddSingleton(botConfiguration)
             .AddSingleton<GuildRoleManager>()
             .AddSingleton<CacheInvalidationService>()
-            .AddSingleton<CachedClient>()
+            .AddSingleton<ApiClient>()
             .AddSingleton<IMessageLogger, ConsoleMessageLogger>()
             .AddSingleton<CronjobScheduler>()
             .AddSingleton<PaginationComponentHandler>()

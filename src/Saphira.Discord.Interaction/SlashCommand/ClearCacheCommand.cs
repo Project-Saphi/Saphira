@@ -1,9 +1,9 @@
 using Discord;
 using Discord.Interactions;
 using Saphira.Core.Extensions.Caching;
-using Saphira.Discord.Interaction.Precondition;
+using Saphira.Core.Logging;
+using Saphira.Discord.Interaction.Foundation.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
-using Saphira.Discord.Logging;
 using Saphira.Discord.Messaging;
 
 namespace Saphira.Discord.Interaction.SlashCommand;

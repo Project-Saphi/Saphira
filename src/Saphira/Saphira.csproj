@@ -13,17 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Saphira.Core.Extensions\Saphira.Core.Extensions.csproj" />
-    <ProjectReference Include="..\Saphira.Core.Security\Saphira.Core.Security.csproj" />
     <ProjectReference Include="..\Saphira.Core\Saphira.Core.csproj" />
-    <ProjectReference Include="..\Saphira.Discord.Cronjob\Saphira.Discord.Cronjob.csproj" />
-    <ProjectReference Include="..\Saphira.Discord.Event\Saphira.Discord.Event.csproj" />
     <ProjectReference Include="..\Saphira.Discord.Interaction\Saphira.Discord.Interaction.csproj" />
-    <ProjectReference Include="..\Saphira.Discord.Logging\Saphira.Discord.Logging.csproj" />
-    <ProjectReference Include="..\Saphira.Discord.Messaging\Saphira.Discord.Messaging.csproj" />
     <ProjectReference Include="..\Saphira.Saphi\Saphira.Saphi.csproj" />
     <ProjectReference Include="..\Saphira.Discord\Saphira.Discord.csproj" />
-    <ProjectReference Include="..\Saphira.Util\Saphira.Util.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\Resources\**\*.json">
+    <None Include="..\..\resources\**\*.json">
       <Link>resources\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

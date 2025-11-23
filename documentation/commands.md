@@ -86,6 +86,9 @@ Show a player's achievements and statistics.
 - First places
 - Podium finishes
 
+**Cooldown:**
+- 15 seconds (team members exempt)
+
 ### `/leaderboard`
 Get the leaderboard for a specific track and category.
 
@@ -101,6 +104,9 @@ Get the leaderboard for a specific track and category.
 **Response:**
 - Top times for the specified track and category
 - Buttons to navigate between pages, 20 entries per page
+
+**Cooldown:**
+- 15 seconds (team members exempt)
 
 ### `/matchup`
 Get the matchup between 2 players for a particular category.
@@ -122,6 +128,9 @@ Get the matchup between 2 players for a particular category.
 - Player 1 and Player 2 must be 2 different players
 - Player 1 and Player 2 must have at least one track in common that they have played
 
+**Cooldown:**
+- 15 seconds (team members exempt)
+
 ### `/pbs`
 Get personal best times for a player across all tracks.
 
@@ -137,6 +146,9 @@ Get personal best times for a player across all tracks.
 - List of personal bests with track names, times, and ranks
 - Buttons to navigate between pages, 20 entries per page
 
+**Cooldown:**
+- 15 seconds (team members exempt)
+
 ### `/tracks`
 Get the list of all supported custom tracks.
 
@@ -148,6 +160,9 @@ Get the list of all supported custom tracks.
 **Response:**
 - Complete list of custom tracks with their IDs
 - Buttons to navigate between pages, 20 entries per page
+
+**Cooldown:**
+- 30 seconds (team members exempt)
 
 ## 👤 Profile Commands
 
@@ -180,6 +195,9 @@ Toggle notification roles on or off.
 
 **Response:**
 - Confirmation of role addition or removal
+
+**Cooldown:**
+- 15 seconds (team members exempt)
 
 ## 🛡️ Moderator Commands
 

@@ -1,9 +1,9 @@
 using Discord;
 using Discord.Interactions;
-using Saphira.Discord.Interaction.Precondition;
+using Saphira.Discord.Interaction.Foundation.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
-using Saphira.Discord.Messaging.Pagination;
+using Saphira.Discord.Pagination;
 using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
 
@@ -12,7 +12,7 @@ namespace Saphira.Discord.Interaction.SlashCommand;
 [RequireCooldownExpired(30)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class TracksCommand(CachedClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+public class TracksCommand(ApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
     private readonly int EntriesPerPage = 20;
 

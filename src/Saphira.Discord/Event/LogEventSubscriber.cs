@@ -1,0 +1,34 @@
+using Discord;
+using Discord.WebSocket;
+using Saphira.Core.Event;
+using Saphira.Core.Extensions.DependencyInjection;
+using Saphira.Core.Logging;
+
+namespace Saphira.Discord.Event;
+
+[AutoRegister]
+public class LogEventSubscriber(DiscordSocketClient client, IMessageLogger logger) : IEventSubscriber
+{
+    private bool _isRegistered = false;
+
+    public void Register()
+    {
+        if (_isRegistered) return;
+
+        client.Log += HandleLogAsync;
+        _isRegistered = true;
+    }
+
+    public void Unregister()
+    {
+        if (!_isRegistered) return;
+
+        client.Log -= HandleLogAsync;
+        _isRegistered = false;
+    }
+
+    private async Task HandleLogAsync(LogMessage message)
+    {
+        logger.Log(message);
+    }
+}

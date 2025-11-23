@@ -11,9 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Saphira.Core.Extensions\Saphira.Core.Extensions.csproj" />
     <ProjectReference Include="..\Saphira.Core\Saphira.Core.csproj" />
-    <ProjectReference Include="..\Saphira.Saphi.Entity\Saphira.Saphi.Entity.csproj" />
+    <ProjectReference Include="..\Saphira.Discord\Saphira.Discord.csproj" />
   </ItemGroup>
 
 </Project>

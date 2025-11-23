@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Microsoft.Extensions.DependencyInjection;
+using Saphira.Core.Logging;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
 using System.Reflection;
@@ -9,6 +10,8 @@ namespace Saphira.Discord.Interaction.SlashCommand;
 
 public class HelpCommand(IServiceProvider serviceProvider) : BaseCommand
 {
+    private readonly IMessageLogger _logger = serviceProvider.GetRequiredService<IMessageLogger>();
+
     public override SlashCommandMetadata GetMetadata()
     {
         return new SlashCommandMetadata("/help");
@@ -59,6 +62,7 @@ public class HelpCommand(IServiceProvider serviceProvider) : BaseCommand
         }
         catch (Exception ex)
         {
+            _logger.Log(LogSeverity.Error, "Saphira", $"Failed to DM the command help to {Context.User.GlobalName} ({Context.User.Id}): {ex}");
             await RespondAsync("Failed to DM the command help. Do you have DMs from server members enabled?", ephemeral: true);
         }
     }

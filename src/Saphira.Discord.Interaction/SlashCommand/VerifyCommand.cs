@@ -1,10 +1,10 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Saphira.Discord.Guild.Role;
-using Saphira.Discord.Interaction.Precondition;
+using Saphira.Core.Logging;
+using Saphira.Discord.Entity.Guild.Role;
+using Saphira.Discord.Interaction.Foundation.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
-using Saphira.Discord.Logging;
 using Saphira.Discord.Messaging;
 
 namespace Saphira.Discord.Interaction.SlashCommand;

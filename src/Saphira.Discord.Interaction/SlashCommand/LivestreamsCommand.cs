@@ -1,12 +1,12 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Saphira.Discord.Guild;
-using Saphira.Discord.Interaction.Precondition;
+using Saphira.Discord.Entity.Guild;
+using Saphira.Discord.Interaction.Foundation.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
-using Saphira.Discord.Messaging.Pagination;
-using Saphira.Util.EmoteMapper;
+using Saphira.Discord.Messaging.EmoteMapper;
+using Saphira.Discord.Pagination;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
 
