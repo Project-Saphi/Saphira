@@ -11,7 +11,7 @@ public class TwitchClient(HttpClient httpClient, IMessageLogger logger)
         {
             if (!string.IsNullOrEmpty(accountName))
             {
-                var thumbnailUrl = $"https://static-cdn.jtvnw.net/previews-ttv/live_user_{accountName}-1920x1080.jpg";
+                var thumbnailUrl = Twitch.GetStreamThumbnailUrl(accountName);
                 return await httpClient.GetStreamAsync(thumbnailUrl);
             }
 
