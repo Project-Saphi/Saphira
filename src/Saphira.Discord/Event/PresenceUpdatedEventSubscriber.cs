@@ -12,12 +12,7 @@ using Saphira.Discord.Messaging;
 namespace Saphira.Discord.Event;
 
 [AutoRegister]
-public class PresenceUpdatedEventSubscriber(
-    DiscordSocketClient client, 
-    Configuration configuration, 
-    TwitchClient twitchClient, 
-    IMessageLogger logger
-    ) : IEventSubscriber
+public class PresenceUpdatedEventSubscriber(DiscordSocketClient client, Configuration configuration, IMessageLogger logger) : IEventSubscriber
 {
     private bool _isRegistered = false;
 
