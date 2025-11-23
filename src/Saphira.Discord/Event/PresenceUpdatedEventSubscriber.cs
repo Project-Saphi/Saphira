@@ -45,7 +45,7 @@ public class PresenceUpdatedEventSubscriber(DiscordSocketClient client, Configur
 
     private async Task PostLivestream(SocketGuildUser guildUser, SocketPresence oldPresence, SocketPresence newPresence)
     {
-        var channel = guildUser.Guild.Channels.Where(c => c.Name == configuration.LivestreamsChannel).FirstOrDefault();
+        var channel = guildUser.Guild.Channels.FirstOrDefault(c => c.Name == configuration.LivestreamsChannel);
 
         if (channel == null)
         {
@@ -59,8 +59,8 @@ public class PresenceUpdatedEventSubscriber(DiscordSocketClient client, Configur
             return;
         }
 
-        var isNewStream = !(oldPresence.Activities?.Where(a => Activity.IsCTRStream(a)).Any() ?? false);
-        var streamActivity = newPresence.Activities?.Where(a => Activity.IsCTRStream(a)).FirstOrDefault();
+        var isNewStream = !(oldPresence.Activities?.Any(a => Activity.IsCTRStream(a)) ?? false);
+        var streamActivity = newPresence.Activities?.FirstOrDefault(a => Activity.IsCTRStream(a));
 
         if (!isNewStream || streamActivity == null || streamActivity is not StreamingGame game)
         {
@@ -123,14 +123,14 @@ public class PresenceUpdatedEventSubscriber(DiscordSocketClient client, Configur
 
     private async Task ToggleStreamingRole(SocketGuildUser guildUser, SocketPresence presence)
     {
-        var streamingRole = guildUser.Guild.Roles.Where(r => GuildRole.IsStreamingRole(r)).FirstOrDefault();
+        var streamingRole = guildUser.Guild.Roles.FirstOrDefault(r => GuildRole.IsStreamingRole(r));
 
         if (streamingRole == null)
         {
             return;
         }
 
-        var isStreaming = presence.Activities?.Where(a => Activity.IsCTRStream(a)).Any() ?? false;
+        var isStreaming = presence.Activities?.Any(a => Activity.IsCTRStream(a)) ?? false;
         var hasStreamingRole = guildUser.Roles.Contains(streamingRole);
 
         if (isStreaming && !hasStreamingRole)

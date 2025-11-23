@@ -8,7 +8,7 @@ public class CooldownRegistry(TimeSpan cooldown)
 
     public void AddEntry(SocketGuildUser guildUser, string actionName, bool overrideIfExists = false)
     {
-        var existingEntry = _entries.Where(e => e.GuildUser == guildUser && e.ActionName == actionName).FirstOrDefault();
+        var existingEntry = _entries.FirstOrDefault(e => e.GuildUser == guildUser && e.ActionName == actionName);
 
         if (existingEntry != null && !overrideIfExists)
         {
@@ -30,19 +30,19 @@ public class CooldownRegistry(TimeSpan cooldown)
 
     public bool IsEntryExpired(SocketGuildUser guildUser, string actionName)
     {
-        var existingEntry = _entries.Where(e => e.GuildUser == guildUser && e.ActionName == actionName).FirstOrDefault();
+        var existingEntry = _entries.FirstOrDefault(e => e.GuildUser == guildUser && e.ActionName == actionName);
 
         if (existingEntry == null)
         {
             return true;
         }
 
-        return _entries.Where(e => e.GuildUser == guildUser && e.ActionName == actionName && DateTime.Now - e.LastExecuted > cooldown).Any();
+        return _entries.Any(e => e.GuildUser == guildUser && e.ActionName == actionName && DateTime.Now - e.LastExecuted > cooldown);
     }
 
     public void RemoveEntry(SocketGuildUser guildUser, string actionName)
     {
-        var existingEntry = _entries.Where(e => e.GuildUser == guildUser && e.ActionName == actionName).FirstOrDefault();
+        var existingEntry = _entries.FirstOrDefault(e => e.GuildUser == guildUser && e.ActionName == actionName);
 
         if (existingEntry == null)
         {
@@ -54,28 +54,13 @@ public class CooldownRegistry(TimeSpan cooldown)
 
     public void CleanupExpiredEntries()
     {
-        var expiredEntries = _entries.Where(e => DateTime.Now - e.LastExecuted > cooldown).ToList();
-
-        foreach (var entry in expiredEntries)
-        {
-            _entries.Remove(entry);
-        }
+        _entries.RemoveAll(e => DateTime.Now - e.LastExecuted > cooldown);
     }
 
     public int CountEntries(SocketGuildUser? guildUser = null, string? actionName = null)
     {
-        var entries = _entries;
-
-        if (guildUser != null)
-        {
-            entries = [.. entries.Where(e => e.GuildUser == guildUser)];
-        }
-
-        if (actionName != null)
-        {
-            entries = [.. entries.Where(e => e.ActionName == actionName)];
-        }
-
-        return entries.Count; 
+        return _entries.Count(e =>
+            (guildUser == null || e.GuildUser == guildUser) &&
+            (actionName == null || e.ActionName == actionName));
     }
 }

@@ -34,17 +34,18 @@ public class TypeFinder(Assembly assembly)
 
     public IEnumerable<Type> Find()
     {
-        var types = _assembly.GetTypes();
-        types = [.. types.Where(t => t is { IsInterface: false, IsAbstract: false })];
-        
+        IEnumerable<Type> types = _assembly.GetTypes();
+
+        types = types.Where(t => t is { IsInterface: false, IsAbstract: false });
+
         if (_interfaceType != null)
         {
-            types = [.. types.Where(_interfaceType.IsAssignableFrom)];
+            types = types.Where(_interfaceType.IsAssignableFrom);
         }
 
         if (_attributeType != null)
         {
-            types = [.. types.Where(t => _optionalAttribute || t.GetCustomAttribute(_attributeType) != null)];
+            types = types.Where(t => _optionalAttribute || t.GetCustomAttribute(_attributeType) != null);
         }
 
         return types;

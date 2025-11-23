@@ -97,9 +97,7 @@ public class HelpCommand(IServiceProvider serviceProvider) : BaseCommand
     {
         var slashCommandAttributes = new List<SlashCommandAttribute>();
 
-        var methods = commandType.GetMethods().Where(m => m.GetCustomAttribute<SlashCommandAttribute>() != null);
-
-        foreach (var method in methods)
+        foreach (var method in commandType.GetMethods())
         {
             var slashCommandAttribute = method.GetCustomAttribute<SlashCommandAttribute>();
 

@@ -17,7 +17,7 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, ApiClient 
 {
     public async Task ExecuteAsync()
     {
-        var guild = discordClient.Guilds.Where(g => g.Id == configuration.GuildId).FirstOrDefault();
+        var guild = discordClient.Guilds.FirstOrDefault(g => g.Id == configuration.GuildId);
 
         if (guild == null)
         {
@@ -25,7 +25,7 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, ApiClient 
             return;
         }
 
-        var channel = guild.Channels.Where(c => c.Name == configuration.SubmissionFeedChannel).FirstOrDefault();
+        var channel = guild.Channels.FirstOrDefault(c => c.Name == configuration.SubmissionFeedChannel);
 
         if (channel == null)
         {
