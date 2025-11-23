@@ -10,7 +10,10 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddCronjobs(this IServiceCollection services, bool requireAttribute = true)
     {
-        foreach (var assembly in Application.LoadAssemblies())
+        using var provider = services.BuildServiceProvider();
+        var application = provider.GetRequiredService<Application>();
+
+        foreach (var assembly in application.LoadAssemblies())
         {
             var finder = new TypeFinder(assembly)
                 .ByInterface(typeof(ICronjob))
@@ -27,10 +30,11 @@ public static class ServiceCollectionExtensions
 
     public static void RegisterCronjobs(this IServiceProvider serviceProvider, bool requireAttribute = true)
     {
+        var application = serviceProvider.GetRequiredService<Application>();
         var cronjobScheduler = serviceProvider.GetRequiredService<CronjobScheduler>();
         var logger = serviceProvider.GetRequiredService<IMessageLogger>();
 
-        foreach (var assembly in Application.LoadAssemblies())
+        foreach (var assembly in application.LoadAssemblies())
         {
             var finder = new TypeFinder(assembly)
                 .ByInterface(typeof(ICronjob))
@@ -48,7 +52,10 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddEventSubscribers(this IServiceCollection services, bool requireAttribute = true)
     {
-        foreach (var assembly in Application.LoadAssemblies())
+        using var provider = services.BuildServiceProvider();
+        var application = provider.GetRequiredService<Application>();
+
+        foreach (var assembly in application.LoadAssemblies())
         {
             var finder = new TypeFinder(assembly)
                         .ByInterface(typeof(IEventSubscriber))
@@ -65,9 +72,10 @@ public static class ServiceCollectionExtensions
 
     public static void RegisterEventSubscribers(this IServiceProvider serviceProvider, bool requireAttribute = true)
     {
+        var application = serviceProvider.GetRequiredService<Application>();
         var logger = serviceProvider.GetRequiredService<IMessageLogger>();
 
-        foreach (var assembly in Application.LoadAssemblies())
+        foreach (var assembly in application.LoadAssemblies())
         {
             var finder = new TypeFinder(assembly)
                         .ByInterface(typeof(IEventSubscriber))

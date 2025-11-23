@@ -12,7 +12,12 @@ using Saphira.Discord.Messaging;
 namespace Saphira.Discord.Event;
 
 [AutoRegister]
-public class PresenceUpdatedEventSubscriber(DiscordSocketClient client, Configuration configuration, TwitchClient twitchClient, IMessageLogger logger) : IEventSubscriber
+public class PresenceUpdatedEventSubscriber(
+    DiscordSocketClient client, 
+    Configuration configuration, 
+    TwitchClient twitchClient, 
+    IMessageLogger logger
+    ) : IEventSubscriber
 {
     private bool _isRegistered = false;
 
@@ -127,6 +132,7 @@ public class PresenceUpdatedEventSubscriber(DiscordSocketClient client, Configur
 
         if (streamingRole == null)
         {
+            logger.Log(LogSeverity.Error, "Saphira", $"The role '{GuildRole.StreamingRole}' does not exist. Unable to assign to users who are streaming.");
             return;
         }
 
@@ -136,11 +142,13 @@ public class PresenceUpdatedEventSubscriber(DiscordSocketClient client, Configur
         if (isStreaming && !hasStreamingRole)
         {
             await guildUser.AddRoleAsync(streamingRole);
+            logger.Log(LogSeverity.Verbose, "Saphira", $"Added role '{streamingRole.Name}' to {guildUser.GlobalName} ({guildUser.Id})");
         }
 
         if (!isStreaming && hasStreamingRole)
         {
             await guildUser.RemoveRoleAsync(streamingRole);
+            logger.Log(LogSeverity.Verbose, "Saphira", $"Removed role '{streamingRole.Name}' from {guildUser.GlobalName} ({guildUser.Id})");
         }
     }
 }

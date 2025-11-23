@@ -114,6 +114,7 @@ public class Program
             .AddSingleton<CronjobScheduler>()
             .AddSingleton<PaginationComponentHandler>()
             .AddSingleton<CooldownService>()
+            .AddSingleton<Application>()
             .AddTransient<GuildManager>()
             .AddTransient<ScoreFormatter>()
             .AddTransient<InviteLinkDetector>()

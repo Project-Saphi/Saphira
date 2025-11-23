@@ -8,7 +8,7 @@ namespace Saphira.Discord.Interaction.SlashCommand;
 
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class PingCommand : BaseCommand
+public class PingCommand(Application application) : BaseCommand
 {
     public override SlashCommandMetadata GetMetadata()
     {
@@ -20,7 +20,7 @@ public class PingCommand : BaseCommand
     {
         var latency = Context.Client.Latency;
 
-        var uptime = DateTime.UtcNow - Application.StartTime;
+        var uptime = DateTime.UtcNow - application.StartTime;
         var uptimeString = $"{uptime.Days}d {uptime.Hours}h {uptime.Minutes}m {uptime.Seconds}s";
 
         var ping = new[]

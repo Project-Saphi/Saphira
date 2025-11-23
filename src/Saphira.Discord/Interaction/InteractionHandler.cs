@@ -11,6 +11,7 @@ namespace Saphira.Discord.Interaction;
 
 public class InteractionHandler(IServiceProvider serviceProvider)
 {
+    private readonly Application _application = serviceProvider.GetRequiredService<Application>();
     private readonly InteractionService _interactionService = serviceProvider.GetRequiredService<InteractionService>();
     private readonly IMessageLogger _logger = serviceProvider.GetRequiredService<IMessageLogger>();
     private readonly CooldownService _cooldownService = serviceProvider.GetRequiredService<CooldownService>();
@@ -19,7 +20,7 @@ public class InteractionHandler(IServiceProvider serviceProvider)
     {
         _interactionService.AddTypeConverter<IEmote>(new EmoteTypeConverter());
 
-        foreach (var assembly in Application.LoadAssemblies())
+        foreach (var assembly in _application.LoadAssemblies())
         {
             _logger.Log(LogSeverity.Info, "Saphira", $"Loading interaction modules from {assembly.GetName().Name} ...");
             await _interactionService.AddModulesAsync(assembly, serviceProvider);

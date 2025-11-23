@@ -10,13 +10,23 @@ public class CronjobScheduler(IMessageLogger logger)
 
     public void RegisterCronjob(ICronjob cronjob)
     {
-        if (!_cronjobs.Contains(cronjob))
+        if (_cronjobs.Contains(cronjob))
         {
-            _cronjobs.Add(cronjob);
+            return;
         }
+
+        _cronjobs.Add(cronjob);
     }
 
-    public void UnregisterCronjob(ICronjob cronjob) => _cronjobs.Remove(cronjob);
+    public void UnregisterCronjob(ICronjob cronjob)
+    {
+        if (!_cronjobs.Contains(cronjob))
+        {
+            return; 
+        }
+
+        _cronjobs.Remove(cronjob);
+    }
 
     public void ScheduleCronjobs()
     {

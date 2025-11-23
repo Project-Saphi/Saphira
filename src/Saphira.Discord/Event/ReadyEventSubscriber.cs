@@ -8,7 +8,7 @@ using Saphira.Core.Logging;
 namespace Saphira.Discord.Event;
 
 [AutoRegister]
-public class ReadyEventSubscriber(DiscordSocketClient client, IMessageLogger logger) : IEventSubscriber
+public class ReadyEventSubscriber(Application application, DiscordSocketClient client, IMessageLogger logger) : IEventSubscriber
 {
     private bool _isRegistered = false;
 
@@ -30,7 +30,7 @@ public class ReadyEventSubscriber(DiscordSocketClient client, IMessageLogger log
 
     private async Task HandleReadyAsync()
     {
-        Application.StartTime = DateTime.UtcNow;
+        application.StartTime = DateTime.UtcNow;
 
         logger.Log(LogSeverity.Info, "Saphira", "Connection to Discord established");
         logger.Log(LogSeverity.Info, "Saphira", "Saphira started successfully");

@@ -1,12 +1,14 @@
+using Discord;
+using Saphira.Core.Logging;
 using System.Reflection;
 
 namespace Saphira.Core;
 
-public static class Application
+public class Application(IMessageLogger logger)
 {
-    public static DateTime StartTime { get; set; }
+    public DateTime StartTime { get; set; }
 
-    public static List<Assembly> LoadAssemblies()
+    public List<Assembly> LoadAssemblies()
     {
         var assemblies = new List<Assembly>();
 
@@ -32,9 +34,12 @@ public static class Application
             {
                 var assembly = Assembly.Load(assemblyName);
                 assemblies.Add(assembly);
+
+                logger.Log(LogSeverity.Verbose, "Saphira", $"Loaded assembly {assemblyName}");
             }
             catch
             {
+                logger.Log(LogSeverity.Error, "Saphira", $"Failed to load assembly {assemblyName}");
             }
         }
 

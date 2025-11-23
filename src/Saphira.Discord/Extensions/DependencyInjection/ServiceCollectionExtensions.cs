@@ -9,7 +9,10 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddValueProviders(this IServiceCollection services, bool requireAttribute = true)
     {
-        foreach (var assembly in Application.LoadAssemblies())
+        using var provider = services.BuildServiceProvider();
+        var application = provider.GetRequiredService<Application>();
+        
+        foreach (var assembly in application.LoadAssemblies())
         {
             var finder = new TypeFinder(assembly)
                         .ByInterface(typeof(IValueProvider))
