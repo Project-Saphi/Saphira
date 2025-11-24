@@ -12,6 +12,8 @@ public class Configuration
 
     public string MainChannel { get; set; } = "";
 
+    public string DmLogChannel { get; set; } = "";
+
     public string SubmissionFeedChannel { get; set; } = "";
 
     public string LivestreamsChannel { get; set; } = "";

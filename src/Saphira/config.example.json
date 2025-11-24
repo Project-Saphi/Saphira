@@ -4,6 +4,7 @@
   "MinimumLogLevel": 3,
   "GuildId": 0,
   "MainChannel": "general",
+  "DmLogChannel": "saphira-dms",
   "SubmissionFeedChannel": "submissions",
   "LivestreamsChannel": "livestreams",
   "CommandsAllowedChannels": [

@@ -78,9 +78,9 @@ public class PresenceUpdatedEventSubscriber(DiscordSocketClient client, Configur
         var data = new[]
         {
             $"{MessageTextFormat.Bold("Streamer")}: {guildUser.Mention}",
-            $"{MessageTextFormat.Bold("Title")}: `{streamActivity.Details}`",
-            $"{MessageTextFormat.Bold("Game")}: {game.Name}",
-            $"{MessageTextFormat.Bold("Channel")}: {MessageTextFormat.MaskedLink(game.Url, game.Url)}",
+            $"{MessageTextFormat.Bold("Title")}: ```{streamActivity.Details}```",
+            $"{MessageTextFormat.Bold("Game")}: Crash Team Racing",
+            $"{MessageTextFormat.Bold("Channel")}: {game.Url}",
         };
 
         var embed = new EmbedBuilder()
@@ -111,7 +111,7 @@ public class PresenceUpdatedEventSubscriber(DiscordSocketClient client, Configur
 
     private async Task ToggleStreamingRole(SocketGuildUser guildUser, SocketPresence presence)
     {
-        var streamingRole = guildUser.Guild.Roles.FirstOrDefault(r => GuildRole.IsStreamingRole(r));
+        var streamingRole = guildUser.Guild.Roles.Where(r => GuildRole.IsStreamingRole(r)).FirstOrDefault();
 
         if (streamingRole == null)
         {

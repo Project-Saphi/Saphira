@@ -16,17 +16,6 @@ public class RequireCooldownExpired(int cooldown) : PreconditionAttribute
         IServiceProvider services
         )
     {
-        if (context.User is not SocketGuildUser guildUser)
-        {
-            return Task.FromResult(PreconditionResult.FromError("User not found."));
-        }
-
-        // Team members have no cooldown
-        if (guildUser.Roles.Any(role => GuildRole.IsTeamRole(role)))
-        {
-            return Task.FromResult(PreconditionResult.FromSuccess());
-        }
-
         var cooldownService = services.GetRequiredService<CooldownService>();
         var registryName = cooldownService.CreateCooldownRegistryName(commandInfo.Name);
 
@@ -37,6 +26,17 @@ public class RequireCooldownExpired(int cooldown) : PreconditionAttribute
         catch (ArgumentException)
         {
             // fine, registry already exists
+        }
+
+        if (context.User is not SocketGuildUser guildUser)
+        {
+            return Task.FromResult(PreconditionResult.FromError("User not found."));
+        }
+
+        // Team members have no cooldown
+        if (guildUser.Roles.Any(role => GuildRole.IsTeamRole(role)))
+        {
+            return Task.FromResult(PreconditionResult.FromSuccess());
         }
 
         if (!cooldownService.CanUseActionAgain(registryName, guildUser, "usage"))

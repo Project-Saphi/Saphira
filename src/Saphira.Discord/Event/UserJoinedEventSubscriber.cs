@@ -33,6 +33,7 @@ public class UserJoinedEventSubscriber(DiscordSocketClient client, Configuration
         if (guild.Users.Count % 100 == 0)
         {
             var mainChannel = guild.Channels.FirstOrDefault(channel => channel.Name == configuration.MainChannel);
+
             if (mainChannel is not SocketTextChannel textChannel)
             {
                 return;
