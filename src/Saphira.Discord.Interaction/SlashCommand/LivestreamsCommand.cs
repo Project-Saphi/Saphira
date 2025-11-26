@@ -28,12 +28,14 @@ public class LivestreamsCommand(PaginationComponentHandler paginationComponentHa
     [SlashCommand("livestreams", "List all CTR livestreams from server members")]
     public async Task HandleCommand()
     {
+        await DeferAsync();
+
         var activities = GuildManager.FindCTRStreamActivities(Context.Guild);
 
         if (activities.Count == 0)
         {
             var infoAlert = new InfoAlertEmbedBuilder("There is currently nobody streaming Crash Team Racing.");
-            await RespondAsync(embed: infoAlert.Build());
+            await FollowupAsync(embed: infoAlert.Build());
             return;
         }
 
@@ -45,7 +47,7 @@ public class LivestreamsCommand(PaginationComponentHandler paginationComponentHa
 
         var (embed, components) = paginationBuilder.Build();
 
-        await RespondAsync(embed: embed, components: components);
+        await FollowupAsync(embed: embed, components: components);
     }
 
     private EmbedBuilder GetEmbedForPage(List<(SocketGuildUser User, IActivity Activity)> activities, int page)

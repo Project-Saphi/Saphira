@@ -13,7 +13,13 @@ using Saphira.Saphi.Game;
 namespace Saphira.Saphi.Cronjob;
 
 [AutoRegister]
-public class SubmissionFeedCronjob(DiscordSocketClient discordClient, ApiClient saphiClient, Configuration configuration, IMessageLogger logger) : ICronjob
+public class SubmissionFeedCronjob(
+    DiscordSocketClient discordClient, 
+    ISaphiApiClient saphiClient, 
+    Configuration configuration, 
+    SubmissionAnalyzer submissionAnalyzer,
+    IMessageLogger logger
+    ) : ICronjob
 {
     public async Task ExecuteAsync()
     {
@@ -21,7 +27,7 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, ApiClient 
 
         if (guild == null)
         {
-            logger.Log(LogSeverity.Error, "Saphira", $"No guild with ID {configuration.GuildId} found. Unable to post new submissions.");
+            logger.Log(LogSeverity.Error, "Saphira", $"Saphira is not in the server with ID {configuration.GuildId}. Unable to post new submissions.");
             return;
         }
 
@@ -39,7 +45,7 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, ApiClient 
             return;
         }
 
-        var result = await saphiClient.GetRecentSubmissionsAsync("1m", cacheDuration: TimeSpan.FromSeconds(1));
+        var result = await saphiClient.GetRecentSubmissionsAsync("1m", forceRefresh: true);
 
         if (!result.Success || result.Response == null)
         {
@@ -60,12 +66,14 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, ApiClient 
 
         foreach (var submission in submissions)
         {
-            var submissionEmbed = GetEmbedForSubmission(submission);
+            var isWorldRecord = await submissionAnalyzer.CheckIsWorldRecordAsync(submission);
+
+            var submissionEmbed = GetEmbedForSubmission(submission, isWorldRecord);
             await textChannel.SendMessageAsync(embed: submissionEmbed.Build());
         }
     }
 
-    private EmbedBuilder GetEmbedForSubmission(RecentSubmission submission)
+    private EmbedBuilder GetEmbedForSubmission(RecentSubmission submission, bool isWorldRecord)
     {
         var data = new[]
         {
@@ -78,10 +86,21 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, ApiClient 
         };
 
         var embed = new EmbedBuilder()
-            .WithColor(5526696)
             .WithThumbnailUrl("https://i.imgur.com/esMgq3Y.png")
-            .WithAuthor($"New submission by {submission.Username}")
             .WithTimestamp(DateTimeOffset.Now);
+
+        if (isWorldRecord)
+        {
+            embed
+                .WithColor(14530399)
+                .WithAuthor($"New world record by {submission.Username}");
+        }
+        else
+        {
+            embed
+                .WithColor(5526696)
+                .WithAuthor($"New submission by {submission.Username}");
+        }
 
         var dataField = new EmbedFieldBuilder()
             .WithName($":receipt: {MessageTextFormat.Bold("Details")}")

@@ -16,7 +16,7 @@ namespace Saphira.Discord.Interaction.SlashCommand;
 [RequireCooldownExpired(15)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class LeaderboardCommand(ApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+public class LeaderboardCommand(ISaphiApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
     private readonly int EntriesPerPage = 20;
 
@@ -34,12 +34,14 @@ public class LeaderboardCommand(ApiClient client, PaginationComponentHandler pag
         [Autocomplete(typeof(GenericAutocompleteHandler<CategoryValueProvider>))] string category
         )
     {
+        await DeferAsync();
+
         var result = await client.GetTrackLeaderboardAsync(track, category);
 
         if (!result.Success || result.Response == null)
         {
             var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve leaderboard: {result.ErrorMessage ?? "Unknown error"}");
-            await RespondAsync(embed: errorAlert.Build());
+            await FollowupAsync(embed: errorAlert.Build());
             return;
         }
 
@@ -48,7 +50,7 @@ public class LeaderboardCommand(ApiClient client, PaginationComponentHandler pag
         if (result.Response.Data.Count == 0 || customTrack == null)
         {
             var warningAlert = new WarningAlertEmbedBuilder($"Nobody has set a time on {customTrack?.Name ?? "Unknown"} yet.");
-            await RespondAsync(embed: warningAlert.Build());
+            await FollowupAsync(embed: warningAlert.Build());
             return;
         }
 
@@ -62,7 +64,7 @@ public class LeaderboardCommand(ApiClient client, PaginationComponentHandler pag
 
         var (embed, components) = paginationBuilder.Build();
 
-        await RespondAsync(embed: embed, components: components);
+        await FollowupAsync(embed: embed, components: components);
     }
 
     private EmbedBuilder GetEmbedForPage(CustomTrack track, List<TrackLeaderboardEntry> leaderboardEntries, int currentPage)

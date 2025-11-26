@@ -7,7 +7,7 @@ using Saphira.Saphi.Api;
 namespace Saphira.Saphi.Interaction;
 
 [AutoRegister]
-public class CharacterValueProvider(ApiClient client, IMessageLogger logger) : IValueProvider
+public class CharacterValueProvider(ISaphiApiClient client, IMessageLogger logger) : IValueProvider
 {
     public async Task<List<Value>> GetValuesAsync()
     {

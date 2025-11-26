@@ -19,11 +19,13 @@ public class ServerCommand : BaseCommand
     [SlashCommand("server", "Get information about this server")]
     public async Task HandleCommand()
     {
+        await DeferAsync();
+
         var guild = Context.Guild;
 
         if (guild == null)
         {
-            await RespondAsync("This command can only be used in a server!");
+            await FollowupAsync("This command can only be used in a server!");
             return;
         }
 
@@ -56,7 +58,7 @@ public class ServerCommand : BaseCommand
         AddEmbedField(embed, ":bar_chart:", "Statistics", statistics);
         AddEmbedField(embed, ":level_slider:", "Metrics", data);
 
-        await RespondAsync(embed: embed.Build());
+        await FollowupAsync(embed: embed.Build());
     }
 
     private void AddEmbedField(EmbedBuilder embed, string emote, string title, string[] content)

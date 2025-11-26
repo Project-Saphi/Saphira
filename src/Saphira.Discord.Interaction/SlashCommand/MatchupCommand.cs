@@ -30,20 +30,22 @@ public class MatchupCommand(PlayerMatchupCalculator playerMatchupGenerator) : Ba
         [Autocomplete(typeof(GenericAutocompleteHandler<CategoryValueProvider>))] string category
         )
     {
+        await DeferAsync();
+
         var result = await playerMatchupGenerator.GeneratePlayerMatchup(player1, player2, category);
 
         if (result.Status == PlayerMatchupCalculationStatus.Failure || result.PlayerMatchup == null)
         {
             var errorAlert = new ErrorAlertEmbedBuilder(result.ErrorMessage ?? "An error occured calculating the matchup.");
-            await RespondAsync(embed: errorAlert.Build());
+            await FollowupAsync(embed: errorAlert.Build());
             return;
         }
 
-        var matchupEmbed = BuildMatchupEmbed(result.PlayerMatchup);
-        await RespondAsync(embed: matchupEmbed.Build());
+        var matchupEmbed = GetMatchupEmbed(result.PlayerMatchup);
+        await FollowupAsync(embed: matchupEmbed.Build());
     }
 
-    private EmbedBuilder BuildMatchupEmbed(PlayerMatchup playerMatchup)
+    private EmbedBuilder GetMatchupEmbed(PlayerMatchup playerMatchup)
     {
         var embed = new EmbedBuilder()
             .WithAuthor($"Matchup between {playerMatchup.PlayerName1} and {playerMatchup.PlayerName2} ({playerMatchup.Category.Name})");

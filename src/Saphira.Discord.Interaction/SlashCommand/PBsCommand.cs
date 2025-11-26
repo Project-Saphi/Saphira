@@ -16,7 +16,7 @@ namespace Saphira.Discord.Interaction.SlashCommand;
 [RequireCooldownExpired(15)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class PBsCommand(ApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+public class PBsCommand(ISaphiApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
     private readonly int EntriesPerPage = 20;
 
@@ -33,19 +33,21 @@ public class PBsCommand(ApiClient client, PaginationComponentHandler paginationC
         [Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] string player
         )
     {
+        await DeferAsync();
+
         var result = await client.GetPlayerPBsAsync(player);
 
         if (!result.Success || result.Response == null)
         {
             var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve personal best times: {result.ErrorMessage ?? "Unknown error"}");
-            await RespondAsync(embed: errorAlert.Build());
+            await FollowupAsync(embed: errorAlert.Build());
             return;
         }
 
         if (result.Response.Data.Count == 0)
         {
             var warningAlert = new WarningAlertEmbedBuilder("This player doesn't have any PBs set yet.");
-            await RespondAsync(embed: warningAlert.Build());
+            await FollowupAsync(embed: warningAlert.Build());
             return;
         }
 
@@ -60,7 +62,7 @@ public class PBsCommand(ApiClient client, PaginationComponentHandler paginationC
 
         var (embed, components) = paginationBuilder.Build();
 
-        await RespondAsync(embed: embed, components: components);
+        await FollowupAsync(embed: embed, components: components);
     }
 
     private EmbedBuilder GetEmbedForPage(string playerName, List<PlayerPB> pagePBs, int pageNumber)

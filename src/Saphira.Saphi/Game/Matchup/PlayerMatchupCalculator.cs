@@ -3,7 +3,7 @@ using Saphira.Saphi.Entity;
 
 namespace Saphira.Saphi.Game.Matchup;
 
-public class PlayerMatchupCalculator(ApiClient client)
+public class PlayerMatchupCalculator(ISaphiApiClient client)
 {
     public async Task<PlayerMatchupCalculationResult> GeneratePlayerMatchup(string player1, string player2, string category)
     {
@@ -141,9 +141,9 @@ public class PlayerMatchupCalculator(ApiClient client)
         );
     }
 
-    private async Task<List<PlayerPB>> FetchPlayerPBsAsync(string player)
+    private async Task<List<PlayerPB>> FetchPlayerPBsAsync(string playerId)
     {
-        var result = await client.GetPlayerPBsAsync(player);
+        var result = await client.GetPlayerPBsAsync(playerId);
 
         if (!result.Success || result.Response == null)
         {
@@ -153,7 +153,7 @@ public class PlayerMatchupCalculator(ApiClient client)
         return result.Response.Data;
     }
 
-    private async Task<Category?> FetchCategory(string category)
+    private async Task<Category?> FetchCategory(string categoryId)
     {
         var result = await client.GetCategoriesAsync();
 
@@ -162,6 +162,6 @@ public class PlayerMatchupCalculator(ApiClient client)
             return null;
         }
 
-        return result.Response.Data.Where(c => c.Id == int.Parse(category)).FirstOrDefault();
+        return result.Response.Data.Where(c => c.Id == int.Parse(categoryId)).FirstOrDefault();
     }
 }

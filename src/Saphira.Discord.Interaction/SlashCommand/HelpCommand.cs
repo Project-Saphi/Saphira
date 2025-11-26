@@ -20,6 +20,8 @@ public class HelpCommand(IServiceProvider serviceProvider) : BaseCommand
     [SlashCommand("help", "Receive a DM with all available commands")]
     public async Task HandleCommand()
     {
+        await DeferAsync();
+
         var embedFields = new List<EmbedFieldBuilder>();
 
         var assembly = Assembly.GetExecutingAssembly();
@@ -58,12 +60,12 @@ public class HelpCommand(IServiceProvider serviceProvider) : BaseCommand
         try
         {
             await Context.User.SendMessageAsync(embed: embed.Build());
-            await RespondAsync("You received the command help via DM.", ephemeral: true);
+            await FollowupAsync("You received the command help via DM.", ephemeral: true);
         }
         catch (Exception ex)
         {
             _logger.Log(LogSeverity.Error, "Saphira", $"Failed to DM the command help to {Context.User.GlobalName} ({Context.User.Id}): {ex}");
-            await RespondAsync("Failed to DM the command help. Do you have DMs from server members enabled?", ephemeral: true);
+            await FollowupAsync("Failed to DM the command help. Do you have DMs from server members enabled?", ephemeral: true);
         }
     }
 

@@ -20,10 +20,12 @@ public class ProfileCommand : BaseCommand
     [SlashCommand("profile", "See a user's profile")]
     public async Task HandleCommand()
     {
+        await DeferAsync();
+
         if (Context.User is not SocketGuildUser guildUser)
         {
             var errorAlert = new ErrorAlertEmbedBuilder("Your profile data cannot be fetched.");
-            await RespondAsync(embed: errorAlert.Build());
+            await FollowupAsync(embed: errorAlert.Build());
             return;
         }
 
@@ -43,7 +45,7 @@ public class ProfileCommand : BaseCommand
             embed.AddField(field);
         }
 
-        await RespondAsync(embed: embed.Build());
+        await FollowupAsync(embed: embed.Build());
     }
 
     private List<EmbedFieldBuilder> GetProfileEmbedFields(SocketUser user)

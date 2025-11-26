@@ -1,6 +1,6 @@
 ﻿namespace Saphira.Saphi.Api;
 
-public class ApiEndpoint
+public class SaphiApiEndpoint
 {
     public static readonly string GetCustomTracks = "custom-tracks.php";
     public static readonly string GetPlayerPBs = "player-pbs.php";

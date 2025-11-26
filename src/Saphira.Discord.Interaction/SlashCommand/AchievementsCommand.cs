@@ -13,7 +13,7 @@ namespace Saphira.Discord.Interaction.SlashCommand;
 [RequireCooldownExpired(15)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class AchievementsCommand(ApiClient client) : BaseCommand
+public class AchievementsCommand(ISaphiApiClient client) : BaseCommand
 {
     public override SlashCommandMetadata GetMetadata()
     {
@@ -25,12 +25,14 @@ public class AchievementsCommand(ApiClient client) : BaseCommand
         [Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] string player
         )
     {
+        await DeferAsync();
+
         var result = await client.GetUserProfileAsync(player);
 
         if (!result.Success || result.Response == null)
         {
             var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve user profile: {result.ErrorMessage ?? "Unknown error"}");
-            await RespondAsync(embed: errorAlert.Build());
+            await FollowupAsync(embed: errorAlert.Build());
             return;
         }
 
@@ -54,6 +56,6 @@ public class AchievementsCommand(ApiClient client) : BaseCommand
 
         embed.AddField(field);
 
-        await RespondAsync(embed: embed.Build());
+        await FollowupAsync(embed: embed.Build());
     }
 }

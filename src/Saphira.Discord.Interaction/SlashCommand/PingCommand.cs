@@ -18,6 +18,8 @@ public class PingCommand(Application application) : BaseCommand
     [SlashCommand("ping", "Check the bot's latency")]
     public async Task HandleCommand()
     {
+        await DeferAsync();
+
         var latency = Context.Client.Latency;
 
         var uptime = DateTime.UtcNow - application.StartTime;
@@ -30,6 +32,6 @@ public class PingCommand(Application application) : BaseCommand
         };
 
         var successAlert = new SuccessAlertEmbedBuilder(string.Join("\n", ping));
-        await RespondAsync(embed: successAlert.Build());
+        await FollowupAsync(embed: successAlert.Build());
     }
 }

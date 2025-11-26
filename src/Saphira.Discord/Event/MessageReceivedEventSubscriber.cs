@@ -61,7 +61,7 @@ public class MessageReceivedEventSubscriber(
 
         if (guild == null)
         {
-            logger.Log(LogSeverity.Error, "Saphira", $"Saphira is not in the server with ID {configuration.GuildId}.");
+            logger.Log(LogSeverity.Error, "Saphira", $"Saphira is not in the server with ID {configuration.GuildId}. Unable to log Saphira's DMs.");
             return;
         }
 
