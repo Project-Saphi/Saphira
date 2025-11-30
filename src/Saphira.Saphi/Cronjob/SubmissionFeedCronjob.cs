@@ -27,7 +27,7 @@ public class SubmissionFeedCronjob(
 
         if (guild == null)
         {
-            logger.Log(LogSeverity.Error, "Saphira", $"Saphira is not in the server with ID {configuration.GuildId}. Unable to post new submissions.");
+            logger.Log(LogSeverity.Error, "Saphira", $"Saphira is not in the server with ID {configuration.GuildId}. Unable to post new submissions");
             return;
         }
 
@@ -35,13 +35,13 @@ public class SubmissionFeedCronjob(
 
         if (channel == null)
         {
-            logger.Log(LogSeverity.Error, "Saphira", $"No channel {configuration.SubmissionFeedChannel} exists. Unable to post new submissions.");
+            logger.Log(LogSeverity.Error, "Saphira", $"No channel {configuration.SubmissionFeedChannel} exists. Unable to post new submissions");
             return;
         }
 
         if (channel is not SocketTextChannel textChannel)
         {
-            logger.Log(LogSeverity.Error, "Saphira", $"The channel {configuration.SubmissionFeedChannel} is not a text channel. Unable to post new submissions.");
+            logger.Log(LogSeverity.Error, "Saphira", $"The channel {configuration.SubmissionFeedChannel} is not a text channel. Unable to post new submissions");
             return;
         }
 

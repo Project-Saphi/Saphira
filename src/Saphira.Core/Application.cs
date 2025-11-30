@@ -21,6 +21,8 @@ public class Application(IMessageLogger logger)
         var assemblyDirectory = AppDomain.CurrentDomain.BaseDirectory;
         var assemblyFiles = Directory.GetFiles(assemblyDirectory, "Saphira.*.dll");
 
+        logger.Log(LogSeverity.Debug, "Saphira", $"Found {assemblyFiles.Length} assemblies in the current app domain");
+
         foreach (var assemblyFile in assemblyFiles)
         {
             var assemblyName = AssemblyName.GetAssemblyName(assemblyFile);

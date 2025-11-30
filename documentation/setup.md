@@ -35,6 +35,7 @@ A `config.json` file needs to be created under `src/Saphira` with the following 
   "MinimumLogLevel": 3,
   "GuildId": 0,
   "MainChannel": "",
+  "DmLogChannel": "",
   "SubmissionFeedChannel": "",
   "LivestreamsChannel": "",
   "CommandsAllowedChannels": [],
@@ -49,6 +50,7 @@ A `config.json` file needs to be created under `src/Saphira` with the following 
 - `MinimumLogLevel` is the minimum log level of messages that will be logged (based on Discord.NET's `Discord.LogSeverity` enum)
 - `GuildId` is the internal ID of the server you want to run Saphira on
 - `MainChannel` is the name of the main channel where Saphira will post some messages to (like the member count celebration)
+- `DmLogChannel` is the name of the channel where Saphira will log DMs to
 - `SubmissionFeedChannel` is the name of the channel where Saphira will post the newest submissions to
 - `LivestreamsChannel` is the name of the channel where Saphira will post livestreams and suppress embeds for all messages
 - `CommandsAllowedChannels` is a list of channels where users are allowed to use slash commands (unless they have the `Saphi Team` role)

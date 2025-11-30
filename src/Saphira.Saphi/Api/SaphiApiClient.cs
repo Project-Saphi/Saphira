@@ -1,7 +1,10 @@
+using Discord;
 using Microsoft.Extensions.Caching.Memory;
 using Saphira.Core;
 using Saphira.Core.Extensions.Caching;
+using Saphira.Core.Logging;
 using Saphira.Saphi.Api.Response;
+using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -15,13 +18,15 @@ public class SaphiApiClient : ISaphiApiClient
     private readonly Configuration _configuration;
     private readonly IMemoryCache _cache;
     private readonly CacheInvalidationService _cacheInvalidationService;
+    private readonly IMessageLogger _logger;
 
-    public SaphiApiClient(HttpClient httpClient, Configuration configuration, IMemoryCache cache, CacheInvalidationService cacheInvalidationService)
+    public SaphiApiClient(HttpClient httpClient, Configuration configuration, IMemoryCache cache, CacheInvalidationService cacheInvalidationService, IMessageLogger logger)
     {
         _httpClient = httpClient;
         _configuration = configuration;
         _cache = cache;
         _cacheInvalidationService = cacheInvalidationService;
+        _logger = logger;
 
         if (!string.IsNullOrWhiteSpace(_configuration.SaphiApiBaseUrl))
         {
@@ -187,10 +192,18 @@ public class SaphiApiClient : ISaphiApiClient
 
     private async Task<SaphiApiResult<T>> GetAsync<T>(string endpoint)
     {
+        var stopWatch = new Stopwatch();
+
         try
         {
+            stopWatch.Start();
+            _logger.Log(LogSeverity.Debug, "Saphira", $"Calling Saphi API endpoint {endpoint} ...");
+
             var response = await _httpClient.GetAsync(endpoint);
             var content = await response.Content.ReadAsStringAsync();
+
+            stopWatch.Stop();
+            _logger.Log(LogSeverity.Debug, "Saphira", $"Response received from Saphi API endpoint {endpoint} in {stopWatch.ElapsedMilliseconds}ms");
 
             if (!response.IsSuccessStatusCode)
             {

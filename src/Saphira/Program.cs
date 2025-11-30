@@ -122,6 +122,7 @@ public class Program
             .AddTransient<PlayerMatchupCalculator>()
             .AddTransient<TwitchClient>()
             .AddTransient<SubmissionAnalyzer>()
+            .AddTransient<StandardCalculator>()
             .AddHttpClient()
             .AddMemoryCache()
             .AddCronjobs()

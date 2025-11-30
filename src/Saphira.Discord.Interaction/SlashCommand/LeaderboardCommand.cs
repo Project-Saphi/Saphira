@@ -10,13 +10,14 @@ using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
 using Saphira.Saphi.Game;
 using Saphira.Saphi.Interaction;
+using System.Text;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
 
 [RequireCooldownExpired(15)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class LeaderboardCommand(ISaphiApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+public class LeaderboardCommand(ISaphiApiClient client, StandardCalculator standardCalculator, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
     private readonly int EntriesPerPage = 20;
 
@@ -67,13 +68,13 @@ public class LeaderboardCommand(ISaphiApiClient client, PaginationComponentHandl
         await FollowupAsync(embed: embed, components: components);
     }
 
-    private EmbedBuilder GetEmbedForPage(CustomTrack track, List<TrackLeaderboardEntry> leaderboardEntries, int currentPage)
+    private EmbedBuilder GetEmbedForPage(CustomTrack customTrack, List<TrackLeaderboardEntry> leaderboardEntries, int currentPage)
     {
         var firstEntry = leaderboardEntries.First();
-        var leaderboardData = GetLeaderboardData(leaderboardEntries);
+        var leaderboardData = GetLeaderboardData(customTrack, leaderboardEntries);
 
         var embed = new EmbedBuilder()
-            .WithAuthor($"[Page {currentPage}] Leaderboard for {track?.Name ?? "Unknown"} ({firstEntry?.CategoryName ?? "Unknown"})");
+            .WithAuthor($"[Page {currentPage}] Leaderboard for {customTrack?.Name ?? "Unknown"} ({firstEntry?.CategoryName ?? "Unknown"})");
 
         AddEmbedField(embed, ":trophy:", "Placement", leaderboardData["placements"]);
         AddEmbedField(embed, ":bust_in_silhouette:", "Player", leaderboardData["players"]);
@@ -90,7 +91,7 @@ public class LeaderboardCommand(ISaphiApiClient client, PaginationComponentHandl
             .WithIsInline(true));
     }
 
-    private Dictionary<string, List<string>> GetLeaderboardData(List<TrackLeaderboardEntry> entries)
+    private Dictionary<string, List<string>> GetLeaderboardData(CustomTrack customTrack, List<TrackLeaderboardEntry> entries)
     {
         var dict = new Dictionary<string, List<string>>()
         {
@@ -101,12 +102,47 @@ public class LeaderboardCommand(ISaphiApiClient client, PaginationComponentHandl
 
         foreach (var entry in entries)
         {
-            dict["placements"].Add(RankFormatter.ToMedalFormat(entry.Rank));
-            dict["players"].Add($"{CountryEmoteMapper.MapCountryToEmote(entry.CountryName)} {MessageTextFormat.Bold(entry.Holder)}");
-            dict["times"].Add($"{ScoreFormatter.AsHumanTime(entry.MinScore)} {CharacterEmoteMapper.MapCharacterToEmote(entry.CharacterName)}");
+            dict["placements"].Add(BuildPlacementString(entry));
+            dict["players"].Add(BuildPlayerString(entry));
+            dict["times"].Add(BuildTimeString(customTrack, entry));
         }
 
         return dict;
+    }
+
+    private string BuildPlacementString(TrackLeaderboardEntry entry)
+    {
+        return new StringBuilder().Append(RankFormatter.ToMedalFormat(entry.Rank)).ToString();
+    }
+
+    private string BuildPlayerString(TrackLeaderboardEntry entry)
+    {
+        return new StringBuilder()
+            .Append(CountryEmoteMapper.MapCountryToEmote(entry.CountryName))
+            .Append(' ')
+            .Append(MessageTextFormat.Bold(entry.Holder))
+            .ToString();
+    }
+
+    private string BuildTimeString(CustomTrack customTrack, TrackLeaderboardEntry entry)
+    {
+        var standard = standardCalculator.CalculateStandard(customTrack, entry.CategoryId, entry.MinScore);
+        var standardEmote = standard != null ? TierEmoteMapper.MapTierToEmote(standard.TierId) : null;
+
+        var timeString = new StringBuilder();
+
+        if (standardEmote != null)
+        {
+            timeString
+                .Append(standardEmote)
+                .Append(' ');
+        }
+
+        return timeString
+            .Append(ScoreFormatter.AsHumanTime(entry.MinScore))
+            .Append(' ')
+            .Append(CharacterEmoteMapper.MapCharacterToEmote(entry.CharacterName))
+            .ToString();
     }
 
     private async Task<CustomTrack?> FindCustomTrack(string trackId)

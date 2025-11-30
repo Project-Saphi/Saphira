@@ -12,7 +12,7 @@ using Saphira.Discord.Messaging;
 namespace Saphira.Discord.Event;
 
 [AutoRegister]
-public class PresenceUpdatedEventSubscriber(DiscordSocketClient client, Configuration configuration, IMessageLogger logger) : IEventSubscriber
+public class PresenceUpdatedEventSubscriber(DiscordSocketClient client, Configuration configuration, TwitchClient twitchClient, IMessageLogger logger) : IEventSubscriber
 {
     private bool _isRegistered = false;
 
@@ -68,6 +68,28 @@ public class PresenceUpdatedEventSubscriber(DiscordSocketClient client, Configur
         }
 
         var embed = GetEmbedForStream(guildUser, streamActivity, game);
+
+        FileAttachment? attachment = null;
+        var streamingPlatform = Activity.GetStreamingPlatform(streamActivity.Name);
+
+        if (streamingPlatform == StreamingPlatform.Twitch)
+        {
+            var accountName = Twitch.ExtractAccountNameFromStreamUrl(game.Url);
+            var imageStream = await twitchClient.FetchStreamPreview(accountName ?? "");
+
+            if (imageStream != null)
+            {
+                attachment = new FileAttachment(imageStream, "thumbnail.jpg");
+                embed.WithThumbnailUrl($"attachment://{attachment.Value.FileName}");
+            }
+        }
+
+        if (attachment != null)
+        {
+            await livestreamsChannel.SendFileAsync(attachment.Value, embed: embed.Build());
+            return;
+        }
+
         await livestreamsChannel.SendMessageAsync(embed: embed.Build());
     }
 
@@ -88,17 +110,6 @@ public class PresenceUpdatedEventSubscriber(DiscordSocketClient client, Configur
             .WithColor(streamingPlatform.HasValue ? (uint) streamingPlatform.Value : Color.Default)
             .WithUrl(game.Url)
             .WithTimestamp(DateTimeOffset.Now);
-
-        if (streamingPlatform == StreamingPlatform.Twitch)
-        {
-            var accountName = Twitch.ExtractAccountNameFromStreamUrl(game.Url);
-            if (accountName != null)
-            {
-                // Discord.NET is apparently stupid and can't send a message that contains both a file attachment and an embed
-                // For now, the embed will just reference the preview URL of the stream
-                embed.WithThumbnailUrl(Twitch.GetStreamThumbnailUrl(accountName));
-            }
-        }
 
         var detailsField = new EmbedFieldBuilder()
             .WithName(":receipt: Details")

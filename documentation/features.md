@@ -6,11 +6,18 @@ Saphira has a bunch of built-in features that cannot be directly controlled via 
 
 ## Table of Contents
 
+- [DM Logging](#dm-logging)
 - [Submission Feed](#submission-feed)
 - [Livestreams](#livestreams)
 - [Invite Link Blocker](#invite-link-blocker)
 - [Restricted Content for new Members](#restricted-content-for-new-members)
 - [Member Count Celebration](#member-count-celebration)
+
+## DM Logging
+
+Saphira can log messages that it receives via DM into a configurable channel. This is useful for a number of things such as building a private player reporting system.
+
+The log message contains the content of the message and the user information (such as the global name and the user ID). In combination with the `/dm` command, this can be used to communicate with users anonymously via Saphira.
 
 ## Submission Feed
 
