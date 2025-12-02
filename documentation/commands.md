@@ -102,8 +102,8 @@ Get the leaderboard for a specific track and category.
 - `category` - The racing category (autocomplete available)
 
 **Response:**
-- Top times for the specified track and category
-- Buttons to navigate between pages, 20 entries per page
+- Top times for the specified track and category with standard tier badges
+- Buttons to navigate between pages, 15 entries per page
 
 **Cooldown:**
 - 15 seconds (team members exempt)
@@ -158,7 +158,7 @@ Get the list of all supported custom tracks.
 ```
 
 **Response:**
-- Complete list of custom tracks with their IDs
+- Complete list of custom tracks with their IDs, names, creators, and submission counts
 - Buttons to navigate between pages, 20 entries per page
 
 **Cooldown:**
@@ -198,6 +198,27 @@ Toggle notification roles on or off.
 
 **Cooldown:**
 - 15 seconds (team members exempt)
+
+### `/verify`
+Verify yourself by linking your Discord account to your Saphi profile.
+
+**Usage:**
+```
+/verify
+```
+
+**How it works:**
+1. Run `/verify` to get your Discord ID
+2. Add your Discord ID to your user profile on the Saphi website
+3. Run `/verify` again to receive the "Verified" role
+
+**Response:**
+- If not linked: Instructions with your Discord ID
+- If linked: Confirmation and "Verified" role assignment
+
+**Requirements:**
+- Bot's role must be higher than "Verified" role in hierarchy
+- Your Discord ID must be set in your Saphi user profile
 
 ## 🛡️ Moderator Commands
 
@@ -295,18 +316,3 @@ Add a reaction to any message as the bot.
 
 **Permissions Required:**
 - Saphi Team role
-
-### `/verify`
-Add the "Verified" role to a user.
-
-**Usage:**
-```
-/verify user:<@user>
-```
-
-**Parameters:**
-- `user` - The user to verify
-
-**Permissions Required:**
-- Saphi Team role
-- Bot's role must be higher than "Verified" role in hierarchy

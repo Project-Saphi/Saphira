@@ -162,10 +162,25 @@ namespace Saphira.Saphi.Entity;
 public class Player
 {
     [JsonPropertyName("id")]
-    public string Id { get; set; }
+    public int Id { get; set; }
 
-    [JsonPropertyName("name")]
-    public string Name { get; set; }
+    [JsonPropertyName("username")]
+    public string Username { get; set; }
+
+    [JsonPropertyName("display_name")]
+    public string DisplayName { get; set; }
+
+    [JsonPropertyName("country_id")]
+    public int CountryId { get; set; }
+
+    [JsonPropertyName("country_name")]
+    public string CountryName { get; set; }
+
+    [JsonPropertyName("status")]
+    public int Status { get; set; }
+
+    [JsonPropertyName("discord")]
+    public string? Discord { get; set; }
 }
 ```
 
@@ -177,12 +192,18 @@ using Saphira.Saphi.Api;
 
 namespace Saphira.Saphi.Interaction;
 
-public class PlayerValueProvider(ApiClient client) : IValueProvider
+public class PlayerValueProvider(ISaphiApiClient client) : IValueProvider
 {
     public async Task<List<Value>> GetValuesAsync()
     {
-        var players = await client.GetPlayersAsync(); // We assume GetPlayersAsync() returns a List<Player>
-        return [.. players.Select(p => new Value(int.Parse(p.Id), p.Name))];
+        var result = await client.GetPlayersAsync();
+
+        if (!result.Success || result.Response == null)
+        {
+            return [];
+        }
+
+        return [.. result.Response.Data.Select(p => new Value(p.Id, p.DisplayName))];
     }
 }
 ```
@@ -199,7 +220,7 @@ namespace Saphira.Discord.Interaction.SlashCommand;
 public class PBsCommand : BaseCommand
 {
     [SlashCommand("pbs", "Get personal best times of a player")]
-    public async Task HandleCommand([Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] string player)
+    public async Task HandleCommand([Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] int player)
     {
         // Other code ...
     }
@@ -216,7 +237,7 @@ using Saphira.Saphi.Api;
 namespace Saphira.Saphi.Interaction;
 
 [AutoRegister]
-public class PlayerValueProvider(ApiClient client) : IValueProvider
+public class PlayerValueProvider(ISaphiApiClient client) : IValueProvider
 {
     // Other code ...
 }
@@ -307,7 +328,7 @@ using Saphira.Discord.Interaction.SlashCommand;
 using Saphira.Discord.Pagination;
 using Saphira.Saphi.Api;
 
-public class PBsCommand(ApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+public class PBsCommand(ISaphiApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
     // Other code ...
 }
@@ -326,21 +347,28 @@ using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
 
 [RequireTextChannel]
-public class PBsCommand(ApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+public class PBsCommand(ISaphiApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
     private readonly int EntriesPerPage = 20;
 
     [SlashCommand("pbs", "Get personal best times of a player")]
-    public async Task HandleCommand(string player)
+    public async Task HandleCommand(int player)
     {
-        var playerPBs = [...]; // Your list of entries
-        var playerName = "Garma";
+        var result = await client.GetPlayerPBsAsync(player);
+
+        if (!result.Success || result.Response == null)
+        {
+            // Handle error ...
+            return;
+        }
+
+        var playerPBs = result.Response.Data;
+        var playerName = playerPBs.First().Holder;
 
         var paginationBuilder = new PaginationBuilder<PlayerPB>(paginationComponentHandler)
             .WithItems(playerPBs)
             .WithPageSize(EntriesPerPage)
             .WithRenderPageCallback((pagePBs, pageNumber) => GetEmbedForPage(playerName, pagePBs, pageNumber))
-            .WithCustomId(Guid.NewGuid())
             .WithFilter((component) => Task.FromResult(new PaginationFilterResult(component.User.Id == Context.User.Id)));
 
         var (embed, components) = paginationBuilder.Build();
