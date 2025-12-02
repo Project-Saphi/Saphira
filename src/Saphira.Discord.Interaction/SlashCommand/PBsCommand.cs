@@ -31,7 +31,7 @@ public class PBsCommand(ISaphiApiClient client, StandardCalculator standardCalcu
 
     [SlashCommand("pbs", "Get personal best times of a player")]
     public async Task HandleCommand(
-        [Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] string player
+        [Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] int player
         )
     {
         await DeferAsync();

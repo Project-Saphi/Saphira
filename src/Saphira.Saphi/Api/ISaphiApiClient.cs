@@ -4,24 +4,24 @@ namespace Saphira.Saphi.Api;
 
 public interface ISaphiApiClient
 {
-    public Task<SaphiApiResult<GetCustomTrackResponse>> GetCustomTrackAsync(string trackId, TimeSpan? cacheDuration = null, bool forceRefresh = false);
+    public Task<SaphiApiResult<GetCustomTrackResponse>> GetCustomTrackAsync(int trackId, TimeSpan? cacheDuration = null, bool forceRefresh = false);
 
     public Task<SaphiApiResult<GetCustomTracksResponse>> GetCustomTracksAsync(TimeSpan? cacheDuration = null, bool forceRefresh = false);
 
-    public Task<SaphiApiResult<GetPlayerPBsResponse>> GetPlayerPBsAsync(string playerId, TimeSpan? cacheDuration = null, bool forceRefresh = false);
+    public Task<SaphiApiResult<GetPlayerPBsResponse>> GetPlayerPBsAsync(int playerId, TimeSpan? cacheDuration = null, bool forceRefresh = false);
 
-    public Task<SaphiApiResult<GetTrackLeaderboardResponse>> GetTrackLeaderboardAsync(string trackId, string categoryId, TimeSpan? cacheDuration = null, bool forceRefresh = false);
+    public Task<SaphiApiResult<GetTrackLeaderboardResponse>> GetTrackLeaderboardAsync(int trackId, int categoryId, TimeSpan? cacheDuration = null, bool forceRefresh = false);
 
     public Task<SaphiApiResult<GetRecentSubmissionsResponse>> GetRecentSubmissionsAsync(
         string? timeFilter = null,
-        string? trackId = null,
-        string? categoryId = null,
-        string? userId = null,
+        int? trackId = null,
+        int? categoryId = null,
+        int? userId = null,
         TimeSpan? cacheDuration = null,
         bool forceRefresh = false
     );
 
-    public Task<SaphiApiResult<GetUserProfileResponse>> GetUserProfileAsync(string userId, TimeSpan? cacheDuration = null, bool forceRefresh = false);
+    public Task<SaphiApiResult<GetUserProfileResponse>> GetUserProfileAsync(int userId, TimeSpan? cacheDuration = null, bool forceRefresh = false);
 
     public Task<SaphiApiResult<GetCountriesResponse>> GetCountriesAsync(TimeSpan? cacheDuration = null, bool forceRefresh = false);
 

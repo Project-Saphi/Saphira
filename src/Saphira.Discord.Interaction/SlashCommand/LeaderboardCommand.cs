@@ -31,8 +31,8 @@ public class LeaderboardCommand(ISaphiApiClient client, StandardCalculator stand
 
     [SlashCommand("leaderboard", "Get the leaderboard for a single track and category")]
     public async Task HandleCommand(
-        [Autocomplete(typeof(GenericAutocompleteHandler<CustomTrackValueProvider>))] string track,
-        [Autocomplete(typeof(GenericAutocompleteHandler<CategoryValueProvider>))] string category
+        [Autocomplete(typeof(GenericAutocompleteHandler<CustomTrackValueProvider>))] int track,
+        [Autocomplete(typeof(GenericAutocompleteHandler<CategoryValueProvider>))] int category
         )
     {
         await DeferAsync();

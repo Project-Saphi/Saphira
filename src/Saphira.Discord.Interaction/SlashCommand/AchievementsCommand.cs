@@ -22,7 +22,7 @@ public class AchievementsCommand(ISaphiApiClient client) : BaseCommand
 
     [SlashCommand("achievements", "Show a player's achievements")]
     public async Task HandleCommand(
-        [Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] string player
+        [Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] int player
         )
     {
         await DeferAsync();

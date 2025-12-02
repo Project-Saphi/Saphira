@@ -5,7 +5,7 @@ namespace Saphira.Saphi.Game.Matchup;
 
 public class PlayerMatchupCalculator(ISaphiApiClient client)
 {
-    public async Task<PlayerMatchupCalculationResult> GeneratePlayerMatchup(string player1, string player2, string category)
+    public async Task<PlayerMatchupCalculationResult> GeneratePlayerMatchup(int player1, int player2, int category)
     {
         if (player1 == player2)
         {
@@ -141,7 +141,7 @@ public class PlayerMatchupCalculator(ISaphiApiClient client)
         );
     }
 
-    private async Task<List<PlayerPB>> FetchPlayerPBsAsync(string playerId)
+    private async Task<List<PlayerPB>> FetchPlayerPBsAsync(int playerId)
     {
         var result = await client.GetPlayerPBsAsync(playerId);
 
@@ -153,7 +153,7 @@ public class PlayerMatchupCalculator(ISaphiApiClient client)
         return result.Response.Data;
     }
 
-    private async Task<Category?> FetchCategory(string categoryId)
+    private async Task<Category?> FetchCategory(int categoryId)
     {
         var result = await client.GetCategoriesAsync();
 
@@ -162,6 +162,6 @@ public class PlayerMatchupCalculator(ISaphiApiClient client)
             return null;
         }
 
-        return result.Response.Data.Where(c => c.Id == int.Parse(categoryId)).FirstOrDefault();
+        return result.Response.Data.Where(c => c.Id == categoryId).FirstOrDefault();
     }
 }

@@ -25,9 +25,9 @@ public class MatchupCommand(PlayerMatchupCalculator playerMatchupGenerator) : Ba
 
     [SlashCommand("matchup", "Show the matchup between 2 players for a category")]
     public async Task HandleCommand(
-        [Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] string player1,
-        [Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] string player2,
-        [Autocomplete(typeof(GenericAutocompleteHandler<CategoryValueProvider>))] string category
+        [Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] int player1,
+        [Autocomplete(typeof(GenericAutocompleteHandler<PlayerValueProvider>))] int player2,
+        [Autocomplete(typeof(GenericAutocompleteHandler<CategoryValueProvider>))] int category
         )
     {
         await DeferAsync();

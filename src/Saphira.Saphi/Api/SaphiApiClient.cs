@@ -42,15 +42,15 @@ public class SaphiApiClient : ISaphiApiClient
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
-    public async Task<SaphiApiResult<GetCustomTrackResponse>> GetCustomTrackAsync(string trackId, TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
+    public async Task<SaphiApiResult<GetCustomTrackResponse>> GetCustomTrackAsync(int trackId, TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
         forceRefresh
-            ? await GetAsync<GetCustomTrackResponse>(SaphiApiEndpoint.GetCustomTrack, new Dictionary<string, string>
+            ? await GetAsync<GetCustomTrackResponse>(SaphiApiEndpoint.GetCustomTrack, new Dictionary<string, object>
             {
-                { "track_id", trackId  },
+                { "track_id", trackId },
             })
             : await GetCachedAsync(
                 $"api:custom_track:{trackId}",
-                () => GetAsync<GetCustomTrackResponse>(SaphiApiEndpoint.GetCustomTrack, new Dictionary<string, string>
+                () => GetAsync<GetCustomTrackResponse>(SaphiApiEndpoint.GetCustomTrack, new Dictionary<string, object>
                 {
                     { "track_id", trackId }
                 }),
@@ -66,31 +66,31 @@ public class SaphiApiClient : ISaphiApiClient
                 cacheDuration ?? DefaultCacheDuration.CustomTrack
             );
 
-    public async Task<SaphiApiResult<GetPlayerPBsResponse>> GetPlayerPBsAsync(string playerId, TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
+    public async Task<SaphiApiResult<GetPlayerPBsResponse>> GetPlayerPBsAsync(int playerId, TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
         forceRefresh
-            ? await GetAsync<GetPlayerPBsResponse>(SaphiApiEndpoint.GetPlayerPBs, new Dictionary<string, string>
+            ? await GetAsync<GetPlayerPBsResponse>(SaphiApiEndpoint.GetPlayerPBs, new Dictionary<string, object>
             {
                 { "player_id", playerId }
             })
             : await GetCachedAsync(
                 $"api:player_pbs:{playerId}",
-                () => GetAsync<GetPlayerPBsResponse>(SaphiApiEndpoint.GetPlayerPBs, new Dictionary<string, string>
+                () => GetAsync<GetPlayerPBsResponse>(SaphiApiEndpoint.GetPlayerPBs, new Dictionary<string, object>
                 {
                     { "player_id", playerId }
                 }),
                 cacheDuration ?? DefaultCacheDuration.PlayerPB
             );
 
-    public async Task<SaphiApiResult<GetTrackLeaderboardResponse>> GetTrackLeaderboardAsync(string trackId, string categoryId, TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
+    public async Task<SaphiApiResult<GetTrackLeaderboardResponse>> GetTrackLeaderboardAsync(int trackId, int categoryId, TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
         forceRefresh
-            ? await GetAsync<GetTrackLeaderboardResponse>(SaphiApiEndpoint.GetTrackLeaderboard, new Dictionary<string, string>
+            ? await GetAsync<GetTrackLeaderboardResponse>(SaphiApiEndpoint.GetTrackLeaderboard, new Dictionary<string, object>
             {
                 { "id", trackId },
                 { "type", categoryId }
             })
             : await GetCachedAsync(
                 $"api:track_leaderboard:{trackId}:{categoryId}",
-                () => GetAsync<GetTrackLeaderboardResponse>(SaphiApiEndpoint.GetTrackLeaderboard, new Dictionary<string, string>
+                () => GetAsync<GetTrackLeaderboardResponse>(SaphiApiEndpoint.GetTrackLeaderboard, new Dictionary<string, object>
                 {
                     { "id", trackId },
                     { "type", categoryId }
@@ -100,27 +100,27 @@ public class SaphiApiClient : ISaphiApiClient
 
     public async Task<SaphiApiResult<GetRecentSubmissionsResponse>> GetRecentSubmissionsAsync(
         string? timeFilter = null,
-        string? trackId = null,
-        string? categoryId = null,
-        string? userId = null,
+        int? trackId = null,
+        int? categoryId = null,
+        int? userId = null,
         TimeSpan? cacheDuration = null,
         bool forceRefresh = false)
     {
-        var queryParams = new Dictionary<string, string>();
+        var queryParams = new Dictionary<string, object>();
 
         if (!string.IsNullOrWhiteSpace(timeFilter))
             queryParams["time_filter"] = timeFilter;
 
-        if (!string.IsNullOrWhiteSpace(trackId))
-            queryParams["track_id"] = trackId;
+        if (trackId.HasValue)
+            queryParams["track_id"] = trackId.Value;
 
-        if (!string.IsNullOrWhiteSpace(categoryId))
-            queryParams["category_id"] = categoryId;
+        if (categoryId.HasValue)
+            queryParams["category_id"] = categoryId.Value;
 
-        if (!string.IsNullOrWhiteSpace(userId))
-            queryParams["user_id"] = userId;
+        if (userId.HasValue)
+            queryParams["user_id"] = userId.Value;
 
-        var cacheKey = $"api:recent_submissions:{timeFilter ?? "24h"}:{trackId ?? "all"}:{categoryId ?? "all"}:{userId ?? "all"}";
+        var cacheKey = $"api:recent_submissions:{timeFilter ?? "24h"}:{trackId?.ToString() ?? "all"}:{categoryId?.ToString() ?? "all"}:{userId?.ToString() ?? "all"}";
 
         return forceRefresh
             ? await GetAsync<GetRecentSubmissionsResponse>(SaphiApiEndpoint.GetRecentSubmissions, queryParams)
@@ -131,15 +131,15 @@ public class SaphiApiClient : ISaphiApiClient
             );
     }
 
-    public async Task<SaphiApiResult<GetUserProfileResponse>> GetUserProfileAsync(string userId, TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
+    public async Task<SaphiApiResult<GetUserProfileResponse>> GetUserProfileAsync(int userId, TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
         forceRefresh
-            ? await GetAsync<GetUserProfileResponse>(SaphiApiEndpoint.GetUserProfile, new Dictionary<string, string>
+            ? await GetAsync<GetUserProfileResponse>(SaphiApiEndpoint.GetUserProfile, new Dictionary<string, object>
             {
                 { "user_id", userId }
             })
             : await GetCachedAsync(
                 $"api:user_profile:{userId}",
-                () => GetAsync<GetUserProfileResponse>(SaphiApiEndpoint.GetUserProfile, new Dictionary<string, string>
+                () => GetAsync<GetUserProfileResponse>(SaphiApiEndpoint.GetUserProfile, new Dictionary<string, object>
                 {
                     { "user_id", userId }
                 }),
@@ -191,7 +191,7 @@ public class SaphiApiClient : ISaphiApiClient
                 cacheDuration ?? DefaultCacheDuration.Players
             );
 
-    private string BuildUrlWithQuery(string endpoint, Dictionary<string, string>? queryParams)
+    private string BuildUrlWithQuery(string endpoint, Dictionary<string, object>? queryParams)
     {
         if (queryParams == null || queryParams.Count == 0)
             return endpoint;
@@ -199,7 +199,7 @@ public class SaphiApiClient : ISaphiApiClient
         var query = HttpUtility.ParseQueryString(string.Empty);
         foreach (var param in queryParams)
         {
-            query[param.Key] = param.Value;
+            query[param.Key] = param.Value.ToString();
         }
 
         return $"{endpoint}?{query}";
@@ -269,7 +269,7 @@ public class SaphiApiClient : ISaphiApiClient
         }
     }
 
-    private async Task<SaphiApiResult<T>> GetAsync<T>(string endpoint, Dictionary<string, string> queryParams)
+    private async Task<SaphiApiResult<T>> GetAsync<T>(string endpoint, Dictionary<string, object> queryParams)
     {
         var url = BuildUrlWithQuery(endpoint, queryParams);
         return await GetAsync<T>(url);
