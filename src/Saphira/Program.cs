@@ -121,7 +121,6 @@ public class Program
             .AddTransient<RestrictedContentDetector>()
             .AddTransient<PlayerMatchupCalculator>()
             .AddTransient<TwitchClient>()
-            .AddTransient<SubmissionAnalyzer>()
             .AddTransient<StandardCalculator>()
             .AddHttpClient()
             .AddMemoryCache()

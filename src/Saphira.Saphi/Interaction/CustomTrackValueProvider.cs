@@ -19,6 +19,6 @@ public class CustomTrackValueProvider(ISaphiApiClient client, IMessageLogger log
             return [];
         }
 
-        return [.. result.Response.Data.Select(ct => new Value(int.Parse(ct.Id), ct.Name))];
+        return [.. result.Response.Data.Select(ct => new Value(ct.Id, ct.Name))];
     }
 }

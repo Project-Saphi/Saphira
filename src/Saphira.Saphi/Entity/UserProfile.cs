@@ -5,7 +5,7 @@ namespace Saphira.Saphi.Entity;
 public class UserProfile
 {
     [JsonPropertyName("id")]
-    public string Id { get; set; }
+    public int Id { get; set; }
 
     [JsonPropertyName("username")]
     public string Username { get; set; }

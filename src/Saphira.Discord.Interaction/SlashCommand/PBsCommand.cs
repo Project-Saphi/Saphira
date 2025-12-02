@@ -10,13 +10,14 @@ using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
 using Saphira.Saphi.Game;
 using Saphira.Saphi.Interaction;
+using System.Text;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
 
 [RequireCooldownExpired(15)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class PBsCommand(ISaphiApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+public class PBsCommand(ISaphiApiClient client, StandardCalculator standardCalculator, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
     private readonly int EntriesPerPage = 20;
 
@@ -35,29 +36,42 @@ public class PBsCommand(ISaphiApiClient client, PaginationComponentHandler pagin
     {
         await DeferAsync();
 
-        var result = await client.GetPlayerPBsAsync(player);
+        var playerPBsResult = await client.GetPlayerPBsAsync(player);
 
-        if (!result.Success || result.Response == null)
+        if (!playerPBsResult.Success || playerPBsResult.Response == null)
         {
-            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve personal best times: {result.ErrorMessage ?? "Unknown error"}");
+            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve personal best times: {playerPBsResult.ErrorMessage ?? "Unknown error"}");
             await FollowupAsync(embed: errorAlert.Build());
             return;
         }
 
-        if (result.Response.Data.Count == 0)
+        if (playerPBsResult.Response.Data.Count == 0)
         {
             var warningAlert = new WarningAlertEmbedBuilder("This player doesn't have any PBs set yet.");
             await FollowupAsync(embed: warningAlert.Build());
             return;
         }
 
-        var playerPBs = result.Response.Data;
+        // In theory the PlayerPB object is disconnected from the custom track itself
+        // but we need the standards, so ... eh
+        var customTrackResult = await client.GetCustomTracksAsync();
+
+        if (!customTrackResult.Success || customTrackResult.Response == null)
+        {
+            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve personal best times: {customTrackResult.ErrorMessage ?? "Unknown error"}");
+            await FollowupAsync(embed: errorAlert.Build());
+            return;
+        }
+
+        var playerPBs = playerPBsResult.Response.Data;
+        var customTracks = customTrackResult.Response.Data;
+
         var playerName = playerPBs.First().Holder;
 
         var paginationBuilder = new PaginationBuilder<PlayerPB>(paginationComponentHandler)
             .WithItems(playerPBs)
             .WithPageSize(EntriesPerPage)
-            .WithRenderPageCallback((pagePBs, pageNumber) => GetEmbedForPage(playerName, pagePBs, pageNumber))
+            .WithRenderPageCallback((pagePBs, pageNumber) => GetEmbedForPage(customTracks, playerName, pagePBs, pageNumber))
             .WithFilter((component) => Task.FromResult(new PaginationFilterResult(component.User.Id == Context.User.Id)));
 
         var (embed, components) = paginationBuilder.Build();
@@ -65,14 +79,16 @@ public class PBsCommand(ISaphiApiClient client, PaginationComponentHandler pagin
         await FollowupAsync(embed: embed, components: components);
     }
 
-    private EmbedBuilder GetEmbedForPage(string playerName, List<PlayerPB> pagePBs, int pageNumber)
+    private EmbedBuilder GetEmbedForPage(List<CustomTrack> customTracks, string playerName, List<PlayerPB> pagePBs, int pageNumber)
     {
+        var pbData = GetPBData(customTracks, pagePBs);
+
         var embed = new EmbedBuilder()
             .WithAuthor($"[Page {pageNumber}] {playerName}'s personal best times");
 
-        AddEmbedField(embed, ":motorway:", "Track", GetCustomTracks(pagePBs));
-        AddEmbedField(embed, ":stadium:", "Category", GetCategories(pagePBs));
-        AddEmbedField(embed, ":stopwatch:", "Time", GetTimes(pagePBs));
+        AddEmbedField(embed, ":motorway:", "Track", pbData["tracks"]);
+        AddEmbedField(embed, ":stadium:", "Category", pbData["categories"]);
+        AddEmbedField(embed, ":stopwatch:", "Time", pbData["times"]);
 
         return embed;
     }
@@ -85,12 +101,67 @@ public class PBsCommand(ISaphiApiClient client, PaginationComponentHandler pagin
             .WithIsInline(true));
     }
 
-    private List<string> GetCustomTracks(List<PlayerPB> pbs) =>
-        [.. pbs.Select(p => MessageTextFormat.Bold(p.TrackName))];
+    private Dictionary<string, List<string>> GetPBData(List<CustomTrack> customTracks, List<PlayerPB> playerPBs)
+    {
+        var dict = new Dictionary<string, List<string>>()
+        {
+            { "tracks", [] },
+            { "categories", [] },
+            { "times", [] }
+        };
 
-    private List<string> GetCategories(List<PlayerPB> pbs) =>
-    [.. pbs.Select(p => MessageTextFormat.Bold(p.CategoryName))];
+        foreach (var playerPB in playerPBs)
+        {
+            var customTrack = customTracks.FirstOrDefault(x => x.Id == playerPB.TrackId);
 
-    private List<string> GetTimes(List<PlayerPB> pbs) =>
-        [.. pbs.Select(p => $"{RankFormatter.ToMedalFormat(int.Parse(p.Rank))} - {ScoreFormatter.AsHumanTime(p.Time)} {CharacterEmoteMapper.MapCharacterToEmote(p.CharacterName)}")];
+            if (customTrack == null)
+            {
+                // not sure what to do in that case, probably just skip the track
+                continue;
+            }
+
+            dict["tracks"].Add(BuildTrackString(playerPB));
+            dict["categories"].Add(BuildCategoryString(customTrack, playerPB));
+            dict["times"].Add(BuildTimeString(playerPB));
+        }
+
+        return dict;
+    }
+
+    private string BuildTrackString(PlayerPB playerPB)
+    {
+        return new StringBuilder()
+            .Append(RankFormatter.ToMedalFormat(playerPB.Rank))
+            .Append(' ')
+            .Append(MessageTextFormat.Bold(playerPB.TrackName))
+            .ToString();
+    }
+
+    private string BuildCategoryString(CustomTrack customTrack, PlayerPB playerPB)
+    {
+        var standard = standardCalculator.CalculateStandard(customTrack, playerPB.CategoryId, playerPB.Time);
+        var standardEmote = standard != null ? TierEmoteMapper.MapTierToEmote(standard.TierId.ToString()) : null;
+
+        var categoryString = new StringBuilder();
+
+        if (standardEmote != null)
+        {
+            categoryString
+                .Append(standardEmote)
+                .Append(' ');
+        }
+
+        return categoryString
+            .Append(MessageTextFormat.Bold(playerPB.CategoryName))
+            .ToString();
+    }
+
+    private string BuildTimeString(PlayerPB playerPB)
+    {
+        return new StringBuilder()
+            .Append(CharacterEmoteMapper.MapCharacterToEmote(playerPB.CharacterName))
+            .Append(' ')
+            .Append(ScoreFormatter.AsHumanTime(playerPB.Time))
+            .ToString();
+    }
 }

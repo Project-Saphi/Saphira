@@ -19,7 +19,7 @@ namespace Saphira.Discord.Interaction.SlashCommand;
 [RequireCommandAllowedChannel]
 public class LeaderboardCommand(ISaphiApiClient client, StandardCalculator standardCalculator, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
-    private readonly int EntriesPerPage = 20;
+    private readonly int EntriesPerPage = 15;
 
     public override SlashCommandMetadata GetMetadata()
     {
@@ -37,25 +37,34 @@ public class LeaderboardCommand(ISaphiApiClient client, StandardCalculator stand
     {
         await DeferAsync();
 
-        var result = await client.GetTrackLeaderboardAsync(track, category);
+        var leaderboardResult = await client.GetTrackLeaderboardAsync(track, category);
 
-        if (!result.Success || result.Response == null)
+        if (!leaderboardResult.Success || leaderboardResult.Response == null)
         {
-            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve leaderboard: {result.ErrorMessage ?? "Unknown error"}");
+            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve leaderboard: {leaderboardResult.ErrorMessage ?? "Unknown error"}");
             await FollowupAsync(embed: errorAlert.Build());
             return;
         }
 
-        var customTrack = await FindCustomTrack(track);
+        var customTrackResult = await client.GetCustomTrackAsync(track);
 
-        if (result.Response.Data.Count == 0 || customTrack == null)
+        if (!customTrackResult.Success || customTrackResult.Response == null)
+        {
+            var errorAlert = new ErrorAlertEmbedBuilder($"There is no custom track with id {track}.");
+            await FollowupAsync(embed: errorAlert.Build());
+            return;
+        }
+
+        var customTrack = customTrackResult.Response.Data;
+
+        if (leaderboardResult.Response.Data.Count == 0 || customTrackResult == null)
         {
             var warningAlert = new WarningAlertEmbedBuilder($"Nobody has set a time on {customTrack?.Name ?? "Unknown"} yet.");
             await FollowupAsync(embed: warningAlert.Build());
             return;
         }
 
-        var leaderboardEntries = result.Response.Data;
+        var leaderboardEntries = leaderboardResult.Response.Data;
 
         var paginationBuilder = new PaginationBuilder<TrackLeaderboardEntry>(paginationComponentHandler)
             .WithItems(leaderboardEntries)
@@ -102,17 +111,31 @@ public class LeaderboardCommand(ISaphiApiClient client, StandardCalculator stand
 
         foreach (var entry in entries)
         {
-            dict["placements"].Add(BuildPlacementString(entry));
+            dict["placements"].Add(BuildPlacementString(customTrack, entry));
             dict["players"].Add(BuildPlayerString(entry));
-            dict["times"].Add(BuildTimeString(customTrack, entry));
+            dict["times"].Add(BuildTimeString(entry));
         }
 
         return dict;
     }
 
-    private string BuildPlacementString(TrackLeaderboardEntry entry)
+    private string BuildPlacementString(CustomTrack customTrack, TrackLeaderboardEntry entry)
     {
-        return new StringBuilder().Append(RankFormatter.ToMedalFormat(entry.Rank)).ToString();
+        var standard = standardCalculator.CalculateStandard(customTrack, entry.CategoryId, entry.MinScore);
+        var standardEmote = standard != null ? TierEmoteMapper.MapTierToEmote(standard.TierId.ToString()) : null;
+
+        var placementString = new StringBuilder();
+
+        if (standardEmote != null)
+        {
+            placementString
+                .Append(standardEmote)
+                .Append(' ');
+        }
+
+        return placementString
+            .Append(RankFormatter.ToMedalFormat(entry.Rank))
+            .ToString();
     }
 
     private string BuildPlayerString(TrackLeaderboardEntry entry)
@@ -124,36 +147,12 @@ public class LeaderboardCommand(ISaphiApiClient client, StandardCalculator stand
             .ToString();
     }
 
-    private string BuildTimeString(CustomTrack customTrack, TrackLeaderboardEntry entry)
+    private string BuildTimeString(TrackLeaderboardEntry entry)
     {
-        var standard = standardCalculator.CalculateStandard(customTrack, entry.CategoryId, entry.MinScore);
-        var standardEmote = standard != null ? TierEmoteMapper.MapTierToEmote(standard.TierId) : null;
-
-        var timeString = new StringBuilder();
-
-        if (standardEmote != null)
-        {
-            timeString
-                .Append(standardEmote)
-                .Append(' ');
-        }
-
-        return timeString
-            .Append(ScoreFormatter.AsHumanTime(entry.MinScore))
-            .Append(' ')
+        return new StringBuilder()
             .Append(CharacterEmoteMapper.MapCharacterToEmote(entry.CharacterName))
+            .Append(' ')
+            .Append(ScoreFormatter.AsHumanTime(entry.MinScore))
             .ToString();
-    }
-
-    private async Task<CustomTrack?> FindCustomTrack(string trackId)
-    {
-        var result = await client.GetCustomTracksAsync();
-
-        if (!result.Success || result.Response == null)
-        {
-            return null;
-        }
-
-        return result.Response.Data.FirstOrDefault(customTrack => customTrack.Id == trackId);
     }
 }

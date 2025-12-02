@@ -5,7 +5,7 @@ namespace Saphira.Saphi.Entity;
 public class CustomTrack
 {
     [JsonPropertyName("id")]
-    public string Id { get; set; }
+    public int Id { get; set; }
 
     [JsonPropertyName("name")]
     public string Name { get; set; }
@@ -14,16 +14,19 @@ public class CustomTrack
     public string Author { get; set; }
 
     [JsonPropertyName("crc32_hash")]
-    public string Crc32Hash { get; set; }
+    public long Crc32Hash { get; set; }
 
     [JsonPropertyName("has_files")]
-    public string HasFiles { get; set; }
+    public int HasFiles { get; set; }
 
     [JsonPropertyName("file_1_name")]
     public string? File1Name { get; set; }
 
     [JsonPropertyName("file_2_name")]
     public string? File2Name { get; set; }
+
+    [JsonPropertyName("submission_count")]
+    public int SubmissionCount { get; set; }
 
     [JsonPropertyName("standards")]
     public List<CustomTrackStandard>? Standards { get; set; }

@@ -21,4 +21,10 @@ public class Player
 
     [JsonPropertyName("country_name")]
     public string CountryName { get; set; }
+
+    [JsonPropertyName("status")]
+    public int Status { get; set; }
+
+    [JsonPropertyName("discord")]
+    public string? Discord { get; set; }
 }

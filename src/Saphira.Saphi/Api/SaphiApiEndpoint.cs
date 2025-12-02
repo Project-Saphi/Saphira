@@ -2,6 +2,7 @@
 
 public class SaphiApiEndpoint
 {
+    public static readonly string GetCustomTrack = "get-custom-track.php";
     public static readonly string GetCustomTracks = "custom-tracks.php";
     public static readonly string GetPlayerPBs = "player-pbs.php";
     public static readonly string GetTrackLeaderboard = "track-leaderboards.php";

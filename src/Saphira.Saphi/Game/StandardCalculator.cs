@@ -4,7 +4,7 @@ namespace Saphira.Saphi.Game;
 
 public class StandardCalculator
 {
-    public CustomTrackStandard? CalculateStandard(CustomTrack customTrack, string category, string time)
+    public CustomTrackStandard? CalculateStandard(CustomTrack customTrack, int category, int time)
     {
         CustomTrackStandard? customTrackStandard = null;
 
@@ -17,7 +17,7 @@ public class StandardCalculator
 
         foreach (var standard in standards)
         {
-            if (int.Parse(time) < int.Parse(standard.Time))
+            if (time < standard.Time)
             {
                 customTrackStandard = standard;
                 break;

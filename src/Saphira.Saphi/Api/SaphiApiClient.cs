@@ -42,6 +42,21 @@ public class SaphiApiClient : ISaphiApiClient
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
+    public async Task<SaphiApiResult<GetCustomTrackResponse>> GetCustomTrackAsync(string trackId, TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
+        forceRefresh
+            ? await GetAsync<GetCustomTrackResponse>(SaphiApiEndpoint.GetCustomTrack, new Dictionary<string, string>
+            {
+                { "track_id", trackId  },
+            })
+            : await GetCachedAsync(
+                $"api:custom_track:{trackId}",
+                () => GetAsync<GetCustomTrackResponse>(SaphiApiEndpoint.GetCustomTrack, new Dictionary<string, string>
+                {
+                    { "track_id", trackId }
+                }),
+                cacheDuration ?? DefaultCacheDuration.CustomTrack
+            );
+
     public async Task<SaphiApiResult<GetCustomTracksResponse>> GetCustomTracksAsync(TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
         forceRefresh
             ? await GetAsync<GetCustomTracksResponse>(SaphiApiEndpoint.GetCustomTracks)

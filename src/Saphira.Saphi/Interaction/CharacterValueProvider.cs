@@ -19,6 +19,6 @@ public class CharacterValueProvider(ISaphiApiClient client, IMessageLogger logge
             return [];
         }
 
-        return [.. result.Response.Data.Select(c => new Value(int.Parse(c.Id), c.Name))];
+        return [.. result.Response.Data.Select(c => new Value(c.Id, c.Name))];
     }
 }

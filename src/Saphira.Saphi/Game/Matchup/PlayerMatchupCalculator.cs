@@ -42,11 +42,11 @@ public class PlayerMatchupCalculator(ISaphiApiClient client)
         var playerRecordComparisons = new List<PlayerRecordComparison>();
 
         var player1PBDict = player1PBs
-            .Where(pb => pb.CategoryId == categoryEntity.Id.ToString())
+            .Where(pb => pb.CategoryId == categoryEntity.Id)
             .ToDictionary(pb => pb.TrackName, pb => pb);
 
         var player2PBDict = player2PBs
-            .Where(pb => pb.CategoryId == categoryEntity.Id.ToString())
+            .Where(pb => pb.CategoryId == categoryEntity.Id)
             .ToDictionary(pb => pb.TrackName, pb => pb);
 
         var commonTracks = player1PBDict.Keys.Intersect(player2PBDict.Keys).ToList();
@@ -64,8 +64,8 @@ public class PlayerMatchupCalculator(ISaphiApiClient client)
             var player1PB = player1PBDict[track];
             var player2PB = player2PBDict[track];
 
-            var player1TimeInSeconds = int.Parse(player1PB.Time);
-            var player2TimeInSeconds = int.Parse(player2PB.Time);
+            var player1TimeInSeconds = player1PB.Time;
+            var player2TimeInSeconds = player2PB.Time;
 
             PlayerRecordComparison comparison;
 

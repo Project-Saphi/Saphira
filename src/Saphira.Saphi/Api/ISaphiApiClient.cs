@@ -4,6 +4,8 @@ namespace Saphira.Saphi.Api;
 
 public interface ISaphiApiClient
 {
+    public Task<SaphiApiResult<GetCustomTrackResponse>> GetCustomTrackAsync(string trackId, TimeSpan? cacheDuration = null, bool forceRefresh = false);
+
     public Task<SaphiApiResult<GetCustomTracksResponse>> GetCustomTracksAsync(TimeSpan? cacheDuration = null, bool forceRefresh = false);
 
     public Task<SaphiApiResult<GetPlayerPBsResponse>> GetPlayerPBsAsync(string playerId, TimeSpan? cacheDuration = null, bool forceRefresh = false);

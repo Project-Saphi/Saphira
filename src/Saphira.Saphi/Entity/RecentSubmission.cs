@@ -17,7 +17,7 @@ public class RecentSubmission
     public int CountryId { get; set; }
 
     [JsonPropertyName("country_name")]
-    public string CountryName { get; set; }
+    public string? CountryName { get; set; }
 
     [JsonPropertyName("track_id")]
     public int TrackId { get; set; }
@@ -48,4 +48,7 @@ public class RecentSubmission
 
     [JsonPropertyName("submit_date")]
     public string SubmitDate { get; set; }
+
+    [JsonPropertyName("is_wr")]
+    public bool IsWr { get; set; }
 }

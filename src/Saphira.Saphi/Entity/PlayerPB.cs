@@ -5,22 +5,22 @@ namespace Saphira.Saphi.Entity;
 public class PlayerPB
 {
     [JsonPropertyName("id")]
-    public string Id { get; set; }
+    public int Id { get; set; }
 
     [JsonPropertyName("track_id")]
-    public string TrackId { get; set; }
+    public int TrackId { get; set; }
 
     [JsonPropertyName("track_name")]
     public string TrackName { get; set; }
 
     [JsonPropertyName("category_id")]
-    public string CategoryId { get; set; }
+    public int CategoryId { get; set; }
 
     [JsonPropertyName("category_name")]
     public string CategoryName { get; set; }
 
     [JsonPropertyName("character_id")]
-    public string CharacterId { get; set; }
+    public int CharacterId { get; set; }
 
     [JsonPropertyName("character_name")]
     public string CharacterName { get; set; }
@@ -29,7 +29,7 @@ public class PlayerPB
     public string EngineName { get; set; }
 
     [JsonPropertyName("time")]
-    public string Time { get; set; }
+    public int Time { get; set; }
 
     [JsonPropertyName("date")]
     public string Date { get; set; }
@@ -38,11 +38,11 @@ public class PlayerPB
     public string Holder { get; set; }
 
     [JsonPropertyName("country_id")]
-    public string CountryId { get; set; }
+    public int CountryId { get; set; }
 
     [JsonPropertyName("country_name")]
     public string CountryName { get; set; }
 
     [JsonPropertyName("rank")]
-    public string Rank { get; set; }
+    public int Rank { get; set; }
 }

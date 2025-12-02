@@ -29,29 +29,28 @@ public class TracksCommand(ISaphiApiClient client, PaginationComponentHandler pa
     {
         await DeferAsync();
 
-        var result = await client.GetCustomTracksAsync();
+        var customTracksResult = await client.GetCustomTracksAsync();
 
-        if (!result.Success || result.Response == null)
+        if (!customTracksResult.Success || customTracksResult.Response == null)
         {
-            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve custom track list: {result.ErrorMessage ?? "Unknown error"}");
+            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve custom track list: {customTracksResult.ErrorMessage ?? "Unknown error"}");
             await FollowupAsync(embed: errorAlert.Build());
             return;
         }
 
-        if (result.Response.Data.Count == 0)
+        if (customTracksResult.Response.Data.Count == 0)
         {
             var warningAlert = new WarningAlertEmbedBuilder("There are no custom tracks supported yet.");
             await FollowupAsync(embed:  warningAlert.Build());
             return;
         }
 
-        var customTracks = result.Response.Data;
-        var submissionCounts = await CountSubmissions(customTracks);
+        var customTracks = customTracksResult.Response.Data;
 
         var paginationBuilder = new PaginationBuilder<CustomTrack>(paginationComponentHandler)
             .WithItems(customTracks)
             .WithPageSize(EntriesPerPage)
-            .WithRenderPageCallback((pageTracks, pageNumber) => GetEmbedForPage(pageTracks, pageNumber, submissionCounts))
+            .WithRenderPageCallback((pageTracks, pageNumber) => GetEmbedForPage(pageTracks, pageNumber))
             .WithFilter((component) => Task.FromResult(new PaginationFilterResult(component.User.Id == Context.User.Id)));
 
         var (embed, components) = paginationBuilder.Build();
@@ -59,9 +58,9 @@ public class TracksCommand(ISaphiApiClient client, PaginationComponentHandler pa
         await FollowupAsync(embed: embed, components: components);
     }
 
-    private EmbedBuilder GetEmbedForPage(List<CustomTrack> pageTracks, int pageNumber, Dictionary<string, int> submissionCounts)
+    private EmbedBuilder GetEmbedForPage(List<CustomTrack> pageTracks, int pageNumber)
     {
-        var customTracksData = GetCustomTracksData(pageTracks, submissionCounts);
+        var customTracksData = GetCustomTracksData(pageTracks);
 
         var embed = new EmbedBuilder()
             .WithAuthor($"[Page {pageNumber}] Custom Track List");
@@ -73,7 +72,7 @@ public class TracksCommand(ISaphiApiClient client, PaginationComponentHandler pa
         return embed;
     }
 
-    private Dictionary<string, List<string>> GetCustomTracksData(List<CustomTrack> customTracks, Dictionary<string, int> submissionCounts)
+    private Dictionary<string, List<string>> GetCustomTracksData(List<CustomTrack> customTracks)
     {
         var data = new Dictionary<string, List<string>>()
         {
@@ -85,7 +84,7 @@ public class TracksCommand(ISaphiApiClient client, PaginationComponentHandler pa
         foreach (var track in customTracks)
         {
             data["ids"].Add($"#{track.Id}");
-            data["names"].Add($"{MessageTextFormat.Bold(track.Name)} ({submissionCounts[track.Id]})");
+            data["names"].Add($"{MessageTextFormat.Bold(track.Name)} ({track.SubmissionCount})");
             data["creators"].Add(track.Author);
         }
 
@@ -98,41 +97,5 @@ public class TracksCommand(ISaphiApiClient client, PaginationComponentHandler pa
             .WithName($"{emote} {MessageTextFormat.Bold(title)}")
             .WithValue(string.Join("\n", content))
             .WithIsInline(true));
-    }
-
-    private async Task<Dictionary<string, int>> CountSubmissions(List<CustomTrack> customTracks)
-    {
-        var count = new Dictionary<string, int>();
-
-        var categoryResult = await client.GetCategoriesAsync();
-
-        if (!categoryResult.Success || categoryResult.Response == null)
-        {
-            return count;
-        }
-
-        var categories = categoryResult.Response.Data;
-
-        foreach (var category in categories)
-        {
-            foreach (var track in customTracks)
-            {
-                if (!count.ContainsKey(track.Id))
-                {
-                    count[track.Id] = 0;
-                }
-
-                var leaderboardResult = await client.GetTrackLeaderboardAsync(track.Id.ToString(), category.Id.ToString());
-
-                if (!leaderboardResult.Success || leaderboardResult.Response == null)
-                {
-                    continue; 
-                }
-
-                count[track.Id] += leaderboardResult.Response.Data.Count;
-            }
-        }
-
-        return count;
     }
 }

@@ -27,17 +27,17 @@ public class AchievementsCommand(ISaphiApiClient client) : BaseCommand
     {
         await DeferAsync();
 
-        var result = await client.GetUserProfileAsync(player);
+        var userProfileResult = await client.GetUserProfileAsync(player);
 
-        if (!result.Success || result.Response == null)
+        if (!userProfileResult.Success || userProfileResult.Response == null)
         {
-            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve user profile: {result.ErrorMessage ?? "Unknown error"}");
+            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve user profile: {userProfileResult.ErrorMessage ?? "Unknown error"}");
             await FollowupAsync(embed: errorAlert.Build());
             return;
         }
 
-        var stats = result.Response.Data.Stats;
-        var country = result.Response.Data.Country;
+        var stats = userProfileResult.Response.Data.Stats;
+        var country = userProfileResult.Response.Data.Country;
 
         var content = new[]
         {
@@ -51,7 +51,7 @@ public class AchievementsCommand(ISaphiApiClient client) : BaseCommand
         var embed = new EmbedBuilder();
         
         var field = new EmbedFieldBuilder()
-            .WithName($"{CountryEmoteMapper.MapCountryToEmote(country.Name)} {result.Response.Data.Username}'s Achievements")
+            .WithName($"{CountryEmoteMapper.MapCountryToEmote(country.Name)} {userProfileResult.Response.Data.Username}'s Achievements")
             .WithValue(string.Join("\n", content));
 
         embed.AddField(field);

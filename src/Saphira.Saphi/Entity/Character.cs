@@ -5,11 +5,11 @@ namespace Saphira.Saphi.Entity;
 public class Character
 {
     [JsonPropertyName("id")]
-    public string Id { get; set; }
+    public int Id { get; set; }
 
     [JsonPropertyName("name")]
     public string Name { get; set; }
 
     [JsonPropertyName("default_engine")]
-    public string DefaultEngine { get; set; }
+    public int DefaultEngine { get; set; }
 }

@@ -13,13 +13,7 @@ using Saphira.Saphi.Game;
 namespace Saphira.Saphi.Cronjob;
 
 [AutoRegister]
-public class SubmissionFeedCronjob(
-    DiscordSocketClient discordClient, 
-    ISaphiApiClient saphiClient, 
-    Configuration configuration, 
-    SubmissionAnalyzer submissionAnalyzer,
-    IMessageLogger logger
-    ) : ICronjob
+public class SubmissionFeedCronjob(DiscordSocketClient discordClient, ISaphiApiClient saphiClient, Configuration configuration, IMessageLogger logger) : ICronjob
 {
     public async Task ExecuteAsync()
     {
@@ -66,14 +60,12 @@ public class SubmissionFeedCronjob(
 
         foreach (var submission in submissions)
         {
-            var isWorldRecord = await submissionAnalyzer.CheckIsWorldRecordAsync(submission);
-
-            var submissionEmbed = GetEmbedForSubmission(submission, isWorldRecord);
+            var submissionEmbed = GetEmbedForSubmission(submission);
             await textChannel.SendMessageAsync(embed: submissionEmbed.Build());
         }
     }
 
-    private EmbedBuilder GetEmbedForSubmission(RecentSubmission submission, bool isWorldRecord)
+    private EmbedBuilder GetEmbedForSubmission(RecentSubmission submission)
     {
         var data = new[]
         {
@@ -89,7 +81,7 @@ public class SubmissionFeedCronjob(
             .WithThumbnailUrl("https://i.imgur.com/esMgq3Y.png")
             .WithTimestamp(DateTimeOffset.Now);
 
-        if (isWorldRecord)
+        if (submission.IsWr)
         {
             embed
                 .WithColor(14530399)

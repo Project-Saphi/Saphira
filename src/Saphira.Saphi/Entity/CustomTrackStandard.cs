@@ -5,11 +5,11 @@ namespace Saphira.Saphi.Entity;
 public class CustomTrackStandard
 {
     [JsonPropertyName("tier_id")]
-    public string TierId { get; set; }
+    public int TierId { get; set; }
 
     [JsonPropertyName("time")]
-    public string Time { get; set; }
+    public int Time { get; set; }
 
     [JsonPropertyName("type")]
-    public string Type { get; set; }
+    public int Type { get; set; }
 }
