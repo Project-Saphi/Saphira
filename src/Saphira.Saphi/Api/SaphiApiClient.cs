@@ -46,13 +46,13 @@ public class SaphiApiClient : ISaphiApiClient
         forceRefresh
             ? await GetAsync<GetCustomTrackResponse>(SaphiApiEndpoint.GetCustomTrack, new Dictionary<string, object>
             {
-                { "track_id", trackId },
+                { "id", trackId },
             })
             : await GetCachedAsync(
                 $"api:custom_track:{trackId}",
                 () => GetAsync<GetCustomTrackResponse>(SaphiApiEndpoint.GetCustomTrack, new Dictionary<string, object>
                 {
-                    { "track_id", trackId }
+                    { "id", trackId }
                 }),
                 cacheDuration ?? DefaultCacheDuration.CustomTrack
             );
@@ -72,7 +72,7 @@ public class SaphiApiClient : ISaphiApiClient
         TimeSpan? cacheDuration = null,
         bool forceRefresh = false)
     {
-        var queryParams = new Dictionary<string, object> { { "player_id", playerId } };
+        var queryParams = new Dictionary<string, object> { { "id", playerId } };
 
         if (trackId.HasValue)
             queryParams["track_id"] = trackId.Value;
@@ -275,10 +275,12 @@ public class SaphiApiClient : ISaphiApiClient
             );
     }
 
-    private string BuildUrlWithQuery(string endpoint, Dictionary<string, object>? queryParams)
+    private string BuildUrlWithQuery(string action, Dictionary<string, object>? queryParams)
     {
+        var baseUrl = $"index.php?controller=api&action={action}";
+
         if (queryParams == null || queryParams.Count == 0)
-            return endpoint;
+            return baseUrl;
 
         var query = HttpUtility.ParseQueryString(string.Empty);
         foreach (var param in queryParams)
@@ -286,23 +288,24 @@ public class SaphiApiClient : ISaphiApiClient
             query[param.Key] = param.Value.ToString();
         }
 
-        return $"{endpoint}?{query}";
+        return $"{baseUrl}&{query}";
     }
 
-    private async Task<SaphiApiResult<T>> GetAsync<T>(string endpoint)
+    private async Task<SaphiApiResult<T>> GetAsync<T>(string action)
     {
+        var url = $"index.php?controller=api&action={action}";
         var stopWatch = new Stopwatch();
 
         try
         {
             stopWatch.Start();
-            _logger.Log(LogSeverity.Debug, "Saphira", $"Calling Saphi API endpoint {endpoint} ...");
+            _logger.Log(LogSeverity.Debug, "Saphira", $"Calling Saphi API endpoint {url} ...");
 
-            var response = await _httpClient.GetAsync(endpoint);
+            var response = await _httpClient.GetAsync(url);
             var content = await response.Content.ReadAsStringAsync();
 
             stopWatch.Stop();
-            _logger.Log(LogSeverity.Debug, "Saphira", $"Response received from Saphi API endpoint {endpoint} in {stopWatch.ElapsedMilliseconds}ms");
+            _logger.Log(LogSeverity.Debug, "Saphira", $"Response received from Saphi API endpoint {url} in {stopWatch.ElapsedMilliseconds}ms");
 
             if (!response.IsSuccessStatusCode)
             {
