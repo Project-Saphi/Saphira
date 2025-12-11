@@ -42,10 +42,12 @@ public class AchievementsCommand(ISaphiApiClient client) : BaseCommand
         var content = new[]
         {
             $"{MessageTextFormat.Bold("Total Points")}: {stats.TotalPoints}",
-            $"{MessageTextFormat.Bold("Course Points")}: {stats.CoursePoints}",
-            $"{MessageTextFormat.Bold("Lap Points")}: {stats.LapPoints}",
+            $"{MessageTextFormat.Bold("Total Time")}: {stats.TotalTimeFormatted}",
             $"{MessageTextFormat.Bold("First Places")}: {stats.FirstPlaces}",
-            $"{MessageTextFormat.Bold("Podium Finishes")}: {stats.PodiumFinishes}"
+            $"{MessageTextFormat.Bold("Podium Finishes")}: {stats.PodiumFinishes}",
+            $"{MessageTextFormat.Bold("Tracks Submitted")}: {stats.TracksSubmitted}",
+            $"{MessageTextFormat.Bold("Average Finish")}: {stats.AvgFinish:F3}",
+            $"{MessageTextFormat.Bold("Average Rank")}: {stats.AvgStandard:F3}"
         };
 
         var embed = new EmbedBuilder();

@@ -1,16 +1,14 @@
-﻿namespace Saphira.Saphi.Api;
+namespace Saphira.Saphi.Api;
 
-public class SaphiApiEndpoint
+public static class SaphiApiEndpoint
 {
-    public static readonly string GetCustomTrack = "get-custom-track";
-    public static readonly string GetCustomTracks = "custom-tracks";
-    public static readonly string GetPlayerPBs = "player-pbs";
-    public static readonly string GetTrackLeaderboard = "track-leaderboards";
-    public static readonly string GetRecentSubmissions = "recent-submissions";
-    public static readonly string GetUserProfile = "user-profile";
-    public static readonly string GetCountries = "countries";
-    public static readonly string GetCharacters = "characters";
-    public static readonly string GetEngineTypes = "engine-types";
-    public static readonly string GetCategories = "types";
-    public static readonly string GetPlayers = "players";
+    public const string Tracks = "api/tracks";
+    public const string Players = "api/players";
+    public const string Leaderboards = "api/leaderboards";
+    public const string Submissions = "api/submissions";
+    public const string Users = "api/users";
+    public const string Countries = "api/countries";
+    public const string Characters = "api/characters";
+    public const string EngineTypes = "api/engine-types";
+    public const string Types = "api/types";
 }

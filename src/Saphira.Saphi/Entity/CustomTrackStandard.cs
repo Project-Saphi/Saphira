@@ -7,6 +7,9 @@ public class CustomTrackStandard
     [JsonPropertyName("tier_id")]
     public int TierId { get; set; }
 
+    [JsonPropertyName("tier_name")]
+    public string? TierName { get; set; }
+
     [JsonPropertyName("time")]
     public int Time { get; set; }
 

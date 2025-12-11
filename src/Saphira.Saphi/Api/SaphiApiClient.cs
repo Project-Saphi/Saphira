@@ -42,27 +42,26 @@ public class SaphiApiClient : ISaphiApiClient
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
-    public async Task<SaphiApiResult<GetCustomTrackResponse>> GetCustomTrackAsync(int trackId, TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
-        forceRefresh
-            ? await GetAsync<GetCustomTrackResponse>(SaphiApiEndpoint.GetCustomTrack, new Dictionary<string, object>
-            {
-                { "id", trackId },
-            })
+    public async Task<SaphiApiResult<GetCustomTrackResponse>> GetCustomTrackAsync(int trackId, TimeSpan? cacheDuration = null, bool forceRefresh = false)
+    {
+        var endpoint = $"{SaphiApiEndpoint.Tracks}/{trackId}";
+        var cacheKey = $"api:custom_track:{trackId}";
+
+        return forceRefresh
+            ? await GetAsync<GetCustomTrackResponse>(endpoint)
             : await GetCachedAsync(
-                $"api:custom_track:{trackId}",
-                () => GetAsync<GetCustomTrackResponse>(SaphiApiEndpoint.GetCustomTrack, new Dictionary<string, object>
-                {
-                    { "id", trackId }
-                }),
+                cacheKey,
+                () => GetAsync<GetCustomTrackResponse>(endpoint),
                 cacheDuration ?? DefaultCacheDuration.CustomTrack
             );
+    }
 
     public async Task<SaphiApiResult<GetCustomTracksResponse>> GetCustomTracksAsync(TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
         forceRefresh
-            ? await GetAsync<GetCustomTracksResponse>(SaphiApiEndpoint.GetCustomTracks)
+            ? await GetAsync<GetCustomTracksResponse>(SaphiApiEndpoint.Tracks)
             : await GetCachedAsync(
                 "api:custom_tracks",
-                () => GetAsync<GetCustomTracksResponse>(SaphiApiEndpoint.GetCustomTracks),
+                () => GetAsync<GetCustomTracksResponse>(SaphiApiEndpoint.Tracks),
                 cacheDuration ?? DefaultCacheDuration.CustomTrack
             );
 
@@ -72,7 +71,8 @@ public class SaphiApiClient : ISaphiApiClient
         TimeSpan? cacheDuration = null,
         bool forceRefresh = false)
     {
-        var queryParams = new Dictionary<string, object> { { "id", playerId } };
+        var endpoint = $"{SaphiApiEndpoint.Players}/{playerId}/pbs";
+        var queryParams = new Dictionary<string, object>();
 
         if (trackId.HasValue)
             queryParams["track_id"] = trackId.Value;
@@ -80,10 +80,10 @@ public class SaphiApiClient : ISaphiApiClient
         var cacheKey = $"api:player_pbs:{playerId}:{trackId?.ToString() ?? "all"}";
 
         return forceRefresh
-            ? await GetAsync<GetPlayerPBsResponse>(SaphiApiEndpoint.GetPlayerPBs, queryParams)
+            ? await GetAsync<GetPlayerPBsResponse>(endpoint, queryParams)
             : await GetCachedAsync(
                 cacheKey,
-                () => GetAsync<GetPlayerPBsResponse>(SaphiApiEndpoint.GetPlayerPBs, queryParams),
+                () => GetAsync<GetPlayerPBsResponse>(endpoint, queryParams),
                 cacheDuration ?? DefaultCacheDuration.PlayerPB
             );
     }
@@ -94,6 +94,7 @@ public class SaphiApiClient : ISaphiApiClient
         TimeSpan? cacheDuration = null,
         bool forceRefresh = false)
     {
+        var endpoint = $"{SaphiApiEndpoint.Players}/pbs";
         var queryParams = new Dictionary<string, object> { { "username", username } };
 
         if (trackId.HasValue)
@@ -102,10 +103,10 @@ public class SaphiApiClient : ISaphiApiClient
         var cacheKey = $"api:player_pbs:username:{username}:{trackId?.ToString() ?? "all"}";
 
         return forceRefresh
-            ? await GetAsync<GetPlayerPBsResponse>(SaphiApiEndpoint.GetPlayerPBs, queryParams)
+            ? await GetAsync<GetPlayerPBsResponse>(endpoint, queryParams)
             : await GetCachedAsync(
                 cacheKey,
-                () => GetAsync<GetPlayerPBsResponse>(SaphiApiEndpoint.GetPlayerPBs, queryParams),
+                () => GetAsync<GetPlayerPBsResponse>(endpoint, queryParams),
                 cacheDuration ?? DefaultCacheDuration.PlayerPB
             );
     }
@@ -117,9 +118,9 @@ public class SaphiApiClient : ISaphiApiClient
         TimeSpan? cacheDuration = null,
         bool forceRefresh = false)
     {
+        var endpoint = $"{SaphiApiEndpoint.Leaderboards}/{trackId}";
         var queryParams = new Dictionary<string, object>
         {
-            { "id", trackId },
             { "type", categoryId }
         };
 
@@ -129,10 +130,10 @@ public class SaphiApiClient : ISaphiApiClient
         var cacheKey = $"api:track_leaderboard:{trackId}:{categoryId}:{pageIndex?.ToString() ?? "0"}";
 
         return forceRefresh
-            ? await GetAsync<GetTrackLeaderboardResponse>(SaphiApiEndpoint.GetTrackLeaderboard, queryParams)
+            ? await GetAsync<GetTrackLeaderboardResponse>(endpoint, queryParams)
             : await GetCachedAsync(
                 cacheKey,
-                () => GetAsync<GetTrackLeaderboardResponse>(SaphiApiEndpoint.GetTrackLeaderboard, queryParams),
+                () => GetAsync<GetTrackLeaderboardResponse>(endpoint, queryParams),
                 cacheDuration ?? DefaultCacheDuration.Leaderboard
             );
     }
@@ -145,6 +146,7 @@ public class SaphiApiClient : ISaphiApiClient
         TimeSpan? cacheDuration = null,
         bool forceRefresh = false)
     {
+        var endpoint = $"{SaphiApiEndpoint.Submissions}/recent";
         var queryParams = new Dictionary<string, object>();
 
         if (!string.IsNullOrWhiteSpace(timeFilter))
@@ -162,10 +164,10 @@ public class SaphiApiClient : ISaphiApiClient
         var cacheKey = $"api:recent_submissions:{timeFilter ?? "24h"}:{trackId?.ToString() ?? "all"}:{categoryId?.ToString() ?? "all"}:{userId?.ToString() ?? "all"}";
 
         return forceRefresh
-            ? await GetAsync<GetRecentSubmissionsResponse>(SaphiApiEndpoint.GetRecentSubmissions, queryParams)
+            ? await GetAsync<GetRecentSubmissionsResponse>(endpoint, queryParams)
             : await GetCachedAsync(
                 cacheKey,
-                () => GetAsync<GetRecentSubmissionsResponse>(SaphiApiEndpoint.GetRecentSubmissions, queryParams),
+                () => GetAsync<GetRecentSubmissionsResponse>(endpoint, queryParams),
                 cacheDuration ?? DefaultCacheDuration.RecentSubmission
             );
     }
@@ -173,72 +175,69 @@ public class SaphiApiClient : ISaphiApiClient
     public async Task<SaphiApiResult<GetUserProfileResponse>> GetUserProfileAsync(
         int userId,
         TimeSpan? cacheDuration = null,
-        bool forceRefresh = false) =>
-        forceRefresh
-            ? await GetAsync<GetUserProfileResponse>(SaphiApiEndpoint.GetUserProfile, new Dictionary<string, object>
-            {
-                { "user_id", userId }
-            })
+        bool forceRefresh = false)
+    {
+        var endpoint = $"{SaphiApiEndpoint.Users}/{userId}/profile";
+
+        return forceRefresh
+            ? await GetAsync<GetUserProfileResponse>(endpoint)
             : await GetCachedAsync(
                 $"api:user_profile:{userId}",
-                () => GetAsync<GetUserProfileResponse>(SaphiApiEndpoint.GetUserProfile, new Dictionary<string, object>
-                {
-                    { "user_id", userId }
-                }),
+                () => GetAsync<GetUserProfileResponse>(endpoint),
                 cacheDuration ?? DefaultCacheDuration.Player
             );
+    }
 
     public async Task<SaphiApiResult<GetUserProfileResponse>> GetUserProfileByUsernameAsync(
         string username,
         TimeSpan? cacheDuration = null,
-        bool forceRefresh = false) =>
-        forceRefresh
-            ? await GetAsync<GetUserProfileResponse>(SaphiApiEndpoint.GetUserProfile, new Dictionary<string, object>
-            {
-                { "username", username }
-            })
+        bool forceRefresh = false)
+    {
+        var endpoint = $"{SaphiApiEndpoint.Users}/profile";
+        var queryParams = new Dictionary<string, object> { { "username", username } };
+
+        return forceRefresh
+            ? await GetAsync<GetUserProfileResponse>(endpoint, queryParams)
             : await GetCachedAsync(
                 $"api:user_profile:username:{username}",
-                () => GetAsync<GetUserProfileResponse>(SaphiApiEndpoint.GetUserProfile, new Dictionary<string, object>
-                {
-                    { "username", username }
-                }),
+                () => GetAsync<GetUserProfileResponse>(endpoint, queryParams),
                 cacheDuration ?? DefaultCacheDuration.Player
             );
+    }
 
     public async Task<SaphiApiResult<GetCountriesResponse>> GetCountriesAsync(TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
         forceRefresh
-            ? await GetAsync<GetCountriesResponse>(SaphiApiEndpoint.GetCountries)
+            ? await GetAsync<GetCountriesResponse>(SaphiApiEndpoint.Countries)
             : await GetCachedAsync(
                 "api:countries",
-                () => GetAsync<GetCountriesResponse>(SaphiApiEndpoint.GetCountries),
+                () => GetAsync<GetCountriesResponse>(SaphiApiEndpoint.Countries),
                 cacheDuration ?? DefaultCacheDuration.Country
             );
 
     public async Task<SaphiApiResult<GetCharactersResponse>> GetCharactersAsync(TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
         forceRefresh
-            ? await GetAsync<GetCharactersResponse>(SaphiApiEndpoint.GetCharacters)
+            ? await GetAsync<GetCharactersResponse>(SaphiApiEndpoint.Characters)
             : await GetCachedAsync(
                 "api:characters",
-                () => GetAsync<GetCharactersResponse>(SaphiApiEndpoint.GetCharacters),
+                () => GetAsync<GetCharactersResponse>(SaphiApiEndpoint.Characters),
                 cacheDuration ?? DefaultCacheDuration.Character
             );
 
     public async Task<SaphiApiResult<GetEngineTypesResponse>> GetEngineTypesAsync(TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
         forceRefresh
-            ? await GetAsync<GetEngineTypesResponse>(SaphiApiEndpoint.GetEngineTypes)
+            ? await GetAsync<GetEngineTypesResponse>(SaphiApiEndpoint.EngineTypes)
             : await GetCachedAsync(
                 "api:engine_types",
-                () => GetAsync<GetEngineTypesResponse>(SaphiApiEndpoint.GetEngineTypes),
+                () => GetAsync<GetEngineTypesResponse>(SaphiApiEndpoint.EngineTypes),
                 cacheDuration ?? DefaultCacheDuration.Engine
             );
 
     public async Task<SaphiApiResult<GetCategoriesResponse>> GetCategoriesAsync(TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
         forceRefresh
-            ? await GetAsync<GetCategoriesResponse>(SaphiApiEndpoint.GetCategories)
+            ? await GetAsync<GetCategoriesResponse>(SaphiApiEndpoint.Types)
             : await GetCachedAsync(
                 "api:categories",
-                () => GetAsync<GetCategoriesResponse>(SaphiApiEndpoint.GetCategories),
+                () => GetAsync<GetCategoriesResponse>(SaphiApiEndpoint.Types),
                 cacheDuration ?? DefaultCacheDuration.Category
             );
 
@@ -267,20 +266,18 @@ public class SaphiApiClient : ISaphiApiClient
         var cacheKey = $"api:players:{search ?? "all"}:{countryId?.ToString() ?? "all"}:{status?.ToString() ?? "all"}:{discord ?? "all"}";
 
         return forceRefresh
-            ? await GetAsync<GetPlayersResponse>(SaphiApiEndpoint.GetPlayers, queryParams)
+            ? await GetAsync<GetPlayersResponse>(SaphiApiEndpoint.Players, queryParams)
             : await GetCachedAsync(
                 cacheKey,
-                () => GetAsync<GetPlayersResponse>(SaphiApiEndpoint.GetPlayers, queryParams),
+                () => GetAsync<GetPlayersResponse>(SaphiApiEndpoint.Players, queryParams),
                 cacheDuration ?? DefaultCacheDuration.Players
             );
     }
 
-    private string BuildUrlWithQuery(string action, Dictionary<string, object>? queryParams)
+    private string BuildUrl(string endpoint, Dictionary<string, object>? queryParams = null)
     {
-        var baseUrl = $"index.php?controller=api&action={action}";
-
         if (queryParams == null || queryParams.Count == 0)
-            return baseUrl;
+            return endpoint;
 
         var query = HttpUtility.ParseQueryString(string.Empty);
         foreach (var param in queryParams)
@@ -288,24 +285,23 @@ public class SaphiApiClient : ISaphiApiClient
             query[param.Key] = param.Value.ToString();
         }
 
-        return $"{baseUrl}&{query}";
+        return $"{endpoint}?{query}";
     }
 
-    private async Task<SaphiApiResult<T>> GetAsync<T>(string action)
+    private async Task<SaphiApiResult<T>> GetAsync<T>(string endpoint)
     {
-        var url = $"index.php?controller=api&action={action}";
         var stopWatch = new Stopwatch();
 
         try
         {
             stopWatch.Start();
-            _logger.Log(LogSeverity.Debug, "Saphira", $"Calling Saphi API endpoint {url} ...");
+            _logger.Log(LogSeverity.Debug, "Saphira", $"Calling Saphi API endpoint {endpoint} ...");
 
-            var response = await _httpClient.GetAsync(url);
+            var response = await _httpClient.GetAsync(endpoint);
             var content = await response.Content.ReadAsStringAsync();
 
             stopWatch.Stop();
-            _logger.Log(LogSeverity.Debug, "Saphira", $"Response received from Saphi API endpoint {url} in {stopWatch.ElapsedMilliseconds}ms");
+            _logger.Log(LogSeverity.Debug, "Saphira", $"Response received from Saphi API endpoint {endpoint} in {stopWatch.ElapsedMilliseconds}ms");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -358,7 +354,7 @@ public class SaphiApiClient : ISaphiApiClient
 
     private async Task<SaphiApiResult<T>> GetAsync<T>(string endpoint, Dictionary<string, object> queryParams)
     {
-        var url = BuildUrlWithQuery(endpoint, queryParams);
+        var url = BuildUrl(endpoint, queryParams);
         return await GetAsync<T>(url);
     }
 
@@ -371,7 +367,7 @@ public class SaphiApiClient : ISaphiApiClient
         {
             entry.AbsoluteExpirationRelativeToNow = cacheDuration;
             entry.AddExpirationToken(_cacheInvalidationService.GetInvalidationToken());
-            
+
             var result = await fetchFunc();
 
             // it is possible that the request fails and the result is not successfull,

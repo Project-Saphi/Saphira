@@ -7,14 +7,20 @@ public class UserStats
     [JsonPropertyName("total_points")]
     public int TotalPoints { get; set; }
 
-    [JsonPropertyName("course_points")]
-    public int CoursePoints { get; set; }
+    [JsonPropertyName("total_time")]
+    public int TotalTime { get; set; }
 
-    [JsonPropertyName("lap_points")]
-    public int LapPoints { get; set; }
+    [JsonPropertyName("total_time_formatted")]
+    public string? TotalTimeFormatted { get; set; }
 
-    [JsonPropertyName("tracks_submitted")]
-    public int TracksSubmitted { get; set; }
+    [JsonPropertyName("avg_finish")]
+    public double AvgFinish { get; set; }
+
+    [JsonPropertyName("avg_standard")]
+    public double AvgStandard { get; set; }
+
+    [JsonPropertyName("avg_sr_pr")]
+    public double AvgSrPr { get; set; }
 
     [JsonPropertyName("first_places")]
     public int FirstPlaces { get; set; }
@@ -22,14 +28,8 @@ public class UserStats
     [JsonPropertyName("podium_finishes")]
     public int PodiumFinishes { get; set; }
 
-    [JsonPropertyName("unique_tracks")]
-    public int UniqueTracks { get; set; }
-
-    [JsonPropertyName("course_tracks")]
-    public int CourseTracks { get; set; }
-
-    [JsonPropertyName("lap_tracks")]
-    public int LapTracks { get; set; }
+    [JsonPropertyName("tracks_submitted")]
+    public int TracksSubmitted { get; set; }
 
     [JsonPropertyName("first_submission")]
     public string? FirstSubmission { get; set; }
