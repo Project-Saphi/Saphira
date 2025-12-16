@@ -13,8 +13,14 @@ public class RecentSubmission
     [JsonPropertyName("username")]
     public string Username { get; set; }
 
+    [JsonPropertyName("display_name")]
+    public string? DisplayName { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+
     [JsonPropertyName("country_id")]
-    public int CountryId { get; set; }
+    public int? CountryId { get; set; }
 
     [JsonPropertyName("country_name")]
     public string? CountryName { get; set; }
@@ -43,12 +49,12 @@ public class RecentSubmission
     [JsonPropertyName("engine_name")]
     public string EngineName { get; set; }
 
-    [JsonPropertyName("score")]
-    public int Score { get; set; }
+    [JsonPropertyName("time")]
+    public int Time { get; set; }
 
-    [JsonPropertyName("submit_date")]
-    public string SubmitDate { get; set; }
+    [JsonPropertyName("submitted_at")]
+    public string SubmittedAt { get; set; }
 
-    [JsonPropertyName("is_wr")]
-    public bool IsWr { get; set; }
+    [JsonPropertyName("is_world_record")]
+    public bool IsWorldRecord { get; set; }
 }

@@ -15,7 +15,7 @@ using Saphira.Discord.Entity.Guild.Role;
 using Saphira.Discord.Extensions.DependencyInjection;
 using Saphira.Discord.Interaction;
 using Saphira.Discord.Messaging;
-using Saphira.Discord.Pagination;
+using Saphira.Discord.Pagination.Component;
 using Saphira.Saphi.Api;
 using Saphira.Saphi.Game;
 using Saphira.Saphi.Game.Matchup;
@@ -116,7 +116,6 @@ public class Program
             .AddSingleton<CooldownService>()
             .AddSingleton<Application>()
             .AddTransient<GuildManager>()
-            .AddTransient<ScoreFormatter>()
             .AddTransient<InviteLinkDetector>()
             .AddTransient<RestrictedContentDetector>()
             .AddTransient<PlayerMatchupCalculator>()

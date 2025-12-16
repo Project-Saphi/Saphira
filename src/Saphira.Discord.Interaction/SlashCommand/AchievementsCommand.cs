@@ -6,6 +6,7 @@ using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
 using Saphira.Discord.Messaging.EmoteMapper;
 using Saphira.Saphi.Api;
+using Saphira.Saphi.Entity;
 using Saphira.Saphi.Interaction;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
@@ -29,35 +30,82 @@ public class AchievementsCommand(ISaphiApiClient client) : BaseCommand
 
         var userProfileResult = await client.GetUserProfileAsync(player);
 
-        if (!userProfileResult.Success || userProfileResult.Response == null)
+        if (!userProfileResult.Success || userProfileResult.Response == null || userProfileResult.Response.Data.Count == 0)
         {
             var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve user profile: {userProfileResult.ErrorMessage ?? "Unknown error"}");
             await FollowupAsync(embed: errorAlert.Build());
             return;
         }
 
-        var stats = userProfileResult.Response.Data.Stats;
-        var country = userProfileResult.Response.Data.Country;
+        var userProfile = userProfileResult.Response.Data.First();
+        var stats = userProfile.Stats;
+        var country = userProfile.Country;
 
-        var content = new[]
+        var performanceMetrics = new[]
         {
-            $"{MessageTextFormat.Bold("Total Points")}: {stats.TotalPoints}",
-            $"{MessageTextFormat.Bold("Total Time")}: {stats.TotalTimeFormatted}",
             $"{MessageTextFormat.Bold("First Places")}: {stats.FirstPlaces}",
-            $"{MessageTextFormat.Bold("Podium Finishes")}: {stats.PodiumFinishes}",
-            $"{MessageTextFormat.Bold("Tracks Submitted")}: {stats.TracksSubmitted}",
-            $"{MessageTextFormat.Bold("Average Finish")}: {stats.AvgFinish:F3}",
-            $"{MessageTextFormat.Bold("Average Rank")}: {stats.AvgStandard:F3}"
+            $"{MessageTextFormat.Bold("Podiums")}: {stats.PodiumFinishes}",
+            $"{MessageTextFormat.Bold("Total Points")}: {stats.TotalPoints}",
+            $"{MessageTextFormat.Bold("Total Points")}: {stats.TotalTimeFormatted}",
+            $"{MessageTextFormat.Bold("Average Finish")}: {stats.AverageFinish:F3}",
+            $"{MessageTextFormat.Bold("Average Rank")}: {stats.AverageStandard:F3}",
+            $"{MessageTextFormat.Bold("Average SR:PR")}: {stats.AverageSrPr:F3}",
         };
 
-        var embed = new EmbedBuilder();
-        
-        var field = new EmbedFieldBuilder()
-            .WithName($"{CountryEmoteMapper.MapCountryToEmote(country.Name)} {userProfileResult.Response.Data.Username}'s Achievements")
-            .WithValue(string.Join("\n", content));
+        var statistics = new[]
+        {
+            $"{MessageTextFormat.Bold("Total Submissions")}: {stats.TracksSubmitted}",
+            $"{MessageTextFormat.Bold("Completed Tracks")}: {stats.CompletedTracks} / {stats.TotalTracks}",
+            $"{MessageTextFormat.Bold("First Submission")}: {FormatDate(stats.FirstSubmissionAt)}",
+            $"{MessageTextFormat.Bold("Last Submission")}: {FormatDate(stats.LastSubmissionAt)}",
+            $"{MessageTextFormat.Bold("Most Played Track")}: {FormatMostPlayedTrack(stats.MostPlayedTrack)}",
+            $"{MessageTextFormat.Bold("Most Played Character")}: {FormatMostPlayedCharacter(stats.MostPlayedCharacter)}",
+            $"{MessageTextFormat.Bold("Most Played Engine")}: {FormatMostPlayedEngine(stats.MostPlayedEngine)}"
+        };
 
-        embed.AddField(field);
+        var embed = new EmbedBuilder()
+            .WithAuthor($"{userProfile.Name}'s Achievements");
+
+        embed.AddField(":trophy: Performance", string.Join("\n", performanceMetrics), true);
+        embed.AddField(":bar_chart: Statistics", string.Join("\n", statistics), true);
 
         await FollowupAsync(embed: embed.Build());
+    }
+
+    private static string FormatDate(string? date)
+    {
+        if (string.IsNullOrEmpty(date))
+            return "-";
+
+        if (DateTime.TryParse(date, out var parsed))
+            return parsed.ToString("yyyy-MM-dd");
+
+        return date;
+    }
+
+    private static string FormatMostPlayedTrack(MostPlayedItem? item)
+    {
+        if (item == null)
+            return "-";
+
+        return $"{item.Name} ({item.SubmissionCount})";
+    }
+
+    private static string FormatMostPlayedCharacter(MostPlayedItem? item)
+    {
+        if (item == null)
+            return "-";
+
+        var emote = CharacterEmoteMapper.MapCharacterToEmote(item.Name);
+        return $"{emote} ({item.SubmissionCount})";
+    }
+
+    private static string FormatMostPlayedEngine(MostPlayedItem? item)
+    {
+        if (item == null)
+            return "-";
+
+        var emote = EngineEmoteMapper.MapEngineToEmote(item.Name);
+        return $"{emote} ({item.SubmissionCount})";
     }
 }

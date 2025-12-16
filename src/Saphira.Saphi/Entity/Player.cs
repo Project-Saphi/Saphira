@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Saphira.Saphi.Entity;
 
@@ -11,20 +11,23 @@ public class Player
     public string Username { get; set; }
 
     [JsonPropertyName("display_name")]
-    public string DisplayName { get; set; }
+    public string? DisplayName { get; set; }
 
-    [JsonPropertyName("creationdate")]
-    public string CreationDate { get; set; }
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("created_at")]
+    public string CreatedAt { get; set; }
 
     [JsonPropertyName("country_id")]
-    public int CountryId { get; set; }
+    public int? CountryId { get; set; }
 
     [JsonPropertyName("country_name")]
-    public string CountryName { get; set; }
+    public string? CountryName { get; set; }
 
     [JsonPropertyName("status")]
     public int Status { get; set; }
 
-    [JsonPropertyName("discord")]
-    public string? Discord { get; set; }
+    [JsonPropertyName("discord_id")]
+    public string? DiscordId { get; set; }
 }

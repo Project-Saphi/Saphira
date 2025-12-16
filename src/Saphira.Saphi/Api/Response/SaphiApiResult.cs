@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace Saphira.Saphi.Api;
+namespace Saphira.Saphi.Api.Response;
 
 public class SaphiApiResult<T>
 {

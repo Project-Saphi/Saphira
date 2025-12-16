@@ -10,6 +10,24 @@ public class TrackLeaderboardEntry
     [JsonPropertyName("rank")]
     public int Rank { get; set; }
 
+    [JsonPropertyName("user_id")]
+    public int UserId { get; set; }
+
+    [JsonPropertyName("username")]
+    public string Username { get; set; }
+
+    [JsonPropertyName("display_name")]
+    public string? DisplayName { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("country_id")]
+    public int? CountryId { get; set; }
+
+    [JsonPropertyName("country_name")]
+    public string? CountryName { get; set; }
+
     [JsonPropertyName("category_id")]
     public int CategoryId { get; set; }
 
@@ -22,21 +40,18 @@ public class TrackLeaderboardEntry
     [JsonPropertyName("character_name")]
     public string CharacterName { get; set; }
 
+    [JsonPropertyName("engine_id")]
+    public int EngineId { get; set; }
+
     [JsonPropertyName("engine_name")]
     public string EngineName { get; set; }
 
-    [JsonPropertyName("country_id")]
-    public int CountryId { get; set; }
+    [JsonPropertyName("time")]
+    public int Time { get; set; }
 
-    [JsonPropertyName("country_name")]
-    public string CountryName { get; set; }
+    [JsonPropertyName("time_formatted")]
+    public string TimeFormatted { get; set; }
 
-    [JsonPropertyName("MinScore")]
-    public int MinScore { get; set; }
-
-    [JsonPropertyName("date")]
-    public string Date { get; set; }
-
-    [JsonPropertyName("holder")]
-    public string Holder { get; set; }
+    [JsonPropertyName("submitted_at")]
+    public string SubmittedAt { get; set; }
 }

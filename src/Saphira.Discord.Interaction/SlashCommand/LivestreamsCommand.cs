@@ -7,6 +7,8 @@ using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
 using Saphira.Discord.Messaging.EmoteMapper;
 using Saphira.Discord.Pagination;
+using Saphira.Discord.Pagination.Builder;
+using Saphira.Discord.Pagination.Component;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
 
@@ -39,7 +41,7 @@ public class LivestreamsCommand(PaginationComponentHandler paginationComponentHa
             return;
         }
 
-        var paginationBuilder = new PaginationBuilder<(SocketGuildUser User, IActivity Activity)>(paginationComponentHandler)
+        var paginationBuilder = new ListPaginationBuilder<(SocketGuildUser User, IActivity Activity)>(paginationComponentHandler)
             .WithItems(activities)
             .WithPageSize(EntriesPerPage)
             .WithRenderPageCallback((pageEntries, pageNumber) => GetEmbedForPage(pageEntries, pageNumber))

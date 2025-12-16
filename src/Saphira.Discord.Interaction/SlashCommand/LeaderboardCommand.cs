@@ -6,6 +6,8 @@ using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
 using Saphira.Discord.Messaging.EmoteMapper;
 using Saphira.Discord.Pagination;
+using Saphira.Discord.Pagination.Builder;
+using Saphira.Discord.Pagination.Component;
 using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
 using Saphira.Saphi.Game;
@@ -37,53 +39,64 @@ public class LeaderboardCommand(ISaphiApiClient client, StandardCalculator stand
     {
         await DeferAsync();
 
-        var leaderboardResult = await client.GetTrackLeaderboardAsync(track, category);
-
-        if (!leaderboardResult.Success || leaderboardResult.Response == null)
-        {
-            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve leaderboard: {leaderboardResult.ErrorMessage ?? "Unknown error"}");
-            await FollowupAsync(embed: errorAlert.Build());
-            return;
-        }
-
         var customTrackResult = await client.GetCustomTrackAsync(track);
 
-        if (!customTrackResult.Success || customTrackResult.Response == null)
+        if (!customTrackResult.Success || customTrackResult.Response == null || customTrackResult.Response.Data.Count == 0)
         {
             var errorAlert = new ErrorAlertEmbedBuilder($"There is no custom track with id {track}.");
             await FollowupAsync(embed: errorAlert.Build());
             return;
         }
 
-        var customTrack = customTrackResult.Response.Data;
+        var customTrack = customTrackResult.Response.Data.First();
 
-        if (leaderboardResult.Response.Data.Count == 0 || customTrackResult == null)
+        // Fetch initial page to check if there's any data and get total count
+        var initialResult = await client.GetTrackLeaderboardAsync(track, category, page: 1, perPage: EntriesPerPage);
+
+        if (!initialResult.Success || initialResult.Response == null)
         {
-            var warningAlert = new WarningAlertEmbedBuilder($"Nobody has set a time on {customTrack?.Name ?? "Unknown"} yet.");
+            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve leaderboard: {initialResult.ErrorMessage ?? "Unknown error"}");
+            await FollowupAsync(embed: errorAlert.Build());
+            return;
+        }
+
+        if (initialResult.Response.Data.Count == 0)
+        {
+            var warningAlert = new WarningAlertEmbedBuilder($"Nobody has set a time on {customTrack.Name} yet.");
             await FollowupAsync(embed: warningAlert.Build());
             return;
         }
 
-        var leaderboardEntries = leaderboardResult.Response.Data;
+        var totalItems = initialResult.Response.Meta.Total;
 
-        var paginationBuilder = new PaginationBuilder<TrackLeaderboardEntry>(paginationComponentHandler)
-            .WithItems(leaderboardEntries)
+        var paginationBuilder = new CallbackPaginationBuilder<TrackLeaderboardEntry>(paginationComponentHandler)
             .WithPageSize(EntriesPerPage)
-            .WithRenderPageCallback((pageEntries, pageNumber) => GetEmbedForPage(customTrack, pageEntries, pageNumber))
+            .WithTotalItems(totalItems)
+            .WithFetchCallback(async (page, perPage) =>
+            {
+                var result = await client.GetTrackLeaderboardAsync(track, category, page: page, perPage: perPage);
+                return result.Response?.Data ?? [];
+            })
+            .WithRenderPageCallback((pageEntries, pageNumber, totalPages) => GetEmbedForPage(customTrack, pageEntries, pageNumber, totalPages))
             .WithFilter((component) => Task.FromResult(new PaginationFilterResult(component.User.Id == Context.User.Id)));
 
-        var (embed, components) = paginationBuilder.Build();
+        var (embed, components) = await paginationBuilder.BuildAsync();
 
         await FollowupAsync(embed: embed, components: components);
     }
 
-    private EmbedBuilder GetEmbedForPage(CustomTrack customTrack, List<TrackLeaderboardEntry> leaderboardEntries, int currentPage)
+    private EmbedBuilder GetEmbedForPage(CustomTrack customTrack, List<TrackLeaderboardEntry> leaderboardEntries, int currentPage, int totalPages)
     {
+        if (leaderboardEntries.Count == 0)
+        {
+            return new EmbedBuilder().WithDescription("No entries found.");
+        }
+
         var firstEntry = leaderboardEntries.First();
         var leaderboardData = GetLeaderboardData(customTrack, leaderboardEntries);
 
         var embed = new EmbedBuilder()
-            .WithAuthor($"[Page {currentPage}] Leaderboard for {customTrack?.Name ?? "Unknown"} ({firstEntry?.CategoryName ?? "Unknown"})");
+            .WithAuthor($"[Page {currentPage}/{totalPages}] Leaderboard for {customTrack.Name} ({firstEntry.CategoryName})");
 
         AddEmbedField(embed, ":trophy:", "Placement", leaderboardData["placements"]);
         AddEmbedField(embed, ":bust_in_silhouette:", "Player", leaderboardData["players"]);
@@ -121,7 +134,7 @@ public class LeaderboardCommand(ISaphiApiClient client, StandardCalculator stand
 
     private string BuildPlacementString(CustomTrack customTrack, TrackLeaderboardEntry entry)
     {
-        var standard = standardCalculator.CalculateStandard(customTrack, entry.CategoryId, entry.MinScore);
+        var standard = standardCalculator.CalculateStandard(customTrack, entry.CategoryId, entry.Time);
         var standardEmote = standard != null ? TierEmoteMapper.MapTierToEmote(standard.TierId.ToString()) : null;
 
         var placementString = new StringBuilder();
@@ -143,7 +156,7 @@ public class LeaderboardCommand(ISaphiApiClient client, StandardCalculator stand
         return new StringBuilder()
             .Append(CountryEmoteMapper.MapCountryToEmote(entry.CountryName))
             .Append(' ')
-            .Append(MessageTextFormat.Bold(entry.Holder))
+            .Append(MessageTextFormat.Bold(entry.Name))
             .ToString();
     }
 
@@ -152,7 +165,7 @@ public class LeaderboardCommand(ISaphiApiClient client, StandardCalculator stand
         return new StringBuilder()
             .Append(CharacterEmoteMapper.MapCharacterToEmote(entry.CharacterName))
             .Append(' ')
-            .Append(ScoreFormatter.AsHumanTime(entry.MinScore))
+            .Append(entry.TimeFormatted)
             .ToString();
     }
 }

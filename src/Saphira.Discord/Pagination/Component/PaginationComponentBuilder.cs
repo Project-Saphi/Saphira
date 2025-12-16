@@ -1,6 +1,6 @@
 ﻿using Discord;
 
-namespace Saphira.Discord.Pagination;
+namespace Saphira.Discord.Pagination.Component;
 
 public class PaginationComponentBuilder : ComponentBuilder
 {

@@ -1,6 +1,6 @@
 ﻿using Discord.WebSocket;
 
-namespace Saphira.Discord.Pagination;
+namespace Saphira.Discord.Pagination.Component;
 
 public class PaginationComponentHandler
 {

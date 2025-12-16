@@ -10,6 +10,9 @@ public class Character
     [JsonPropertyName("name")]
     public string Name { get; set; }
 
-    [JsonPropertyName("default_engine")]
-    public int DefaultEngine { get; set; }
+    [JsonPropertyName("default_engine_id")]
+    public int DefaultEngineId { get; set; }
+
+    [JsonPropertyName("default_engine_name")]
+    public string DefaultEngineName { get; set; }
 }

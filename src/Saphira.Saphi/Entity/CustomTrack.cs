@@ -14,10 +14,13 @@ public class CustomTrack
     public string Author { get; set; }
 
     [JsonPropertyName("crc32_hash")]
-    public long Crc32Hash { get; set; }
+    public long? Crc32Hash { get; set; }
+
+    [JsonPropertyName("is_active")]
+    public bool IsActive { get; set; }
 
     [JsonPropertyName("has_files")]
-    public int HasFiles { get; set; }
+    public bool HasFiles { get; set; }
 
     [JsonPropertyName("file_1_name")]
     public string? File1Name { get; set; }

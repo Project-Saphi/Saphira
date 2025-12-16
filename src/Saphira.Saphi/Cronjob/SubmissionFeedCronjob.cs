@@ -71,7 +71,7 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, ISaphiApiC
         {
             $"{MessageTextFormat.Bold("Track")}: {submission.TrackName}",
             $"{MessageTextFormat.Bold("Category")}: {submission.CategoryName}",
-            $"{MessageTextFormat.Bold("Time")}: {ScoreFormatter.AsHumanTime(submission.Score.ToString())}",
+            $"{MessageTextFormat.Bold("Time")}: {ScoreFormatter.AsHumanTime(submission.Time.ToString())}",
             $"{MessageTextFormat.Bold("Character")}: {CharacterEmoteMapper.MapCharacterToEmote(submission.CharacterName)}",
             $"{MessageTextFormat.Bold("Engine")}: {EngineEmoteMapper.MapEngineToEmote(submission.EngineName)}",
             $"{MessageTextFormat.Bold("Country")}: {CountryEmoteMapper.MapCountryToEmote(submission.CountryName)}"
@@ -81,17 +81,17 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, ISaphiApiC
             .WithThumbnailUrl("https://i.imgur.com/esMgq3Y.png")
             .WithTimestamp(DateTimeOffset.Now);
 
-        if (submission.IsWr)
+        if (submission.IsWorldRecord)
         {
             embed
                 .WithColor(14530399)
-                .WithAuthor($"New world record by {submission.Username}");
+                .WithAuthor($"New world record by {submission.Name}");
         }
         else
         {
             embed
                 .WithColor(5526696)
-                .WithAuthor($"New submission by {submission.Username}");
+                .WithAuthor($"New submission by {submission.Name}");
         }
 
         var dataField = new EmbedFieldBuilder()

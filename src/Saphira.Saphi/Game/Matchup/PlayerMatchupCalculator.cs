@@ -1,4 +1,4 @@
-﻿using Saphira.Saphi.Api;
+using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
 
 namespace Saphira.Saphi.Game.Matchup;
@@ -19,15 +19,23 @@ public class PlayerMatchupCalculator(ISaphiApiClient client)
             return new PlayerMatchupCalculationResult(PlayerMatchupCalculationStatus.Failure, "The specified category does not exist.", null);
         }
 
+        var player1Profile = await FetchPlayerProfileAsync(player1);
+        var player2Profile = await FetchPlayerProfileAsync(player2);
+
+        if (player1Profile == null || player2Profile == null)
+        {
+            return new PlayerMatchupCalculationResult(PlayerMatchupCalculationStatus.Failure, "One or more players don't exist.", null);
+        }
+
         var player1PBs = await FetchPlayerPBsAsync(player1);
         var player2PBs = await FetchPlayerPBsAsync(player2);
 
         if (player1PBs == null || player2PBs == null)
         {
-            return new PlayerMatchupCalculationResult(PlayerMatchupCalculationStatus.Failure, "One or more players don't exist.", null);
+            return new PlayerMatchupCalculationResult(PlayerMatchupCalculationStatus.Failure, "Failed to fetch player PBs.", null);
         }
 
-        var playerMatchup = ComparePlayers(player1PBs, player2PBs, categoryEntity);
+        var playerMatchup = ComparePlayers(player1Profile, player2Profile, player1PBs, player2PBs, categoryEntity);
 
         if (playerMatchup.PlayerRecordComparisons.Count == 0)
         {
@@ -37,7 +45,7 @@ public class PlayerMatchupCalculator(ISaphiApiClient client)
         return new PlayerMatchupCalculationResult(PlayerMatchupCalculationStatus.Success, null, playerMatchup);
     }
 
-    private PlayerMatchup ComparePlayers(List<PlayerPB> player1PBs, List<PlayerPB> player2PBs, Category categoryEntity)
+    private PlayerMatchup ComparePlayers(UserProfile player1Profile, UserProfile player2Profile, List<PlayerPB> player1PBs, List<PlayerPB> player2PBs, Category categoryEntity)
     {
         var playerRecordComparisons = new List<PlayerRecordComparison>();
 
@@ -51,10 +59,10 @@ public class PlayerMatchupCalculator(ISaphiApiClient client)
 
         var commonTracks = player1PBDict.Keys.Intersect(player2PBDict.Keys).ToList();
 
-        var player1Name = player1PBs.FirstOrDefault()?.Holder ?? "Unknown";
-        var player2Name = player2PBs.FirstOrDefault()?.Holder ?? "Unknown";
-        var country1Name = player1PBs.FirstOrDefault()?.CountryName ?? string.Empty;
-        var country2Name = player2PBs.FirstOrDefault()?.CountryName ?? string.Empty;
+        var player1Name = player1Profile.Name;
+        var player2Name = player2Profile.Name;
+        var country1Name = player1Profile.Country?.Name ?? string.Empty;
+        var country2Name = player2Profile.Country?.Name ?? string.Empty;
 
         int player1Wins = 0;
         int player2Wins = 0;
@@ -73,10 +81,10 @@ public class PlayerMatchupCalculator(ISaphiApiClient client)
             {
                 comparison = new PlayerRecordComparison(
                     track,
-                    player1PB.Holder,
-                    ScoreFormatter.AsHumanTime(player1PB.Time),
-                    player2PB.Holder,
-                    ScoreFormatter.AsHumanTime(player2PB.Time)
+                    player1Name,
+                    player1PB.TimeFormatted,
+                    player2Name,
+                    player2PB.TimeFormatted
                 );
                 player1Wins++;
             }
@@ -84,10 +92,10 @@ public class PlayerMatchupCalculator(ISaphiApiClient client)
             {
                 comparison = new PlayerRecordComparison(
                     track,
-                    player2PB.Holder,
-                    ScoreFormatter.AsHumanTime(player2PB.Time),
-                    player1PB.Holder,
-                    ScoreFormatter.AsHumanTime(player1PB.Time)
+                    player2Name,
+                    player2PB.TimeFormatted,
+                    player1Name,
+                    player1PB.TimeFormatted
                 );
                 player2Wins++;
             }
@@ -96,9 +104,9 @@ public class PlayerMatchupCalculator(ISaphiApiClient client)
                 comparison = new PlayerRecordComparison(
                     track,
                     null,
-                    ScoreFormatter.AsHumanTime(player1PB.Time),
+                    player1PB.TimeFormatted,
                     null,
-                    ScoreFormatter.AsHumanTime(player2PB.Time)
+                    player2PB.TimeFormatted
                 );
             }
 
@@ -132,22 +140,34 @@ public class PlayerMatchupCalculator(ISaphiApiClient client)
             country1Name,
             player2Name,
             country2Name,
-            winnerName, 
-            loserName, 
-            winnerWins, 
-            loserWins, 
-            categoryEntity, 
+            winnerName,
+            loserName,
+            winnerWins,
+            loserWins,
+            categoryEntity,
             playerRecordComparisons
         );
     }
 
-    private async Task<List<PlayerPB>> FetchPlayerPBsAsync(int playerId)
+    private async Task<UserProfile?> FetchPlayerProfileAsync(int userId)
+    {
+        var result = await client.GetUserProfileAsync(userId);
+
+        if (!result.Success || result.Response == null || result.Response.Data.Count == 0)
+        {
+            return null;
+        }
+
+        return result.Response.Data.FirstOrDefault();
+    }
+
+    private async Task<List<PlayerPB>?> FetchPlayerPBsAsync(int playerId)
     {
         var result = await client.GetPlayerPBsAsync(playerId);
 
         if (!result.Success || result.Response == null)
         {
-            return [];
+            return null;
         }
 
         return result.Response.Data;

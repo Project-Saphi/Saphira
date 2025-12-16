@@ -6,6 +6,8 @@ using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
 using Saphira.Discord.Messaging.EmoteMapper;
 using Saphira.Discord.Pagination;
+using Saphira.Discord.Pagination.Builder;
+using Saphira.Discord.Pagination.Component;
 using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
 using Saphira.Saphi.Game;
@@ -24,7 +26,7 @@ public class PBsCommand(ISaphiApiClient client, StandardCalculator standardCalcu
     public override SlashCommandMetadata GetMetadata()
     {
         return new SlashCommandMetadata(
-            "/pbs TheKoji", 
+            "/pbs TheKoji",
             $"{EntriesPerPage} entries are shown per page"
         );
     }
@@ -36,55 +38,74 @@ public class PBsCommand(ISaphiApiClient client, StandardCalculator standardCalcu
     {
         await DeferAsync();
 
-        var playerPBsResult = await client.GetPlayerPBsAsync(player);
+        var userProfileResult = await client.GetUserProfileAsync(player);
 
-        if (!playerPBsResult.Success || playerPBsResult.Response == null)
+        if (!userProfileResult.Success || userProfileResult.Response == null || userProfileResult.Response.Data.Count == 0)
         {
-            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve personal best times: {playerPBsResult.ErrorMessage ?? "Unknown error"}");
+            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve player profile: {userProfileResult.ErrorMessage ?? "Unknown error"}");
             await FollowupAsync(embed: errorAlert.Build());
             return;
         }
 
-        if (playerPBsResult.Response.Data.Count == 0)
+        var userProfile = userProfileResult.Response.Data.First();
+        var playerName = userProfile.Name;
+
+        var initialResult = await client.GetPlayerPBsAsync(player, page: 1, perPage: EntriesPerPage);
+
+        if (!initialResult.Success || initialResult.Response == null)
+        {
+            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve personal best times: {initialResult.ErrorMessage ?? "Unknown error"}");
+            await FollowupAsync(embed: errorAlert.Build());
+            return;
+        }
+
+        if (initialResult.Response.Data.Count == 0)
         {
             var warningAlert = new WarningAlertEmbedBuilder("This player doesn't have any PBs set yet.");
             await FollowupAsync(embed: warningAlert.Build());
             return;
         }
 
-        // In theory the PlayerPB object is disconnected from the custom track itself
-        // but we need the standards, so ... eh
+        // Fetch custom tracks once for standards calculation (needed for all pages)
         var customTrackResult = await client.GetCustomTracksAsync();
 
         if (!customTrackResult.Success || customTrackResult.Response == null)
         {
-            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve personal best times: {customTrackResult.ErrorMessage ?? "Unknown error"}");
+            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve custom tracks: {customTrackResult.ErrorMessage ?? "Unknown error"}");
             await FollowupAsync(embed: errorAlert.Build());
             return;
         }
 
-        var playerPBs = playerPBsResult.Response.Data;
         var customTracks = customTrackResult.Response.Data;
+        var totalItems = initialResult.Response.Meta.Total;
 
-        var playerName = playerPBs.First().Holder;
-
-        var paginationBuilder = new PaginationBuilder<PlayerPB>(paginationComponentHandler)
-            .WithItems(playerPBs)
+        var paginationBuilder = new CallbackPaginationBuilder<PlayerPB>(paginationComponentHandler)
             .WithPageSize(EntriesPerPage)
-            .WithRenderPageCallback((pagePBs, pageNumber) => GetEmbedForPage(customTracks, playerName, pagePBs, pageNumber))
+            .WithTotalItems(totalItems)
+            .WithFetchCallback(async (page, perPage) =>
+            {
+                var result = await client.GetPlayerPBsAsync(player, page: page, perPage: perPage);
+                return result.Response?.Data ?? [];
+            })
+            .WithRenderPageCallback((pagePBs, pageNumber, totalPages) => GetEmbedForPage(customTracks, playerName, pagePBs, pageNumber, totalPages))
             .WithFilter((component) => Task.FromResult(new PaginationFilterResult(component.User.Id == Context.User.Id)));
 
-        var (embed, components) = paginationBuilder.Build();
+        var (embed, components) = await paginationBuilder.BuildAsync();
 
         await FollowupAsync(embed: embed, components: components);
     }
 
-    private EmbedBuilder GetEmbedForPage(List<CustomTrack> customTracks, string playerName, List<PlayerPB> pagePBs, int pageNumber)
+    private EmbedBuilder GetEmbedForPage(List<CustomTrack> customTracks, string playerName, List<PlayerPB> pagePBs, int pageNumber, int totalPages)
     {
+        if (pagePBs.Count == 0)
+        {
+            return new EmbedBuilder().WithDescription("No entries found.");
+        }
+
         var pbData = GetPBData(customTracks, pagePBs);
 
         var embed = new EmbedBuilder()
-            .WithAuthor($"[Page {pageNumber}] {playerName}'s personal best times");
+            .WithAuthor($"[Page {pageNumber}/{totalPages}] {playerName}'s personal best times");
 
         AddEmbedField(embed, ":motorway:", "Track", pbData["tracks"]);
         AddEmbedField(embed, ":stadium:", "Category", pbData["categories"]);
@@ -161,7 +182,7 @@ public class PBsCommand(ISaphiApiClient client, StandardCalculator standardCalcu
         return new StringBuilder()
             .Append(CharacterEmoteMapper.MapCharacterToEmote(playerPB.CharacterName))
             .Append(' ')
-            .Append(ScoreFormatter.AsHumanTime(playerPB.Time))
+            .Append(playerPB.TimeFormatted)
             .ToString();
     }
 }

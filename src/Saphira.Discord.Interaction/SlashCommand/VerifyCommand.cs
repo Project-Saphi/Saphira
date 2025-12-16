@@ -52,7 +52,7 @@ public class VerifyCommand(ISaphiApiClient client, IMessageLogger logger) : Base
             return;
         }
 
-        var playerResult = await client.GetPlayersAsync(discord: guildUser.Id.ToString(), forceRefresh: true);
+        var playerResult = await client.GetPlayersAsync(discordId: guildUser.Id.ToString(), forceRefresh: true);
 
         if (!playerResult.Success || playerResult.Response == null || playerResult.Response.Data.Count == 0)
         {

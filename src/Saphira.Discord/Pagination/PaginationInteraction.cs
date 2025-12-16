@@ -1,5 +1,6 @@
 using Discord.Interactions;
 using Discord.WebSocket;
+using Saphira.Discord.Pagination.Component;
 
 namespace Saphira.Discord.Pagination;
 

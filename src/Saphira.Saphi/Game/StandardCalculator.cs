@@ -13,7 +13,7 @@ public class StandardCalculator
             return null;
         }
 
-        var standards = customTrack.Standards.Where(s => s.Type == category).OrderBy(s => s.Time).ToList();
+        var standards = customTrack.Standards.Where(s => s.CategoryId == category).OrderBy(s => s.Time).ToList();
 
         foreach (var standard in standards)
         {
