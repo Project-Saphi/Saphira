@@ -318,43 +318,57 @@ All messages contain the current timestamp, the source, and the message.
 
 ## Pagination
 
-When a command returns a large dataset (such as a leaderboard, lists of tracks, or player statistics), pagination is a good way to reduce the amount of output that Saphira creates at once. The main idea behind pagination is to not run into Discord's message length limit. To achieve that, Saphira provides a simple and clean API for implementing pagination through the `PaginationBuilder` class. 
+When a command returns a large dataset (such as a leaderboard, lists of tracks, or player statistics), pagination is a good way to reduce the amount of output that Saphira creates at once. The main idea behind pagination is to not run into Discord's message length limit. To achieve that, Saphira provides a simple and clean API for implementing pagination through two specialized builder classes.
 
-To be able to use the `PaginationBuilder`, inject the `PaginationComponentHandler` into your command constructor:
+### Pagination Architecture
+
+Saphira's pagination system consists of three classes:
+
+| Class | Description |
+|-------|-------------|
+| `PaginationBuilderBase<T, TBuilder>` | Abstract base class providing common pagination functionality |
+| `ListPaginationBuilder<T>` | For paginating in-memory lists where all data is available upfront |
+| `CallbackPaginationBuilder<T>` | For paginating data fetched asynchronously (e.g., from an API) |
+
+To use either pagination builder, inject the `PaginationComponentHandler` into your command constructor:
 
 ```csharp
 using Discord.Interactions;
 using Saphira.Discord.Interaction.SlashCommand;
-using Saphira.Discord.Pagination;
+using Saphira.Discord.Pagination.Component;
 using Saphira.Saphi.Api;
 
-public class PBsCommand(ISaphiApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+public class TracksCommand(ISaphiApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
     // Other code ...
 }
 ```
 
-The `PaginationComponentHandler` is a singleton service that keeps track of all registered pagination state across all commands. Once you can access it, you can use the `PaginationBuilder` in your command:
+The `PaginationComponentHandler` is a singleton service that keeps track of all registered pagination state across all commands.
+
+### ListPaginationBuilder
+
+Use `ListPaginationBuilder` when all data is available in memory. This is ideal for smaller datasets that can be fetched in a single request.
 
 ```csharp
 using Discord;
 using Discord.Interactions;
 using Saphira.Discord.Interaction.Foundation.Precondition;
 using Saphira.Discord.Interaction.SlashCommand;
-using Saphira.Discord.Messaging;
-using Saphira.Discord.Pagination;
+using Saphira.Discord.Pagination.Builder;
+using Saphira.Discord.Pagination.Component;
 using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
 
 [RequireTextChannel]
-public class PBsCommand(ISaphiApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+public class TracksCommand(ISaphiApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
     private readonly int EntriesPerPage = 20;
 
-    [SlashCommand("pbs", "Get personal best times of a player")]
-    public async Task HandleCommand(int player)
+    [SlashCommand("tracks", "Get the list of all custom tracks")]
+    public async Task HandleCommand()
     {
-        var result = await client.GetPlayerPBsAsync(player);
+        var result = await client.GetCustomTracksAsync();
 
         if (!result.Success || result.Response == null)
         {
@@ -362,13 +376,12 @@ public class PBsCommand(ISaphiApiClient client, PaginationComponentHandler pagin
             return;
         }
 
-        var playerPBs = result.Response.Data;
-        var playerName = playerPBs.First().Holder;
+        var tracks = result.Response.Data;
 
-        var paginationBuilder = new PaginationBuilder<PlayerPB>(paginationComponentHandler)
-            .WithItems(playerPBs)
+        var paginationBuilder = new ListPaginationBuilder<Track>(paginationComponentHandler)
+            .WithItems(tracks)
             .WithPageSize(EntriesPerPage)
-            .WithRenderPageCallback((pagePBs, pageNumber) => GetEmbedForPage(playerName, pagePBs, pageNumber))
+            .WithRenderPageCallback((pageTracks, pageNumber) => GetEmbedForPage(pageTracks, pageNumber))
             .WithFilter((component) => Task.FromResult(new PaginationFilterResult(component.User.Id == Context.User.Id)));
 
         var (embed, components) = paginationBuilder.Build();
@@ -376,7 +389,7 @@ public class PBsCommand(ISaphiApiClient client, PaginationComponentHandler pagin
         await RespondAsync(embed: embed, components: components);
     }
 
-    private EmbedBuilder GetEmbedForPage(string playerName, List<PlayerPB> pagePBs, int pageNumber)
+    private EmbedBuilder GetEmbedForPage(List<Track> pageTracks, int pageNumber)
     {
         var embed = new EmbedBuilder();
 
@@ -387,22 +400,83 @@ public class PBsCommand(ISaphiApiClient client, PaginationComponentHandler pagin
 }
 ```
 
-The `PaginationBuilder` provides a fluent API to implement a pagination. It comes with a set of handy functions:
+The `ListPaginationBuilder` provides a fluent API with the following methods:
 
-- `WithItems` - Allows you to provide the list of items which can be of any type
-- `WithPageSize` - Allows you to specify how many items per page you want to show
-- `WithRenderPageCallback` - Allows you to provide a callback function that is triggered every time the page changes
-- `WithCustomId` - Allows you to provide a custom ID for your pagination
-- `WithFilter` - Allows you to provide a custom filter to control who can interact with the pagination
+- `WithItems` - Provide the complete list of items to paginate
+- `WithPageSize` - Specify how many items per page to show
+- `WithRenderPageCallback` - Provide a callback function `(items, currentPage) => EmbedBuilder` triggered on page changes
+- `WithCustomId` - Provide a custom GUID for your pagination
+- `WithFilter` - Provide a custom filter to control who can interact with the pagination
 
-The callback function needs to return an `EmbedBuilder` - this is currently a design limitation since I mostly use embeds for data display and it's my primary use case.
+### CallbackPaginationBuilder
 
-Once you call `Build()` on the `PaginationBuilder` you receive 2 values:
+Use `CallbackPaginationBuilder` when data needs to be fetched asynchronously for each page. This is ideal for large datasets where fetching all data upfront would be inefficient.
 
-- The embed for the current page
-- The pagination components (the actual buttons)
+```csharp
+using Discord;
+using Discord.Interactions;
+using Saphira.Discord.Interaction.Foundation.Precondition;
+using Saphira.Discord.Interaction.SlashCommand;
+using Saphira.Discord.Pagination.Builder;
+using Saphira.Discord.Pagination.Component;
+using Saphira.Saphi.Api;
+using Saphira.Saphi.Entity;
 
-Using these 2 values you can respond to your command with a paginated response.
+[RequireTextChannel]
+public class LeaderboardCommand(ISaphiApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+{
+    private readonly int EntriesPerPage = 15;
+
+    [SlashCommand("leaderboard", "Get the leaderboard for a track")]
+    public async Task HandleCommand(int track, int category)
+    {
+        var initialResult = await client.GetTrackLeaderboardAsync(track, category, page: 1, perPage: EntriesPerPage);
+
+        if (!initialResult.Success || initialResult.Response == null)
+        {
+            // Handle error ...
+            return;
+        }
+
+        var totalItems = initialResult.Response.Meta.Total;
+
+        var paginationBuilder = new CallbackPaginationBuilder<LeaderboardEntry>(paginationComponentHandler)
+            .WithTotalItems(totalItems)
+            .WithPageSize(EntriesPerPage)
+            .WithFetchCallback(async (page, perPage) =>
+            {
+                var result = await client.GetTrackLeaderboardAsync(track, category, page, perPage);
+                return result.Response?.Data ?? [];
+            })
+            .WithRenderPageCallback((entries, currentPage, totalPages) => GetEmbedForPage(entries, currentPage, totalPages))
+            .WithFilter((component) => Task.FromResult(new PaginationFilterResult(component.User.Id == Context.User.Id)));
+
+        var (embed, components) = await paginationBuilder.BuildAsync();
+
+        await RespondAsync(embed: embed, components: components);
+    }
+
+    private EmbedBuilder GetEmbedForPage(List<LeaderboardEntry> entries, int currentPage, int totalPages)
+    {
+        var embed = new EmbedBuilder();
+
+        // Create the embed for your page ...
+
+        return embed;
+    }
+}
+```
+
+The `CallbackPaginationBuilder` provides a fluent API with the following methods:
+
+- `WithTotalItems` - Specify the total number of items (used to calculate page count)
+- `WithPageSize` - Specify how many items per page to show
+- `WithFetchCallback` - Provide an async callback `(page, perPage) => Task<List<T>>` to fetch data for each page
+- `WithRenderPageCallback` - Provide a callback `(items, currentPage, totalPages) => EmbedBuilder` triggered on page changes
+- `WithCustomId` - Provide a custom GUID for your pagination
+- `WithFilter` - Provide a custom filter to control who can interact with the pagination
+
+Note that `CallbackPaginationBuilder` uses `BuildAsync()` instead of `Build()` since it needs to fetch the initial page data asynchronously.
 
 ## ASCII Tables
 

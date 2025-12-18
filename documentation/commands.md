@@ -80,11 +80,24 @@ Show a player's achievements and statistics.
 - `player` - The player's username
 
 **Response:**
-- Total points
-- Course points
-- Lap points
+
+*Performance*
 - First places
 - Podium finishes
+- Total points
+- Total time
+- Average finish
+- Average rank
+- Average SR:PR
+
+*Statistics*
+- Total submissions
+- Completed tracks
+- First submission date
+- Last submission date
+- Most played track
+- Most played character
+- Most played engine
 
 **Cooldown:**
 - 15 seconds (team members exempt)
@@ -208,13 +221,18 @@ Verify yourself by linking your Discord account to your Saphi profile.
 ```
 
 **How it works:**
-1. Run `/verify` to get your Discord ID
-2. Add your Discord ID to your user profile on the Saphi website
-3. Run `/verify` again to receive the "Verified" role
+
+Saphira guides you through the verification process automatically:
+
+1. Run `/verify`
+2. If your Discord ID is not yet linked to your Saphi profile, Saphira will show you instructions along with your Discord ID
+3. Add your Discord ID to your user profile on the Saphi website
+4. Run `/verify` again to automatically receive the "Verified" role
 
 **Response:**
-- If not linked: Instructions with your Discord ID
-- If linked: Confirmation and "Verified" role assignment
+- If already verified: Notification that you are already verified
+- If not linked: Verification instructions with your Discord ID displayed
+- If linked: Automatic role assignment and confirmation
 
 **Requirements:**
 - Bot's role must be higher than "Verified" role in hierarchy
