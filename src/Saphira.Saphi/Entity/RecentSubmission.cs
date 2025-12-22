@@ -52,6 +52,9 @@ public class RecentSubmission
     [JsonPropertyName("time")]
     public int Time { get; set; }
 
+    [JsonPropertyName("time_formatted")]
+    public string TimeFormatted { get; set; }
+
     [JsonPropertyName("submitted_at")]
     public string SubmittedAt { get; set; }
 

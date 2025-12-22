@@ -8,7 +8,6 @@ using Saphira.Discord.Messaging;
 using Saphira.Discord.Messaging.EmoteMapper;
 using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
-using Saphira.Saphi.Game;
 
 namespace Saphira.Saphi.Cronjob;
 
@@ -71,7 +70,7 @@ public class SubmissionFeedCronjob(DiscordSocketClient discordClient, ISaphiApiC
         {
             $"{MessageTextFormat.Bold("Track")}: {submission.TrackName}",
             $"{MessageTextFormat.Bold("Category")}: {submission.CategoryName}",
-            $"{MessageTextFormat.Bold("Time")}: {ScoreFormatter.AsHumanTime(submission.Time.ToString())}",
+            $"{MessageTextFormat.Bold("Time")}: {submission.TimeFormatted}",
             $"{MessageTextFormat.Bold("Character")}: {CharacterEmoteMapper.MapCharacterToEmote(submission.CharacterName)}",
             $"{MessageTextFormat.Bold("Engine")}: {EngineEmoteMapper.MapEngineToEmote(submission.EngineName)}",
             $"{MessageTextFormat.Bold("Country")}: {CountryEmoteMapper.MapCountryToEmote(submission.CountryName)}"
