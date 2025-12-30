@@ -7,7 +7,7 @@ using Saphira.Core.Logging;
 using Saphira.Discord.Messaging;
 using Saphira.Discord.Messaging.EmoteMapper;
 using Saphira.Saphi.Api;
-using Saphira.Saphi.Entity;
+using Saphira.Saphi.Entity.Leaderboard;
 
 namespace Saphira.Saphi.Cronjob;
 

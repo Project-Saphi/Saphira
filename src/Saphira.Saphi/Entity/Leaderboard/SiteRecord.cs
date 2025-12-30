@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace Saphira.Saphi.Entity;
+namespace Saphira.Saphi.Entity.Leaderboard;
 
-public class PlayerPB
+public class SiteRecord
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }
@@ -13,11 +13,32 @@ public class PlayerPB
     [JsonPropertyName("track_name")]
     public string TrackName { get; set; }
 
+    [JsonPropertyName("track_author")]
+    public string? TrackAuthor { get; set; }
+
     [JsonPropertyName("category_id")]
     public int CategoryId { get; set; }
 
     [JsonPropertyName("category_name")]
     public string CategoryName { get; set; }
+
+    [JsonPropertyName("user_id")]
+    public int UserId { get; set; }
+
+    [JsonPropertyName("username")]
+    public string Username { get; set; }
+
+    [JsonPropertyName("display_name")]
+    public string? DisplayName { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("country_id")]
+    public int? CountryId { get; set; }
+
+    [JsonPropertyName("country_name")]
+    public string? CountryName { get; set; }
 
     [JsonPropertyName("character_id")]
     public int CharacterId { get; set; }
@@ -40,6 +61,9 @@ public class PlayerPB
     [JsonPropertyName("submitted_at")]
     public string SubmittedAt { get; set; }
 
-    [JsonPropertyName("rank")]
-    public int Rank { get; set; }
+    [JsonPropertyName("standard_id")]
+    public int? StandardId { get; set; }
+
+    [JsonPropertyName("standard_name")]
+    public string? StandardName { get; set; }
 }

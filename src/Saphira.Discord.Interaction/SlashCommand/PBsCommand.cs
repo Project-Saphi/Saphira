@@ -9,7 +9,7 @@ using Saphira.Discord.Pagination;
 using Saphira.Discord.Pagination.Builder;
 using Saphira.Discord.Pagination.Component;
 using Saphira.Saphi.Api;
-using Saphira.Saphi.Entity;
+using Saphira.Saphi.Entity.Leaderboard;
 using Saphira.Saphi.Game;
 using Saphira.Saphi.Interaction;
 using System.Text;
@@ -19,9 +19,9 @@ namespace Saphira.Discord.Interaction.SlashCommand;
 [RequireCooldownExpired(15)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class PBsCommand(ISaphiApiClient client, StandardCalculator standardCalculator, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+public class PBsCommand(ISaphiApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
-    private readonly int EntriesPerPage = 20;
+    private readonly int EntriesPerPage = 15;
 
     public override SlashCommandMetadata GetMetadata()
     {
@@ -66,17 +66,6 @@ public class PBsCommand(ISaphiApiClient client, StandardCalculator standardCalcu
             return;
         }
 
-        // Fetch custom tracks once for standards calculation (needed for all pages)
-        var customTrackResult = await client.GetCustomTracksAsync();
-
-        if (!customTrackResult.Success || customTrackResult.Response == null)
-        {
-            var errorAlert = new ErrorAlertEmbedBuilder($"Failed to retrieve custom tracks: {customTrackResult.ErrorMessage ?? "Unknown error"}");
-            await FollowupAsync(embed: errorAlert.Build());
-            return;
-        }
-
-        var customTracks = customTrackResult.Response.Data;
         var totalItems = initialResult.Response.Meta.Total;
 
         var paginationBuilder = new CallbackPaginationBuilder<PlayerPB>(paginationComponentHandler)
@@ -87,7 +76,7 @@ public class PBsCommand(ISaphiApiClient client, StandardCalculator standardCalcu
                 var result = await client.GetPlayerPBsAsync(player, page: page, perPage: perPage);
                 return result.Response?.Data ?? [];
             })
-            .WithRenderPageCallback((pagePBs, pageNumber, totalPages) => GetEmbedForPage(customTracks, playerName, pagePBs, pageNumber, totalPages))
+            .WithRenderPageCallback((pagePBs, pageNumber, totalPages) => GetEmbedForPage(playerName, pagePBs, pageNumber, totalPages))
             .WithFilter((component) => Task.FromResult(new PaginationFilterResult(component.User.Id == Context.User.Id)));
 
         var (embed, components) = await paginationBuilder.BuildAsync();
@@ -95,14 +84,14 @@ public class PBsCommand(ISaphiApiClient client, StandardCalculator standardCalcu
         await FollowupAsync(embed: embed, components: components);
     }
 
-    private EmbedBuilder GetEmbedForPage(List<CustomTrack> customTracks, string playerName, List<PlayerPB> pagePBs, int pageNumber, int totalPages)
+    private EmbedBuilder GetEmbedForPage(string playerName, List<PlayerPB> pagePBs, int pageNumber, int totalPages)
     {
         if (pagePBs.Count == 0)
         {
             return new EmbedBuilder().WithDescription("No entries found.");
         }
 
-        var pbData = GetPBData(customTracks, pagePBs);
+        var pbData = GetPBData(pagePBs);
 
         var embed = new EmbedBuilder()
             .WithAuthor($"[Page {pageNumber}/{totalPages}] {playerName}'s personal best times");
@@ -122,7 +111,7 @@ public class PBsCommand(ISaphiApiClient client, StandardCalculator standardCalcu
             .WithIsInline(true));
     }
 
-    private Dictionary<string, List<string>> GetPBData(List<CustomTrack> customTracks, List<PlayerPB> playerPBs)
+    private Dictionary<string, List<string>> GetPBData(List<PlayerPB> playerPBs)
     {
         var dict = new Dictionary<string, List<string>>()
         {
@@ -133,16 +122,8 @@ public class PBsCommand(ISaphiApiClient client, StandardCalculator standardCalcu
 
         foreach (var playerPB in playerPBs)
         {
-            var customTrack = customTracks.FirstOrDefault(x => x.Id == playerPB.TrackId);
-
-            if (customTrack == null)
-            {
-                // not sure what to do in that case, probably just skip the track
-                continue;
-            }
-
             dict["tracks"].Add(BuildTrackString(playerPB));
-            dict["categories"].Add(BuildCategoryString(customTrack, playerPB));
+            dict["categories"].Add(BuildCategoryString(playerPB));
             dict["times"].Add(BuildTimeString(playerPB));
         }
 
@@ -158,10 +139,11 @@ public class PBsCommand(ISaphiApiClient client, StandardCalculator standardCalcu
             .ToString();
     }
 
-    private string BuildCategoryString(CustomTrack customTrack, PlayerPB playerPB)
+    private string BuildCategoryString(PlayerPB playerPB)
     {
-        var standard = standardCalculator.CalculateStandard(customTrack, playerPB.CategoryId, playerPB.Time);
-        var standardEmote = standard != null ? TierEmoteMapper.MapTierToEmote(standard.TierId.ToString()) : null;
+        var standardEmote = playerPB.StandardId.HasValue
+            ? TierEmoteMapper.MapTierToEmote(playerPB.StandardId.Value.ToString())
+            : null;
 
         var categoryString = new StringBuilder();
 

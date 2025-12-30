@@ -10,6 +10,7 @@ using Saphira.Discord.Pagination.Builder;
 using Saphira.Discord.Pagination.Component;
 using Saphira.Saphi.Api;
 using Saphira.Saphi.Entity;
+using Saphira.Saphi.Entity.Leaderboard;
 using Saphira.Saphi.Game;
 using Saphira.Saphi.Interaction;
 using System.Text;
@@ -19,7 +20,7 @@ namespace Saphira.Discord.Interaction.SlashCommand;
 [RequireCooldownExpired(15)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class LeaderboardCommand(ISaphiApiClient client, StandardCalculator standardCalculator, PaginationComponentHandler paginationComponentHandler) : BaseCommand
+public class LeaderboardCommand(ISaphiApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
 {
     private readonly int EntriesPerPage = 15;
 
@@ -93,7 +94,7 @@ public class LeaderboardCommand(ISaphiApiClient client, StandardCalculator stand
         }
 
         var firstEntry = leaderboardEntries.First();
-        var leaderboardData = GetLeaderboardData(customTrack, leaderboardEntries);
+        var leaderboardData = GetLeaderboardData(leaderboardEntries);
 
         var embed = new EmbedBuilder()
             .WithAuthor($"[Page {currentPage}/{totalPages}] Leaderboard for {customTrack.Name} ({firstEntry.CategoryName})");
@@ -113,7 +114,7 @@ public class LeaderboardCommand(ISaphiApiClient client, StandardCalculator stand
             .WithIsInline(true));
     }
 
-    private Dictionary<string, List<string>> GetLeaderboardData(CustomTrack customTrack, List<TrackLeaderboardEntry> entries)
+    private Dictionary<string, List<string>> GetLeaderboardData(List<TrackLeaderboardEntry> entries)
     {
         var dict = new Dictionary<string, List<string>>()
         {
@@ -124,7 +125,7 @@ public class LeaderboardCommand(ISaphiApiClient client, StandardCalculator stand
 
         foreach (var entry in entries)
         {
-            dict["placements"].Add(BuildPlacementString(customTrack, entry));
+            dict["placements"].Add(BuildPlacementString(entry));
             dict["players"].Add(BuildPlayerString(entry));
             dict["times"].Add(BuildTimeString(entry));
         }
@@ -132,10 +133,11 @@ public class LeaderboardCommand(ISaphiApiClient client, StandardCalculator stand
         return dict;
     }
 
-    private string BuildPlacementString(CustomTrack customTrack, TrackLeaderboardEntry entry)
+    private string BuildPlacementString(TrackLeaderboardEntry entry)
     {
-        var standard = standardCalculator.CalculateStandard(customTrack, entry.CategoryId, entry.Time);
-        var standardEmote = standard != null ? TierEmoteMapper.MapTierToEmote(standard.TierId.ToString()) : null;
+        var standardEmote = entry.StandardId.HasValue
+            ? TierEmoteMapper.MapTierToEmote(entry.StandardId.Value.ToString())
+            : null;
 
         var placementString = new StringBuilder();
 

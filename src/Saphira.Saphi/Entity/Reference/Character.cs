@@ -1,11 +1,14 @@
 using System.Text.Json.Serialization;
 
-namespace Saphira.Saphi.Entity;
+namespace Saphira.Saphi.Entity.Reference;
 
 public class Character
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }
+
+    [JsonPropertyName("game_id")]
+    public int GameId { get; set; }
 
     [JsonPropertyName("name")]
     public string Name { get; set; }
@@ -13,6 +16,9 @@ public class Character
     [JsonPropertyName("default_engine_id")]
     public int DefaultEngineId { get; set; }
 
-    [JsonPropertyName("default_engine_name")]
-    public string DefaultEngineName { get; set; }
+    [JsonPropertyName("engine_name")]
+    public string EngineName { get; set; }
+
+    [JsonPropertyName("submission_count")]
+    public int SubmissionCount { get; set; }
 }

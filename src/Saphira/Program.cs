@@ -17,8 +17,6 @@ using Saphira.Discord.Interaction;
 using Saphira.Discord.Messaging;
 using Saphira.Discord.Pagination.Component;
 using Saphira.Saphi.Api;
-using Saphira.Saphi.Game;
-using Saphira.Saphi.Game.Matchup;
 
 namespace Saphira;
 
@@ -118,9 +116,7 @@ public class Program
             .AddTransient<GuildManager>()
             .AddTransient<InviteLinkDetector>()
             .AddTransient<RestrictedContentDetector>()
-            .AddTransient<PlayerMatchupCalculator>()
             .AddTransient<TwitchClient>()
-            .AddTransient<StandardCalculator>()
             .AddHttpClient()
             .AddMemoryCache()
             .AddCronjobs()

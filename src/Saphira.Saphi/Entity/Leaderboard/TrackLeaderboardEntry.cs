@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Saphira.Saphi.Entity;
+namespace Saphira.Saphi.Entity.Leaderboard;
 
 public class TrackLeaderboardEntry
 {
@@ -54,4 +54,16 @@ public class TrackLeaderboardEntry
 
     [JsonPropertyName("submitted_at")]
     public string SubmittedAt { get; set; }
+
+    [JsonPropertyName("standard_id")]
+    public int? StandardId { get; set; }
+
+    [JsonPropertyName("standard_name")]
+    public string? StandardName { get; set; }
+
+    [JsonPropertyName("sr_pr")]
+    public double? SrPr { get; set; }
+
+    [JsonPropertyName("points")]
+    public int? Points { get; set; }
 }

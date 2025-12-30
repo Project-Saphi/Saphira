@@ -156,8 +156,52 @@ Get personal best times for a player across all tracks.
 - `player` - The player's username
 
 **Response:**
-- List of personal bests with track names, times, and ranks
+- List of personal bests with track names, categories, times, ranks, and standard tier badges
+- Buttons to navigate between pages, 15 entries per page
+
+**Cooldown:**
+- 15 seconds (team members exempt)
+
+### `/rankings`
+View the global rankings for various metrics.
+
+**Usage:**
+```
+/rankings rankingType:<type> mode:<mode>
+```
+
+**Parameters:**
+- `rankingType` - The ranking metric (autocomplete available):
+  - Points
+  - Average Finish
+  - Average Rank
+  - Total Time
+  - SR/PR
+- `mode` - Player or Country rankings (autocomplete available)
+
+**Response:**
+- Ranked list of players or countries with their respective metric values
+- For Average Rank: includes standard tier badges
 - Buttons to navigate between pages, 20 entries per page
+
+**Cooldown:**
+- 15 seconds (team members exempt)
+
+### `/site-records`
+Get the current site records (world records) across all tracks.
+
+**Usage:**
+```
+/site-records category:<category-name>
+```
+
+**Parameters:**
+- `category` (optional) - Filter by category (autocomplete available)
+
+**Response:**
+- List of world records showing track name, category, time, character, and record holder
+- Standard tier badges displayed for each record
+- Buttons to navigate between pages, 15 entries per page
 
 **Cooldown:**
 - 15 seconds (team members exempt)

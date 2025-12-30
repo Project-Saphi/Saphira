@@ -5,6 +5,10 @@ using Saphira.Core.Extensions.Caching;
 using Saphira.Core.Logging;
 using Saphira.Saphi.Api.Response;
 using Saphira.Saphi.Entity;
+using Saphira.Saphi.Entity.Leaderboard;
+using Saphira.Saphi.Entity.Ranking;
+using Saphira.Saphi.Entity.Reference;
+using Saphira.Saphi.Entity.User;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -352,6 +356,236 @@ public class SaphiApiClient : ISaphiApiClient
                 cacheKey,
                 () => GetAsync<SaphiApiResponse<Player>>(SaphiApiEndpoint.Players, queryParams),
                 cacheDuration ?? DefaultCacheDuration.Players
+            );
+    }
+
+    public async Task<SaphiApiResult<SaphiApiResponse<Standard>>> GetStandardsAsync(TimeSpan? cacheDuration = null, bool forceRefresh = false) =>
+        forceRefresh
+            ? await GetAsync<SaphiApiResponse<Standard>>(SaphiApiEndpoint.Standards)
+            : await GetCachedAsync(
+                "api:standards",
+                () => GetAsync<SaphiApiResponse<Standard>>(SaphiApiEndpoint.Standards),
+                cacheDuration ?? DefaultCacheDuration.Standard
+            );
+
+    public async Task<SaphiApiResult<SaphiApiResponse<SiteRecord>>> GetSiteRecordsAsync(
+        int? categoryId = null,
+        int? engineId = null,
+        int? countryId = null,
+        TimeSpan? cacheDuration = null,
+        bool forceRefresh = false)
+    {
+        var queryParams = new Dictionary<string, object>();
+
+        if (categoryId.HasValue)
+            queryParams["category_id"] = categoryId.Value;
+
+        if (engineId.HasValue)
+            queryParams["engine_id"] = engineId.Value;
+
+        if (countryId.HasValue)
+            queryParams["country_id"] = countryId.Value;
+
+        var cacheKey = BuildCacheKey("api:site_records", categoryId, engineId, countryId);
+
+        return forceRefresh
+            ? await GetAsync<SaphiApiResponse<SiteRecord>>(SaphiApiEndpoint.SiteRecords, queryParams)
+            : await GetCachedAsync(
+                cacheKey,
+                () => GetAsync<SaphiApiResponse<SiteRecord>>(SaphiApiEndpoint.SiteRecords, queryParams),
+                cacheDuration ?? DefaultCacheDuration.SiteRecord
+            );
+    }
+
+    public async Task<SaphiApiResult<SaphiApiResponse<MatchupResult>>> GetMatchupAsync(
+        int player1Id,
+        int player2Id,
+        string? categories = null,
+        TimeSpan? cacheDuration = null,
+        bool forceRefresh = false)
+    {
+        var queryParams = new Dictionary<string, object>
+        {
+            { "player1_id", player1Id },
+            { "player2_id", player2Id }
+        };
+
+        if (!string.IsNullOrWhiteSpace(categories))
+            queryParams["categories"] = categories;
+
+        var cacheKey = BuildCacheKey("api:matchup", player1Id, player2Id, categories);
+
+        return forceRefresh
+            ? await GetAsync<SaphiApiResponse<MatchupResult>>(SaphiApiEndpoint.Matchups, queryParams)
+            : await GetCachedAsync(
+                cacheKey,
+                () => GetAsync<SaphiApiResponse<MatchupResult>>(SaphiApiEndpoint.Matchups, queryParams),
+                cacheDuration ?? DefaultCacheDuration.Matchup
+            );
+    }
+
+    public async Task<SaphiApiResult<SaphiApiResponse<PointsRanking>>> GetPointsRankingsAsync(
+        string? type = null,
+        string? category = null,
+        int? page = null,
+        int? perPage = null,
+        TimeSpan? cacheDuration = null,
+        bool forceRefresh = false)
+    {
+        var queryParams = new Dictionary<string, object>();
+
+        if (!string.IsNullOrWhiteSpace(type))
+            queryParams["type"] = type;
+
+        if (!string.IsNullOrWhiteSpace(category))
+            queryParams["category"] = category;
+
+        if (page.HasValue)
+            queryParams["page"] = page.Value;
+
+        if (perPage.HasValue)
+            queryParams["per_page"] = perPage.Value;
+
+        var cacheKey = BuildCacheKey("api:rankings:points", type, category, page ?? 1, perPage ?? 150);
+
+        return forceRefresh
+            ? await GetAsync<SaphiApiResponse<PointsRanking>>(SaphiApiEndpoint.RankingsPoints, queryParams)
+            : await GetCachedAsync(
+                cacheKey,
+                () => GetAsync<SaphiApiResponse<PointsRanking>>(SaphiApiEndpoint.RankingsPoints, queryParams),
+                cacheDuration ?? DefaultCacheDuration.Ranking
+            );
+    }
+
+    public async Task<SaphiApiResult<SaphiApiResponse<AverageFinishRanking>>> GetAverageFinishRankingsAsync(
+        string? type = null,
+        string? category = null,
+        int? page = null,
+        int? perPage = null,
+        TimeSpan? cacheDuration = null,
+        bool forceRefresh = false)
+    {
+        var queryParams = new Dictionary<string, object>();
+
+        if (!string.IsNullOrWhiteSpace(type))
+            queryParams["type"] = type;
+
+        if (!string.IsNullOrWhiteSpace(category))
+            queryParams["category"] = category;
+
+        if (page.HasValue)
+            queryParams["page"] = page.Value;
+
+        if (perPage.HasValue)
+            queryParams["per_page"] = perPage.Value;
+
+        var cacheKey = BuildCacheKey("api:rankings:average_finish", type, category, page ?? 1, perPage ?? 150);
+
+        return forceRefresh
+            ? await GetAsync<SaphiApiResponse<AverageFinishRanking>>(SaphiApiEndpoint.RankingsAverageFinish, queryParams)
+            : await GetCachedAsync(
+                cacheKey,
+                () => GetAsync<SaphiApiResponse<AverageFinishRanking>>(SaphiApiEndpoint.RankingsAverageFinish, queryParams),
+                cacheDuration ?? DefaultCacheDuration.Ranking
+            );
+    }
+
+    public async Task<SaphiApiResult<SaphiApiResponse<AverageRankRanking>>> GetAverageRankRankingsAsync(
+        string? type = null,
+        string? category = null,
+        int? page = null,
+        int? perPage = null,
+        TimeSpan? cacheDuration = null,
+        bool forceRefresh = false)
+    {
+        var queryParams = new Dictionary<string, object>();
+
+        if (!string.IsNullOrWhiteSpace(type))
+            queryParams["type"] = type;
+
+        if (!string.IsNullOrWhiteSpace(category))
+            queryParams["category"] = category;
+
+        if (page.HasValue)
+            queryParams["page"] = page.Value;
+
+        if (perPage.HasValue)
+            queryParams["per_page"] = perPage.Value;
+
+        var cacheKey = BuildCacheKey("api:rankings:average_rank", type, category, page ?? 1, perPage ?? 150);
+
+        return forceRefresh
+            ? await GetAsync<SaphiApiResponse<AverageRankRanking>>(SaphiApiEndpoint.RankingsAverageRank, queryParams)
+            : await GetCachedAsync(
+                cacheKey,
+                () => GetAsync<SaphiApiResponse<AverageRankRanking>>(SaphiApiEndpoint.RankingsAverageRank, queryParams),
+                cacheDuration ?? DefaultCacheDuration.Ranking
+            );
+    }
+
+    public async Task<SaphiApiResult<SaphiApiResponse<TotalTimeRanking>>> GetTotalTimeRankingsAsync(
+        string? type = null,
+        string? category = null,
+        int? page = null,
+        int? perPage = null,
+        TimeSpan? cacheDuration = null,
+        bool forceRefresh = false)
+    {
+        var queryParams = new Dictionary<string, object>();
+
+        if (!string.IsNullOrWhiteSpace(type))
+            queryParams["type"] = type;
+
+        if (!string.IsNullOrWhiteSpace(category))
+            queryParams["category"] = category;
+
+        if (page.HasValue)
+            queryParams["page"] = page.Value;
+
+        if (perPage.HasValue)
+            queryParams["per_page"] = perPage.Value;
+
+        var cacheKey = BuildCacheKey("api:rankings:total_time", type, category, page ?? 1, perPage ?? 150);
+
+        return forceRefresh
+            ? await GetAsync<SaphiApiResponse<TotalTimeRanking>>(SaphiApiEndpoint.RankingsTotalTime, queryParams)
+            : await GetCachedAsync(
+                cacheKey,
+                () => GetAsync<SaphiApiResponse<TotalTimeRanking>>(SaphiApiEndpoint.RankingsTotalTime, queryParams),
+                cacheDuration ?? DefaultCacheDuration.Ranking
+            );
+    }
+
+    public async Task<SaphiApiResult<SaphiApiResponse<SrPrRanking>>> GetSrPrRankingsAsync(
+        string? type = null,
+        string? category = null,
+        int? page = null,
+        int? perPage = null,
+        TimeSpan? cacheDuration = null,
+        bool forceRefresh = false)
+    {
+        var queryParams = new Dictionary<string, object>();
+
+        if (!string.IsNullOrWhiteSpace(type))
+            queryParams["type"] = type;
+
+        if (!string.IsNullOrWhiteSpace(category))
+            queryParams["category"] = category;
+
+        if (page.HasValue)
+            queryParams["page"] = page.Value;
+
+        if (perPage.HasValue)
+            queryParams["per_page"] = perPage.Value;
+
+        var cacheKey = BuildCacheKey("api:rankings:sr_pr", type, category, page ?? 1, perPage ?? 150);
+
+        return forceRefresh
+            ? await GetAsync<SaphiApiResponse<SrPrRanking>>(SaphiApiEndpoint.RankingsSrPr, queryParams)
+            : await GetCachedAsync(
+                cacheKey,
+                () => GetAsync<SaphiApiResponse<SrPrRanking>>(SaphiApiEndpoint.RankingsSrPr, queryParams),
+                cacheDuration ?? DefaultCacheDuration.Ranking
             );
     }
 

@@ -1,11 +1,12 @@
-﻿using Discord;
+using Discord;
 using Discord.Interactions;
 using Saphira.Discord.Interaction.Foundation.Autocompletion;
 using Saphira.Discord.Interaction.Foundation.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
 using Saphira.Discord.Messaging.EmoteMapper;
-using Saphira.Saphi.Game.Matchup;
+using Saphira.Saphi.Api;
+using Saphira.Saphi.Entity;
 using Saphira.Saphi.Interaction;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
@@ -13,7 +14,7 @@ namespace Saphira.Discord.Interaction.SlashCommand;
 [RequireCooldownExpired(15)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class MatchupCommand(PlayerMatchupCalculator playerMatchupGenerator) : BaseCommand
+public class MatchupCommand(ISaphiApiClient client) : BaseCommand
 {
     public override SlashCommandMetadata GetMetadata()
     {
@@ -32,27 +33,55 @@ public class MatchupCommand(PlayerMatchupCalculator playerMatchupGenerator) : Ba
     {
         await DeferAsync();
 
-        var result = await playerMatchupGenerator.GeneratePlayerMatchup(player1, player2, category);
-
-        if (result.Status == PlayerMatchupCalculationStatus.Failure || result.PlayerMatchup == null)
+        if (player1 == player2)
         {
-            var errorAlert = new ErrorAlertEmbedBuilder(result.ErrorMessage ?? "An error occured calculating the matchup.");
+            var errorAlert = new ErrorAlertEmbedBuilder("You cannot compare a player against himself.");
             await FollowupAsync(embed: errorAlert.Build());
             return;
         }
 
-        var matchupEmbed = GetMatchupEmbed(result.PlayerMatchup);
+        var result = await client.GetMatchupAsync(player1, player2, category.ToString());
+
+        if (!result.Success || result.Response == null)
+        {
+            var errorAlert = new ErrorAlertEmbedBuilder(result.ErrorMessage ?? "An error occurred fetching the matchup.");
+            await FollowupAsync(embed: errorAlert.Build());
+            return;
+        }
+
+        if (result.Response.Data.Count == 0)
+        {
+            var errorAlert = new ErrorAlertEmbedBuilder("One or more players don't exist.");
+            await FollowupAsync(embed: errorAlert.Build());
+            return;
+        }
+
+        var matchup = result.Response.Data.First();
+
+        if (matchup.Comparisons.Count == 0)
+        {
+            var warningAlert = new WarningAlertEmbedBuilder("These players have no tracks in common.");
+            await FollowupAsync(embed: warningAlert.Build());
+            return;
+        }
+
+        var matchupEmbed = GetMatchupEmbed(matchup);
         await FollowupAsync(embed: matchupEmbed.Build());
     }
 
-    private EmbedBuilder GetMatchupEmbed(PlayerMatchup playerMatchup)
+    private EmbedBuilder GetMatchupEmbed(MatchupResult matchup)
     {
-        var embed = new EmbedBuilder()
-            .WithAuthor($"Matchup between {playerMatchup.PlayerName1} and {playerMatchup.PlayerName2} ({playerMatchup.Category.Name})");
+        var categoryName = matchup.Comparisons.First().CategoryName;
 
-        if (!playerMatchup.IsEvenMatchup())
+        var embed = new EmbedBuilder()
+            .WithAuthor($"Matchup between {matchup.Player1.Name} and {matchup.Player2.Name} ({categoryName})");
+
+        if (matchup.OverallWinner.HasValue && matchup.OverallWinner.Value != 0)
         {
-            embed.WithDescription($":trophy: {MessageTextFormat.Bold(playerMatchup.WinnerName)} wins this matchup {MessageTextFormat.Bold(playerMatchup.WinnerWins.ToString())} to {MessageTextFormat.Bold(playerMatchup.LoserWins.ToString())}!");
+            var winner = matchup.OverallWinner.Value == 1 ? matchup.Player1 : matchup.Player2;
+            var loser = matchup.OverallWinner.Value == 1 ? matchup.Player2 : matchup.Player1;
+
+            embed.WithDescription($":trophy: {MessageTextFormat.Bold(winner.Name)} wins this matchup {MessageTextFormat.Bold(winner.Wins.ToString())} to {MessageTextFormat.Bold(loser.Wins.ToString())}!");
         }
         else
         {
@@ -63,27 +92,24 @@ public class MatchupCommand(PlayerMatchupCalculator playerMatchupGenerator) : Ba
         var player1Times = new List<string>();
         var player2Times = new List<string>();
 
-        foreach (var playerRecordComparison in playerMatchup.PlayerRecordComparisons)
+        foreach (var comparison in matchup.Comparisons)
         {
-            trackNames.Add(MessageTextFormat.Bold(playerRecordComparison.TrackName));
+            trackNames.Add(MessageTextFormat.Bold(comparison.TrackName));
 
-            if (!playerRecordComparison.IsEvenRecord())
+            if (comparison.Winner == 1)
             {
-                if (playerRecordComparison.WinnerName == playerMatchup.PlayerName1)
-                {
-                    player1Times.Add(MessageTextFormat.Bold(playerRecordComparison.WinnerTime));
-                    player2Times.Add(MessageTextFormat.Strikethrough(playerRecordComparison.LoserTime));
-                }
-                else
-                {
-                    player2Times.Add(MessageTextFormat.Bold(playerRecordComparison.WinnerTime));
-                    player1Times.Add(MessageTextFormat.Strikethrough(playerRecordComparison.LoserTime));
-                }
+                player1Times.Add(MessageTextFormat.Bold(comparison.Player1TimeFormatted));
+                player2Times.Add(MessageTextFormat.Strikethrough(comparison.Player2TimeFormatted));
+            }
+            else if (comparison.Winner == 2)
+            {
+                player1Times.Add(MessageTextFormat.Strikethrough(comparison.Player1TimeFormatted));
+                player2Times.Add(MessageTextFormat.Bold(comparison.Player2TimeFormatted));
             }
             else
             {
-                player1Times.Add(MessageTextFormat.Bold(playerRecordComparison.WinnerTime));
-                player2Times.Add(MessageTextFormat.Bold(playerRecordComparison.WinnerTime));
+                player1Times.Add(MessageTextFormat.Bold(comparison.Player1TimeFormatted));
+                player2Times.Add(MessageTextFormat.Bold(comparison.Player2TimeFormatted));
             }
         }
 
@@ -92,19 +118,19 @@ public class MatchupCommand(PlayerMatchupCalculator playerMatchupGenerator) : Ba
             .WithValue(string.Join("\n", trackNames))
             .WithIsInline(true);
 
-        var winnerTimesField = new EmbedFieldBuilder()
-            .WithName($"{CountryEmoteMapper.MapCountryToEmote(playerMatchup.CountryName1)} {MessageTextFormat.Bold(playerMatchup.PlayerName1)}")
+        var player1TimesField = new EmbedFieldBuilder()
+            .WithName($"{CountryEmoteMapper.MapCountryToEmote(matchup.Player1.CountryName)} {MessageTextFormat.Bold(matchup.Player1.Name)}")
             .WithValue(string.Join("\n", player1Times))
             .WithIsInline(true);
 
-        var loserTimesField = new EmbedFieldBuilder()
-            .WithName($"{CountryEmoteMapper.MapCountryToEmote(playerMatchup.CountryName2)} {MessageTextFormat.Bold(playerMatchup.PlayerName2)}")
-            .WithValue(string.Join ("\n", player2Times))
+        var player2TimesField = new EmbedFieldBuilder()
+            .WithName($"{CountryEmoteMapper.MapCountryToEmote(matchup.Player2.CountryName)} {MessageTextFormat.Bold(matchup.Player2.Name)}")
+            .WithValue(string.Join("\n", player2Times))
             .WithIsInline(true);
 
         embed.AddField(tracksField);
-        embed.AddField(winnerTimesField);
-        embed.AddField(loserTimesField);
+        embed.AddField(player1TimesField);
+        embed.AddField(player2TimesField);
 
         return embed;
     }

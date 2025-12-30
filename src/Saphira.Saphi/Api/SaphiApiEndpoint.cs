@@ -12,4 +12,12 @@ public static class SaphiApiEndpoint
     public const string Characters = "api/v2/characters";
     public const string Engines = "api/v2/engines";
     public const string Categories = "api/v2/categories";
+    public const string Standards = "api/v2/standards";
+    public const string SiteRecords = "api/v2/site-records";
+    public const string Matchups = "api/v2/matchups";
+    public const string RankingsPoints = "api/v2/rankings/points";
+    public const string RankingsAverageFinish = "api/v2/rankings/average-finish";
+    public const string RankingsAverageRank = "api/v2/rankings/average-rank";
+    public const string RankingsTotalTime = "api/v2/rankings/total-time";
+    public const string RankingsSrPr = "api/v2/rankings/sr-pr";
 }

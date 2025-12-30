@@ -11,7 +11,7 @@ public class RankFormatter
             ":third_place:"
         };
 
-        if (rank - 1 < medals.Length)
+        if (rank >= 1 && rank <= medals.Length)
         {
             return medals[rank - 1];
         }

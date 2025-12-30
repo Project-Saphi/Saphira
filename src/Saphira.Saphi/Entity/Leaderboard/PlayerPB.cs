@@ -1,29 +1,11 @@
 using System.Text.Json.Serialization;
 
-namespace Saphira.Saphi.Entity;
+namespace Saphira.Saphi.Entity.Leaderboard;
 
-public class RecentSubmission
+public class PlayerPB
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }
-
-    [JsonPropertyName("user_id")]
-    public int UserId { get; set; }
-
-    [JsonPropertyName("username")]
-    public string Username { get; set; }
-
-    [JsonPropertyName("display_name")]
-    public string? DisplayName { get; set; }
-
-    [JsonPropertyName("name")]
-    public string Name { get; set; }
-
-    [JsonPropertyName("country_id")]
-    public int? CountryId { get; set; }
-
-    [JsonPropertyName("country_name")]
-    public string? CountryName { get; set; }
 
     [JsonPropertyName("track_id")]
     public int TrackId { get; set; }
@@ -58,6 +40,18 @@ public class RecentSubmission
     [JsonPropertyName("submitted_at")]
     public string SubmittedAt { get; set; }
 
-    [JsonPropertyName("is_world_record")]
-    public bool IsWorldRecord { get; set; }
+    [JsonPropertyName("rank")]
+    public int Rank { get; set; }
+
+    [JsonPropertyName("standard_id")]
+    public int? StandardId { get; set; }
+
+    [JsonPropertyName("standard_name")]
+    public string? StandardName { get; set; }
+
+    [JsonPropertyName("sr_pr")]
+    public double? SrPr { get; set; }
+
+    [JsonPropertyName("points")]
+    public int? Points { get; set; }
 }

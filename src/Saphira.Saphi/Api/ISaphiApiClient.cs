@@ -1,5 +1,9 @@
 using Saphira.Saphi.Api.Response;
 using Saphira.Saphi.Entity;
+using Saphira.Saphi.Entity.Leaderboard;
+using Saphira.Saphi.Entity.Ranking;
+using Saphira.Saphi.Entity.Reference;
+using Saphira.Saphi.Entity.User;
 
 namespace Saphira.Saphi.Api;
 
@@ -80,12 +84,70 @@ public interface ISaphiApiClient
         TimeSpan? cacheDuration = null,
         bool forceRefresh = false);
 
+    Task<SaphiApiResult<SaphiApiResponse<Standard>>> GetStandardsAsync(
+        TimeSpan? cacheDuration = null,
+        bool forceRefresh = false);
+
     Task<SaphiApiResult<SaphiApiResponse<Player>>> GetPlayersAsync(
         int? id = null,
         string? username = null,
         int? countryId = null,
         int? statusId = null,
         string? discordId = null,
+        int? page = null,
+        int? perPage = null,
+        TimeSpan? cacheDuration = null,
+        bool forceRefresh = false);
+
+    Task<SaphiApiResult<SaphiApiResponse<SiteRecord>>> GetSiteRecordsAsync(
+        int? categoryId = null,
+        int? engineId = null,
+        int? countryId = null,
+        TimeSpan? cacheDuration = null,
+        bool forceRefresh = false);
+
+    Task<SaphiApiResult<SaphiApiResponse<MatchupResult>>> GetMatchupAsync(
+        int player1Id,
+        int player2Id,
+        string? categories = null,
+        TimeSpan? cacheDuration = null,
+        bool forceRefresh = false);
+
+    Task<SaphiApiResult<SaphiApiResponse<PointsRanking>>> GetPointsRankingsAsync(
+        string? type = null,
+        string? category = null,
+        int? page = null,
+        int? perPage = null,
+        TimeSpan? cacheDuration = null,
+        bool forceRefresh = false);
+
+    Task<SaphiApiResult<SaphiApiResponse<AverageFinishRanking>>> GetAverageFinishRankingsAsync(
+        string? type = null,
+        string? category = null,
+        int? page = null,
+        int? perPage = null,
+        TimeSpan? cacheDuration = null,
+        bool forceRefresh = false);
+
+    Task<SaphiApiResult<SaphiApiResponse<AverageRankRanking>>> GetAverageRankRankingsAsync(
+        string? type = null,
+        string? category = null,
+        int? page = null,
+        int? perPage = null,
+        TimeSpan? cacheDuration = null,
+        bool forceRefresh = false);
+
+    Task<SaphiApiResult<SaphiApiResponse<TotalTimeRanking>>> GetTotalTimeRankingsAsync(
+        string? type = null,
+        string? category = null,
+        int? page = null,
+        int? perPage = null,
+        TimeSpan? cacheDuration = null,
+        bool forceRefresh = false);
+
+    Task<SaphiApiResult<SaphiApiResponse<SrPrRanking>>> GetSrPrRankingsAsync(
+        string? type = null,
+        string? category = null,
         int? page = null,
         int? perPage = null,
         TimeSpan? cacheDuration = null,

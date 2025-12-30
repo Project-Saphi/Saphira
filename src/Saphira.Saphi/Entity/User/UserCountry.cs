@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Saphira.Saphi.Entity;
+namespace Saphira.Saphi.Entity.User;
 
 public class UserCountry
 {
