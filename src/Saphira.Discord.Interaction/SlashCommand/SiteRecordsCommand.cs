@@ -1,7 +1,7 @@
 using Discord;
 using Discord.Interactions;
-using Saphira.Discord.Interaction.Foundation.Autocompletion;
-using Saphira.Discord.Interaction.Foundation.Precondition;
+using Saphira.Discord.Core.Interaction.Autocompletion;
+using Saphira.Discord.Core.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
 using Saphira.Discord.Messaging.EmoteMapper;
@@ -9,8 +9,8 @@ using Saphira.Discord.Pagination;
 using Saphira.Discord.Pagination.Builder;
 using Saphira.Discord.Pagination.Component;
 using Saphira.Saphi.Api;
-using Saphira.Saphi.Entity.Leaderboard;
-using Saphira.Saphi.Interaction;
+using Saphira.Saphi.Core.Entity.Leaderboard;
+using Saphira.Saphi.Interaction.Autocompletion.ValueProvider;
 using System.Text;
 
 namespace Saphira.Discord.Interaction.SlashCommand;

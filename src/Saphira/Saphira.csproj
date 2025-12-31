@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -14,9 +14,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Saphira.Core\Saphira.Core.csproj" />
-    <ProjectReference Include="..\Saphira.Discord.Interaction\Saphira.Discord.Interaction.csproj" />
-    <ProjectReference Include="..\Saphira.Saphi\Saphira.Saphi.csproj" />
     <ProjectReference Include="..\Saphira.Discord\Saphira.Discord.csproj" />
+    <ProjectReference Include="..\Saphira.Discord.Core\Saphira.Discord.Core.csproj" />
+    <ProjectReference Include="..\Saphira.Discord.Interaction\Saphira.Discord.Interaction.csproj" />
+    <ProjectReference Include="..\Saphira.Saphi.Core\Saphira.Saphi.Core.csproj" />
+    <ProjectReference Include="..\Saphira.Saphi.Api\Saphira.Saphi.Api.csproj" />
+    <ProjectReference Include="..\Saphira.Saphi.Interaction\Saphira.Saphi.Interaction.csproj" />
   </ItemGroup>
 
   <ItemGroup>

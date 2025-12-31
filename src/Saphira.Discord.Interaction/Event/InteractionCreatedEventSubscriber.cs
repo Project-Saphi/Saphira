@@ -1,10 +1,11 @@
-﻿using Discord;
+using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Saphira.Core.Event;
 using Saphira.Core.Extensions.DependencyInjection;
 using Saphira.Core.Logging;
+using Saphira.Discord.Core.Interaction;
 
 namespace Saphira.Discord.Interaction.Event;
 

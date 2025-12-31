@@ -10,10 +10,9 @@ using Saphira.Core.Extensions.DependencyInjection;
 using Saphira.Core.Logging;
 using Saphira.Core.Security.Cooldown;
 using Saphira.Core.Twitch;
-using Saphira.Discord.Entity.Guild;
-using Saphira.Discord.Entity.Guild.Role;
-using Saphira.Discord.Extensions.DependencyInjection;
-using Saphira.Discord.Interaction;
+using Saphira.Discord.Core.Entity.Guild;
+using Saphira.Discord.Core.Extensions.DependencyInjection;
+using Saphira.Discord.Core.Interaction;
 using Saphira.Discord.Messaging;
 using Saphira.Discord.Pagination.Component;
 using Saphira.Saphi.Api;
@@ -105,7 +104,6 @@ public class Program
             .AddSingleton(discordSocketClient)
             .AddSingleton(interactionService)
             .AddSingleton(botConfiguration)
-            .AddSingleton<GuildRoleManager>()
             .AddSingleton<CacheInvalidationService>()
             .AddSingleton<ISaphiApiClient, SaphiApiClient>()
             .AddSingleton<IMessageLogger, ConsoleMessageLogger>()

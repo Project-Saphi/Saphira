@@ -1,8 +1,8 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Saphira.Discord.Entity.Guild;
-using Saphira.Discord.Interaction.Foundation.Precondition;
+using Saphira.Discord.Core.Entity.Guild;
+using Saphira.Discord.Core.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
 using Saphira.Discord.Messaging.EmoteMapper;

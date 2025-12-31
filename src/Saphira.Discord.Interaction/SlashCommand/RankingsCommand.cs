@@ -1,7 +1,7 @@
 using Discord;
 using Discord.Interactions;
-using Saphira.Discord.Interaction.Foundation.Autocompletion;
-using Saphira.Discord.Interaction.Foundation.Precondition;
+using Saphira.Discord.Core.Interaction.Autocompletion;
+using Saphira.Discord.Core.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
 using Saphira.Discord.Messaging.EmoteMapper;
@@ -9,9 +9,9 @@ using Saphira.Discord.Pagination;
 using Saphira.Discord.Pagination.Builder;
 using Saphira.Discord.Pagination.Component;
 using Saphira.Saphi.Api;
-using Saphira.Saphi.Entity.Ranking;
-using Saphira.Saphi.Game;
-using Saphira.Saphi.Interaction;
+using Saphira.Saphi.Core.Entity.Ranking;
+using Saphira.Saphi.Core;
+using Saphira.Saphi.Interaction.Autocompletion.ValueProvider;
 using System.Globalization;
 using System.Text;
 
@@ -248,7 +248,7 @@ public class RankingsCommand(ISaphiApiClient client, PaginationComponentHandler 
             values.Add(entry.Average.ToString("F3", CultureInfo.InvariantCulture));
         }
 
-        return BuildEmbed(title, pageNumber, placements, names, values, isCountryRanking, ":chart_with_upwards_trend:", "Avg. Finish");
+        return BuildEmbed(title, pageNumber, placements, names, values, isCountryRanking, ":chart_with_upwards_trend:", "Average Finish");
     }
 
     private EmbedBuilder GetAverageRankEmbed(List<AverageRankRanking> data, int pageNumber, string title, bool isCountryRanking)
@@ -270,7 +270,7 @@ public class RankingsCommand(ISaphiApiClient client, PaginationComponentHandler 
             values.Add(valueStr);
         }
 
-        return BuildEmbed(title, pageNumber, placements, names, values, isCountryRanking, ":medal:", "Avg. Rank");
+        return BuildEmbed(title, pageNumber, placements, names, values, isCountryRanking, ":medal:", "Average Rank");
     }
 
     private EmbedBuilder GetTotalTimeEmbed(List<TotalTimeRanking> data, int pageNumber, string title, bool isCountryRanking)
@@ -299,10 +299,10 @@ public class RankingsCommand(ISaphiApiClient client, PaginationComponentHandler 
         {
             placements.Add(RankFormatter.ToMedalFormat(entry.Placement));
             names.Add(BuildNameString(entry.Name, entry.CountryName, isCountryRanking));
-            values.Add((entry.SrPr * 100).ToString("F3", CultureInfo.InvariantCulture) + "%");
+            values.Add((entry.SrPr * 100).ToString("F3", CultureInfo.InvariantCulture));
         }
 
-        return BuildEmbed(title, pageNumber, placements, names, values, isCountryRanking, ":checkered_flag:", "SR/PR");
+        return BuildEmbed(title, pageNumber, placements, names, values, isCountryRanking, ":checkered_flag:", "SR:PR");
     }
 
     private string BuildNameString(string? name, string? countryName, bool isCountryRanking)

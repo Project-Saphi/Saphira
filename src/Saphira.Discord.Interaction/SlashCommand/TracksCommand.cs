@@ -1,13 +1,13 @@
 using Discord;
 using Discord.Interactions;
-using Saphira.Discord.Interaction.Foundation.Precondition;
+using Saphira.Discord.Core.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
 using Saphira.Discord.Pagination;
 using Saphira.Discord.Pagination.Builder;
 using Saphira.Discord.Pagination.Component;
 using Saphira.Saphi.Api;
-using Saphira.Saphi.Entity;
+using Saphira.Saphi.Core.Entity;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
 

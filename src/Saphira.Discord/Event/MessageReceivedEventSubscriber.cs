@@ -4,7 +4,7 @@ using Saphira.Core;
 using Saphira.Core.Event;
 using Saphira.Core.Extensions.DependencyInjection;
 using Saphira.Core.Logging;
-using Saphira.Discord.Entity.Guild.Member;
+using Saphira.Discord.Core.Entity.Guild.Member;
 using Saphira.Discord.Messaging;
 
 namespace Saphira.Discord.Event;

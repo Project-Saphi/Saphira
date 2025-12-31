@@ -5,8 +5,8 @@ using Saphira.Core.Event;
 using Saphira.Core.Extensions.DependencyInjection;
 using Saphira.Core.Logging;
 using Saphira.Core.Twitch;
-using Saphira.Discord.Entity.Guild.Role;
-using Saphira.Discord.Entity.Presence;
+using Saphira.Discord.Core.Entity.Guild.Role;
+using Saphira.Discord.Core.Entity.Presence;
 using Saphira.Discord.Messaging;
 
 namespace Saphira.Discord.Event;

@@ -1,4 +1,4 @@
-﻿using Discord.Interactions;
+using Discord.Interactions;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 
 namespace Saphira.Discord.Interaction.SlashCommand;

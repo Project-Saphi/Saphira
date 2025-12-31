@@ -21,9 +21,12 @@ Saphira is organized into multiple assemblies, each responsible for a specific d
 |----------|-------------|
 | Saphira | Main entry point and application startup |
 | Saphira.Core | Core application logic such as configuration, cronjobs, event system, logging, and security |
-| Saphira.Discord | Discord client integration, event subscribers, messaging utilities, pagination, and other Discord-specific utilities |
-| Saphira.Discord.Interaction | Interaction handlers for slash commands, user commands, and components |
-| Saphira.Saphi | Integration with the Saphi API, entity models, and game-specific logic |
+| Saphira.Discord | Discord client integration, event subscribers, messaging utilities, and pagination |
+| Saphira.Discord.Core | Discord abstractions including preconditions, value providers, type converters, interaction handling, and entity models |
+| Saphira.Discord.Interaction | Slash commands, user commands, and component handlers |
+| Saphira.Saphi.Core | Domain entities for Saphi data models |
+| Saphira.Saphi.Api | Integration with the Saphi REST API |
+| Saphira.Saphi.Interaction | Saphi-specific value providers for autocompletion |
 
 When creating new code, make sure you place it in the appropriate assembly based on its purpose.
 
@@ -157,7 +160,7 @@ Using a `ValueProvider` is really simple. First, you need an entity:
 ```csharp
 using System.Text.Json.Serialization;
 
-namespace Saphira.Saphi.Entity;
+namespace Saphira.Saphi.Core.Entity.User;
 
 public class Player
 {
@@ -187,10 +190,10 @@ public class Player
 The entity can come from anywhere - in this example it's a REST entity from an external API, so it also contains JSON decoding instructions. Next, you can implement the actual `ValueProvider`.
 
 ```csharp
-using Saphira.Discord.Interaction.Foundation.Autocompletion.ValueProvider;
+using Saphira.Discord.Core.Interaction.Autocompletion.ValueProvider;
 using Saphira.Saphi.Api;
 
-namespace Saphira.Saphi.Interaction;
+namespace Saphira.Saphi.Interaction.Autocompletion.ValueProvider;
 
 public class PlayerValueProvider(ISaphiApiClient client) : IValueProvider
 {
@@ -212,8 +215,8 @@ The `GenericAutocompleteHandler` already does all the logic for you, so creating
 
 ```csharp
 using Discord.Interactions;
-using Saphira.Discord.Interaction.Foundation.Autocompletion;
-using Saphira.Saphi.Interaction;
+using Saphira.Discord.Core.Interaction.Autocompletion;
+using Saphira.Saphi.Interaction.Autocompletion.ValueProvider;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
 
@@ -231,10 +234,10 @@ To be able to use a `ValueProvider` as a dependency, you can attach the `AutoReg
 
 ```csharp
 using Saphira.Core.Extensions.DependencyInjection;
-using Saphira.Discord.Interaction.Foundation.Autocompletion.ValueProvider;
+using Saphira.Discord.Core.Interaction.Autocompletion.ValueProvider;
 using Saphira.Saphi.Api;
 
-namespace Saphira.Saphi.Interaction;
+namespace Saphira.Saphi.Interaction.Autocompletion.ValueProvider;
 
 [AutoRegister]
 public class PlayerValueProvider(ISaphiApiClient client) : IValueProvider
@@ -353,12 +356,12 @@ Use `ListPaginationBuilder` when all data is available in memory. This is ideal 
 ```csharp
 using Discord;
 using Discord.Interactions;
-using Saphira.Discord.Interaction.Foundation.Precondition;
+using Saphira.Discord.Core.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand;
 using Saphira.Discord.Pagination.Builder;
 using Saphira.Discord.Pagination.Component;
 using Saphira.Saphi.Api;
-using Saphira.Saphi.Entity;
+using Saphira.Saphi.Core.Entity;
 
 [RequireTextChannel]
 public class TracksCommand(ISaphiApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand
@@ -415,12 +418,12 @@ Use `CallbackPaginationBuilder` when data needs to be fetched asynchronously for
 ```csharp
 using Discord;
 using Discord.Interactions;
-using Saphira.Discord.Interaction.Foundation.Precondition;
+using Saphira.Discord.Core.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand;
 using Saphira.Discord.Pagination.Builder;
 using Saphira.Discord.Pagination.Component;
 using Saphira.Saphi.Api;
-using Saphira.Saphi.Entity;
+using Saphira.Saphi.Core.Entity.Leaderboard;
 
 [RequireTextChannel]
 public class LeaderboardCommand(ISaphiApiClient client, PaginationComponentHandler paginationComponentHandler) : BaseCommand

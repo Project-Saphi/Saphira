@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Saphira.Core\Saphira.Core.csproj" />
+    <ProjectReference Include="..\Saphira.Discord.Core\Saphira.Discord.Core.csproj" />
+    <ProjectReference Include="..\Saphira.Saphi.Api\Saphira.Saphi.Api.csproj" />
+  </ItemGroup>
+
+</Project>

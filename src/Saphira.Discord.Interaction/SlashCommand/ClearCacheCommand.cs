@@ -2,7 +2,7 @@ using Discord;
 using Discord.Interactions;
 using Saphira.Core.Extensions.Caching;
 using Saphira.Core.Logging;
-using Saphira.Discord.Interaction.Foundation.Precondition;
+using Saphira.Discord.Core.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
 

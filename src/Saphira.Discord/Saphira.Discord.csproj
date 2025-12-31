@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Saphira.Core\Saphira.Core.csproj" />
+    <ProjectReference Include="..\Saphira.Discord.Core\Saphira.Discord.Core.csproj" />
   </ItemGroup>
 
 </Project>

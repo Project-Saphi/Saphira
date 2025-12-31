@@ -1,13 +1,13 @@
 using Discord;
 using Discord.Interactions;
-using Saphira.Discord.Interaction.Foundation.Autocompletion;
-using Saphira.Discord.Interaction.Foundation.Precondition;
+using Saphira.Discord.Core.Interaction.Autocompletion;
+using Saphira.Discord.Core.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
 using Saphira.Discord.Messaging.EmoteMapper;
 using Saphira.Saphi.Api;
-using Saphira.Saphi.Entity.User;
-using Saphira.Saphi.Interaction;
+using Saphira.Saphi.Core.Entity.User;
+using Saphira.Saphi.Interaction.Autocompletion.ValueProvider;
 
 namespace Saphira.Discord.Interaction.SlashCommand;
 

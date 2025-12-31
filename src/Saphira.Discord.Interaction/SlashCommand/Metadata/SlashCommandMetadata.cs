@@ -1,4 +1,4 @@
-﻿namespace Saphira.Discord.Interaction.SlashCommand.Metadata;
+namespace Saphira.Discord.Interaction.SlashCommand.Metadata;
 
 public class SlashCommandMetadata(string? example = null, string? notes = null)
 {

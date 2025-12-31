@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Discord.Net" Version="3.18.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Saphira.Core\Saphira.Core.csproj" />
+    <ProjectReference Include="..\Saphira.Discord\Saphira.Discord.csproj" />
+    <ProjectReference Include="..\Saphira.Saphi.Core\Saphira.Saphi.Core.csproj" />
+  </ItemGroup>
+
+</Project>

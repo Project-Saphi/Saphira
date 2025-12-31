@@ -1,10 +1,9 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Saphira.Discord.Entity.Guild.Role;
-using Saphira.Discord.Interaction.Foundation.Autocompletion;
-using Saphira.Discord.Interaction.Foundation.Autocompletion.ValueProvider;
-using Saphira.Discord.Interaction.Foundation.Precondition;
+using Saphira.Discord.Core.Interaction.Autocompletion;
+using Saphira.Discord.Core.Interaction.Autocompletion.ValueProvider;
+using Saphira.Discord.Core.Interaction.Precondition;
 using Saphira.Discord.Interaction.SlashCommand.Metadata;
 using Saphira.Discord.Messaging;
 
@@ -13,7 +12,7 @@ namespace Saphira.Discord.Interaction.SlashCommand;
 [RequireCooldownExpired(15)]
 [RequireTextChannel]
 [RequireCommandAllowedChannel]
-public class ToggleCommand(GuildRoleManager guildRoleManager) : BaseCommand
+public class ToggleCommand : BaseCommand
 {
     public override SlashCommandMetadata GetMetadata()
     {
@@ -31,8 +30,14 @@ public class ToggleCommand(GuildRoleManager guildRoleManager) : BaseCommand
     {
         await DeferAsync();
 
-        var toggleableRoles = guildRoleManager.GetToggleableRoles();
-        var toggledRole = toggleableRoles[role];
+        var toggledRole = ToggleableRoleValueProvider.GetToggleableRole(role);
+
+        if (toggledRole == null)
+        {
+            var errorAlert = new ErrorAlertEmbedBuilder("Invalid role selection.");
+            await FollowupAsync(embed: errorAlert.Build());
+            return;
+        }
 
         if (Context.User is not SocketGuildUser guildUser)
         {
