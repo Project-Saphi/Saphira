@@ -68,7 +68,7 @@ public class VerifyCommand(ISaphiApiClient client, IMessageLogger logger) : Base
         var instructions = new StringBuilder()
             .AppendLine($":book: {MessageTextFormat.Bold("Verification Instructions")}")
             .AppendLine("")
-            .AppendLine("To verify yourself, please enter your Discord ID in your user profile on the website.")
+            .AppendLine($"To verify yourself, please enter your Discord ID in your {MessageTextFormat.MaskedLink("user profile", "https://5ever.crashteamranking.com/user/edit-profile")} on the website.")
             .AppendLine($"Your Discord ID is {MessageTextFormat.Code(guildUser.Id.ToString())}.")
             .AppendLine("")
             .AppendLine($"After entering your Discord ID in your user profile, run {MessageTextFormat.Code("/verify")} again.");
