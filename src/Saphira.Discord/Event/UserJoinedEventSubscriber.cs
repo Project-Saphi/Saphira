@@ -39,7 +39,7 @@ public class UserJoinedEventSubscriber(DiscordSocketClient client, Configuration
                 return;
             }
 
-            await textChannel.SendMessageAsync($"We just reached {guild.Users.Count} members. ??");
+            await textChannel.SendMessageAsync($"We just reached {guild.Users.Count} members. :partying_face:");
         }
     }
 }
