@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Saphira.Core\Saphira.Core.csproj" />
-  </ItemGroup>
-
 </Project>
