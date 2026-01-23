@@ -249,6 +249,7 @@ Toggle notification roles on or off.
 - Saphi Updates
 - Server Updates
 - WR Feed
+- CTE Updates
 
 **Response:**
 - Confirmation of role addition or removal

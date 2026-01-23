@@ -10,7 +10,8 @@ public class ToggleableRoleValueProvider : IValueProvider
     {
         { 1, GuildRole.SaphiUpdatesRole },
         { 2, GuildRole.ServerUpdatesRole },
-        { 3, GuildRole.WRFeedRole }
+        { 3, GuildRole.WRFeedRole },
+        { 4, GuildRole.CTEUpdatesRole }
     };
 
     public Task<List<Value>> GetValuesAsync()

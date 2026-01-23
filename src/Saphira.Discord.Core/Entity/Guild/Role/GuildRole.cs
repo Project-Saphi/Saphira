@@ -10,6 +10,7 @@ public class GuildRole
     public static readonly string ServerUpdatesRole = "Server Updates";
     public static readonly string VerifiedRole = "Verified";
     public static readonly string WRFeedRole = "WR Feed";
+    public static readonly string CTEUpdatesRole = "CTE Updates";
 
     public static bool IsTeamRole(IRole role) => role.Name == TeamRole;
 
